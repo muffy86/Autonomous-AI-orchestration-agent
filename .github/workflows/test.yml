@@ -1,0 +1,130 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm test:unit
+        env:
+          NODE_ENV: test
+
+      - name: Run integration tests
+        run: pnpm test:integration
+        env:
+          NODE_ENV: test
+
+      - name: Generate coverage report
+        run: pnpm test:unit:coverage
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.run_id }}
+          path: |
+            coverage/
+            jest-results.xml
+          retention-days: 7
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = '## 📊 Test Coverage Report\n\n';
+            
+            try {
+              // Read coverage summary if it exists
+              const coveragePath = './coverage/coverage-summary.json';
+              if (fs.existsSync(coveragePath)) {
+                const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+                const { total } = coverage;
+                
+                comment += '| Metric | Coverage |\n';
+                comment += '|--------|----------|\n';
+                comment += `| Lines | ${total.lines.pct}% |\n`;
+                comment += `| Functions | ${total.functions.pct}% |\n`;
+                comment += `| Branches | ${total.branches.pct}% |\n`;
+                comment += `| Statements | ${total.statements.pct}% |\n\n`;
+                
+                // Add status based on coverage
+                const linesCoverage = total.lines.pct;
+                if (linesCoverage >= 80) {
+                  comment += '✅ Great coverage! Keep up the good work.\n';
+                } else if (linesCoverage >= 60) {
+                  comment += '⚠️ Coverage could be improved. Consider adding more tests.\n';
+                } else {
+                  comment += '❌ Low coverage detected. Please add more tests.\n';
+                }
+              } else {
+                comment += '⚠️ Coverage report not found.\n';
+              }
+            } catch (error) {
+              comment += '❌ Error reading coverage report.\n';
+            }
+            
+            comment += `\n[View detailed report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
