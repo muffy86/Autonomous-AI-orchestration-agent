@@ -12,7 +12,8 @@
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#model-providers"><strong>Model Providers</strong></a> ·
   <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
+  <a href="#running-locally"><strong>Running locally</strong></a> ·
+  <a href="CONTRIBUTING.md"><strong>Contributing</strong></a>
 </p>
 <br/>
 
@@ -60,3 +61,84 @@ pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
+
+## 📚 Documentation
+
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
+- **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
+- **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
+- **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+
+## 🚀 Features & Workflows
+
+This repository includes comprehensive GitHub Actions workflows:
+
+- **🤖 Dependabot Auto-merge** - Automatically merges dependency updates when tests pass
+- **🔒 Security Scanning** - CodeQL analysis and vulnerability detection
+- **🏗️ Build & Deploy** - Automated build and deployment pipeline
+- **🧪 Testing** - Unit, integration, and E2E test automation
+- **📊 Performance** - Lighthouse CI for performance monitoring
+- **🐳 Docker** - Container builds with security scanning
+- **📦 Release** - Automated release management
+
+## 🛡️ Security
+
+- Automated dependency updates via Dependabot
+- Security vulnerability scanning with CodeQL
+- Container image vulnerability scanning with Trivy
+- Comprehensive security headers and best practices
+- Rate limiting and input validation
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pnpm test:all
+
+# Unit tests only
+pnpm test:unit
+
+# Integration tests
+pnpm test:integration
+
+# E2E tests
+pnpm test
+
+# With coverage
+pnpm test:unit:coverage
+```
+
+## 🐳 Docker Support
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or build and run manually
+docker build -t ai-chatbot .
+docker run -p 3000:3000 ai-chatbot
+```
+
+## 📊 Monitoring & Performance
+
+- Lighthouse CI for performance testing
+- Automated performance regression detection
+- Coverage reporting and tracking
+- Build and deployment monitoring
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Development setup
+- Code style guidelines
+- Testing requirements
+- Pull request process
+
+## 🔒 Security
+
+For security vulnerabilities, please see our [Security Policy](SECURITY.md) for responsible disclosure guidelines.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
