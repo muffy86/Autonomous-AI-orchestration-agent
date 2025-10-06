@@ -15,8 +15,8 @@ importers:
         specifier: ^1.2.15
         version: 1.2.15(zod@3.24.2)
       '@codemirror/lang-javascript':
-        specifier: ^6.2.2
-        version: 6.2.3
+        specifier: ^6.2.4
+        version: 6.2.4
       '@codemirror/lang-python':
         specifier: ^6.1.6
         version: 6.1.7
@@ -581,11 +581,14 @@ packages:
   '@codemirror/autocomplete@6.18.6':
     resolution: {integrity: sha512-PHHBXFomUs5DF+9tCOM/UoW6XQ4R44lLNNhRaW9PKPTU0D7lIjRg3ElxaJnTwsl/oHiR93WSXDBrekhoUGCPtg==}
 
+  '@codemirror/autocomplete@6.19.0':
+    resolution: {integrity: sha512-61Hfv3cF07XvUxNeC3E7jhG8XNi1Yom1G0lRC936oLnlF+jrbrv8rc/J98XlYzcsAoTVupfsf5fLej1aI8kyIg==}
+
   '@codemirror/commands@6.8.0':
     resolution: {integrity: sha512-q8VPEFaEP4ikSlt6ZxjB3zW72+7osfAYW9i8Zu943uqbKuz6utc1+F170hyLUCUltXORjQXRyYQNfkckzA/bPQ==}
 
-  '@codemirror/lang-javascript@6.2.3':
-    resolution: {integrity: sha512-8PR3vIWg7pSu7ur8A07pGiYHgy3hHj+mRYRCSG8q+mPIrl0F02rgpGv+DsQTHRTc30rydOsf5PZ7yjKFg2Ackw==}
+  '@codemirror/lang-javascript@6.2.4':
+    resolution: {integrity: sha512-0WVmhp1QOqZ4Rt6GlVGwKJN3KW7Xh4H2q8ZZNGZaP6lRdxXJzmjm4FqvmOojVj6khWJHIb9sp7U/72W7xQgqAA==}
 
   '@codemirror/lang-python@6.1.7':
     resolution: {integrity: sha512-mZnFTsL4lW5p9ch8uKNKeRU3xGGxr1QpESLilfON2E3fQzOa/OygEMkaDvERvXDJWJA9U9oN/D4w0ZuUzNO4+g==}
@@ -593,8 +596,14 @@ packages:
   '@codemirror/language@6.11.0':
     resolution: {integrity: sha512-A7+f++LodNNc1wGgoRDTt78cOwWm9KVezApgjOMp1W4hM0898nsqBXwF+sbePE7ZRcjN7Sa1Z5m2oN27XkmEjQ==}
 
+  '@codemirror/language@6.11.3':
+    resolution: {integrity: sha512-9HBM2XnwDj7fnu0551HkGdrUrrqmYq/WC5iv6nbY2WdicXdGbhR/gfbZOH73Aqj4351alY1+aoG9rCNfiwS1RA==}
+
   '@codemirror/lint@6.8.4':
     resolution: {integrity: sha512-u4q7PnZlJUojeRe8FJa/njJcMctISGgPQ4PnWsd9268R4ZTtU+tfFYmwkBvgcrK2+QQ8tYFVALVb5fVJykKc5A==}
+
+  '@codemirror/lint@6.9.0':
+    resolution: {integrity: sha512-wZxW+9XDytH3SKvS8cQzMyQCaaazH8XL1EMHleHe00wVzsv7NBQKVW2yzEHrRhmM7ZOhVdItPbvlRBvMp9ej7A==}
 
   '@codemirror/search@6.5.10':
     resolution: {integrity: sha512-RMdPdmsrUf53pb2VwflKGHEe1XVM07hI7vV2ntgw1dmqhimpatSJKva4VA9h4TLUDOD4EIF02201oZurpnEFsg==}
@@ -1311,8 +1320,8 @@ packages:
   '@lezer/highlight@1.2.1':
     resolution: {integrity: sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==}
 
-  '@lezer/javascript@1.4.21':
-    resolution: {integrity: sha512-lL+1fcuxWYPURMM/oFZLEDm0XuLN128QPV+VuGtKpeaOGdcl9F2LYC3nh1S9LkPqx9M0mndZFdXCipNAZpzIkQ==}
+  '@lezer/javascript@1.5.4':
+    resolution: {integrity: sha512-vvYx3MhWqeZtGPwDStM2dwgljd5smolYD2lR2UyFcHfxbBQebqx8yjmFmxtJ/E6nN6u1D9srOiVWm3Rb4tmcUA==}
 
   '@lezer/lr@1.4.2':
     resolution: {integrity: sha512-pu0K1jCIdnQ12aWNaAVU5bzi7Bd1w54J3ECgANPmYLtQKP0HBj2cE/5coBD66MT10xbtIuUr7tg0Shbsvk0mDA==}
@@ -5461,22 +5470,29 @@ snapshots:
       '@codemirror/view': 6.36.4
       '@lezer/common': 1.2.3
 
-  '@codemirror/commands@6.8.0':
+  '@codemirror/autocomplete@6.19.0':
     dependencies:
-      '@codemirror/language': 6.11.0
+      '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.4
       '@lezer/common': 1.2.3
 
-  '@codemirror/lang-javascript@6.2.3':
+  '@codemirror/commands@6.8.0':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
-      '@codemirror/language': 6.11.0
-      '@codemirror/lint': 6.8.4
+      '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.4
       '@lezer/common': 1.2.3
-      '@lezer/javascript': 1.4.21
+
+  '@codemirror/lang-javascript@6.2.4':
+    dependencies:
+      '@codemirror/autocomplete': 6.19.0
+      '@codemirror/language': 6.11.3
+      '@codemirror/lint': 6.9.0
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.36.4
+      '@lezer/common': 1.2.3
+      '@lezer/javascript': 1.5.4
 
   '@codemirror/lang-python@6.1.7':
     dependencies:
@@ -5495,7 +5511,22 @@ snapshots:
       '@lezer/lr': 1.4.2
       style-mod: 4.1.2
 
+  '@codemirror/language@6.11.3':
+    dependencies:
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.36.4
+      '@lezer/common': 1.2.3
+      '@lezer/highlight': 1.2.1
+      '@lezer/lr': 1.4.2
+      style-mod: 4.1.2
+
   '@codemirror/lint@6.8.4':
+    dependencies:
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.36.4
+      crelt: 1.0.6
+
+  '@codemirror/lint@6.9.0':
     dependencies:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.4
@@ -6101,7 +6132,7 @@ snapshots:
     dependencies:
       '@lezer/common': 1.2.3
 
-  '@lezer/javascript@1.4.21':
+  '@lezer/javascript@1.5.4':
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
