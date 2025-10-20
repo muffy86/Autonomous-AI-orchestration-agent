@@ -73,6 +73,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 
 This repository includes comprehensive GitHub Actions workflows:
 
+- **🤖 Auto-merge Pull Requests** - Automatically merges all PRs when approved and checks pass
 - **🤖 Dependabot Auto-merge** - Automatically merges dependency updates when tests pass
 - **🔒 Security Scanning** - CodeQL analysis and vulnerability detection
 - **🏗️ Build & Deploy** - Automated build and deployment pipeline
