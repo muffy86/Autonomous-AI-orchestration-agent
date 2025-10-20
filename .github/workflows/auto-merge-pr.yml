@@ -89,7 +89,7 @@ jobs:
         if: steps.approval.outputs.approved == 'true'
         run: |
           gh pr merge --auto --squash "$PR_URL"
-          gh pr comment "$PR_URL" --body "🤖 Auto-merging this PR after all required checks passed and approval was received."
+          gh pr comment "$PR_URL" --body "🤖 Auto-merge has been enabled for this PR. It will be merged automatically once all required checks have passed and approval has been received."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
