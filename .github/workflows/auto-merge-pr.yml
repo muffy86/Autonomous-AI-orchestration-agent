@@ -30,6 +30,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
+            if (!pr) {
+              console.log('No pull_request found in payload, skipping auto-merge');
+              core.setOutput('ready', false);
+              return false;
+            }
             
             // Skip draft PRs
             if (pr.draft) {
