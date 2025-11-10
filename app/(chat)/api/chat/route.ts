@@ -36,6 +36,7 @@ import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 import { ChatSDKError } from '@/lib/errors';
+import { AIPerformanceTracker } from '@/lib/performance';
 
 export const maxDuration = 60;
 
@@ -62,12 +63,16 @@ function getStreamContext() {
 }
 
 export async function POST(request: Request) {
+  // Start performance tracking
+  const perfId = AIPerformanceTracker.startTracking('chat-api-request');
+  
   let requestBody: PostRequestBody;
 
   try {
     const json = await request.json();
     requestBody = postRequestBodySchema.parse(json);
   } catch (_) {
+    AIPerformanceTracker.endTracking(perfId, 'chat-api-request');
     return new ChatSDKError('bad_request:api').toResponse();
   }
 
@@ -234,9 +239,13 @@ export async function POST(request: Request) {
       return new Response(stream);
     }
   } catch (error) {
+    AIPerformanceTracker.endTracking(perfId, 'chat-api-request');
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
+  } finally {
+    // Ensure performance tracking is completed
+    AIPerformanceTracker.endTracking(perfId, 'chat-api-request');
   }
 }
 

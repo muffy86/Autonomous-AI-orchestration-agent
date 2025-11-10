@@ -146,7 +146,7 @@ describe('utils', () => {
     it('should return empty array when window is undefined', () => {
       const originalWindow = global.window
       // @ts-ignore
-      delete global.window
+      global.window = undefined
 
       const result = getLocalStorage('testKey')
       expect(result).toEqual([])
