@@ -1,6 +1,8 @@
 import { auth } from '@/app/(auth)/auth';
 import { getChatById, getVotesByChatId, voteMessage } from '@/lib/db/queries';
 import { ChatSDKError } from '@/lib/errors';
+import { securitySchemas, validateAndSanitize } from '@/lib/security';
+import { z } from 'zod';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,6 +12,15 @@ export async function GET(request: Request) {
     return new ChatSDKError(
       'bad_request:api',
       'Parameter chatId is required.',
+    ).toResponse();
+  }
+
+  // Validate the chatId parameter
+  const validationResult = validateAndSanitize(chatId, securitySchemas.uuid, false);
+  if (!validationResult.success) {
+    return new ChatSDKError(
+      'bad_request:api',
+      `Invalid chatId format: ${validationResult.error}`,
     ).toResponse();
   }
 
@@ -34,18 +45,32 @@ export async function GET(request: Request) {
   return Response.json(votes, { status: 200 });
 }
 
-export async function PATCH(request: Request) {
-  const {
-    chatId,
-    messageId,
-    type,
-  }: { chatId: string; messageId: string; type: 'up' | 'down' } =
-    await request.json();
+const voteSchema = z.object({
+  chatId: securitySchemas.uuid,
+  messageId: securitySchemas.uuid,
+  type: z.enum(['up', 'down']),
+});
 
-  if (!chatId || !messageId || !type) {
+export async function PATCH(request: Request) {
+  let chatId: string, messageId: string, type: 'up' | 'down';
+  
+  try {
+    const body = await request.json();
+    
+    // Validate the request body
+    const validationResult = validateAndSanitize(body, voteSchema, false);
+    if (!validationResult.success) {
+      return new ChatSDKError(
+        'bad_request:api',
+        `Invalid request data: ${validationResult.error}`,
+      ).toResponse();
+    }
+
+    ({ chatId, messageId, type } = validationResult.data);
+  } catch (error) {
     return new ChatSDKError(
       'bad_request:api',
-      'Parameters chatId, messageId, and type are required.',
+      'Invalid JSON in request body',
     ).toResponse();
   }
 

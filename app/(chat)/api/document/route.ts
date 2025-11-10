@@ -6,6 +6,7 @@ import {
   saveDocument,
 } from '@/lib/db/queries';
 import { ChatSDKError } from '@/lib/errors';
+import { securitySchemas, validateAndSanitize } from '@/lib/security';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,6 +16,15 @@ export async function GET(request: Request) {
     return new ChatSDKError(
       'bad_request:api',
       'Parameter id is missing',
+    ).toResponse();
+  }
+
+  // Validate the ID parameter
+  const validationResult = validateAndSanitize(id, securitySchemas.uuid, false);
+  if (!validationResult.success) {
+    return new ChatSDKError(
+      'bad_request:api',
+      `Invalid ID format: ${validationResult.error}`,
     ).toResponse();
   }
 

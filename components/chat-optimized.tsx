@@ -36,7 +36,7 @@ const InputSkeleton = () => (
 const MessagesSkeleton = () => (
   <div className="space-y-4">
     {[...Array(3)].map((_, i) => (
-      <div key={`message-skeleton-${i}`} className="animate-pulse">
+      <div key={`message-skeleton-${Date.now()}-${i}`} className="animate-pulse">
         <div className="bg-muted rounded-lg h-20 w-full mb-2" />
       </div>
     ))}

@@ -23,7 +23,10 @@
     "test:integration": "jest --testPathPattern=integration",
     "test:all": "pnpm test:unit && pnpm test",
     "analyze:bundle": "node scripts/analyze-bundle.js",
-    "analyze:bundle:detailed": "pnpm add -D @next/bundle-analyzer && ANALYZE=true pnpm build"
+    "analyze:bundle:detailed": "pnpm add -D @next/bundle-analyzer && ANALYZE=true pnpm build",
+    "security:audit": "node scripts/security-audit.js",
+    "security:deps": "pnpm audit",
+    "security:check": "pnpm security:deps && pnpm security:audit"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.11",
@@ -60,9 +63,11 @@
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.34.0",
+    "express-rate-limit": "^8.2.1",
     "fast-deep-equal": "^3.1.3",
     "framer-motion": "^11.3.19",
     "geist": "^1.3.1",
+    "isomorphic-dompurify": "^2.31.0",
     "lucide-react": "^0.446.0",
     "nanoid": "^5.0.8",
     "next": "15.3.0-canary.31",

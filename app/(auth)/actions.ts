@@ -3,12 +3,13 @@
 import { z } from 'zod';
 
 import { createUser, getUser } from '@/lib/db/queries';
+import { securitySchemas, } from '@/lib/security';
 
 import { signIn } from './auth';
 
 const authFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: securitySchemas.email,
+  password: securitySchemas.password,
 });
 
 export interface LoginActionState {
