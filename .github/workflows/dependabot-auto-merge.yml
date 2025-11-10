@@ -24,7 +24,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Wait for status checks
+      - name: Wait for Build workflow
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -33,14 +33,42 @@ jobs:
           wait-interval: 10
           allowed-conclusions: success
 
-      - name: Wait for Playwright tests
+      - name: Wait for Unit Tests
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-name: 'test'
+          check-name: 'Unit and Integration Tests'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success
+
+      - name: Wait for E2E Tests
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: 'Playwright E2E Tests'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+
+      - name: Wait for Lint and Type Check
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: 'Lint and Type Check'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+
+      - name: Auto-approve patch and minor updates
+        if: |
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+          contains(steps.metadata.outputs.dependency-names, 'npm') == false
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge for patch and minor updates
         if: |
@@ -49,7 +77,15 @@ jobs:
           contains(steps.metadata.outputs.dependency-names, 'npm') == false
         run: |
           gh pr merge --auto --merge "$PR_URL"
-          gh pr comment "$PR_URL" --body "🤖 Auto-merging this ${{ steps.metadata.outputs.update-type }} update after all checks passed."
+          gh pr comment "$PR_URL" --body "🤖 Auto-merging this ${{ steps.metadata.outputs.update-type }} update after all checks passed successfully.
+
+          **Checks completed:**
+          ✅ Build workflow
+          ✅ Unit and Integration Tests  
+          ✅ E2E Tests (Playwright)
+          ✅ Lint and Type Check
+          
+          This PR will be automatically merged once all required reviews are completed."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,17 +93,29 @@ jobs:
       - name: Comment on major updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
-          gh pr comment "$PR_URL" --body "🤖 This is a **major version update** that requires manual review before merging. Please review the changelog and test thoroughly."
+          gh pr comment "$PR_URL" --body "🤖 This is a **major version update** that requires manual review before merging.
+          
+          **All checks have passed:**
+          ✅ Build workflow
+          ✅ Unit and Integration Tests  
+          ✅ E2E Tests (Playwright)
+          ✅ Lint and Type Check
+          
+          ⚠️ **Manual review required** - Please review the changelog and test thoroughly before merging."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Auto-approve patch and minor updates
-        if: |
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
-          contains(steps.metadata.outputs.dependency-names, 'npm') == false
-        run: gh pr review --approve "$PR_URL"
+      - name: Comment on security updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' && contains(steps.metadata.outputs.dependency-names, 'security')
+        run: |
+          gh pr comment "$PR_URL" --body "🔒 **Security update detected** - This patch update includes security fixes and will be auto-merged after all checks pass.
+          
+          **Checks completed:**
+          ✅ Build workflow
+          ✅ Unit and Integration Tests  
+          ✅ E2E Tests (Playwright)
+          ✅ Lint and Type Check"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
