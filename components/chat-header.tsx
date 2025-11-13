@@ -25,7 +25,7 @@ function PureChatHeader({
   selectedModelId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
-  session: Session;
+  session: Session | null;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
@@ -55,7 +55,7 @@ function PureChatHeader({
         </Tooltip>
       )}
 
-      {!isReadonly && (
+      {!isReadonly && session && (
         <ModelSelector
           session={session}
           selectedModelId={selectedModelId}

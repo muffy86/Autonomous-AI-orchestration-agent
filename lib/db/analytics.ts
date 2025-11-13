@@ -204,7 +204,8 @@ export class DatabaseAnalytics {
     const result = await db.execute(sql`
       SELECT EXTRACT(EPOCH FROM (now() - pg_postmaster_start_time())) as uptime
     `);
-    return result.rows[0]?.uptime || 0;
+    const rows = result as unknown as any[];
+    return rows[0]?.uptime || 0;
   }
 
   private async getConnectionStats(): Promise<DatabaseHealth['connections']> {
@@ -218,7 +219,8 @@ export class DatabaseAnalytics {
       WHERE datname = current_database()
     `);
 
-    const stats = result.rows[0] || {};
+    const rows = result as unknown as any[];
+    const stats = rows[0] || {};
     return {
       active: stats.active || 0,
       idle: stats.idle || 0,
@@ -244,8 +246,10 @@ export class DatabaseAnalytics {
         FROM pg_statio_user_tables
       `);
 
-      const queryStats = queryStatsResult.rows[0] || {};
-      const cacheStats = cacheStatsResult.rows[0] || {};
+      const queryStatsRows = queryStatsResult as unknown as any[];
+      const cacheStatsRows = cacheStatsResult as unknown as any[];
+      const queryStats = queryStatsRows[0] || {};
+      const cacheStats = cacheStatsRows[0] || {};
 
       return {
         avgQueryTime: queryStats.avg_query_time || 0,
@@ -281,8 +285,10 @@ export class DatabaseAnalytics {
       `),
     ]);
 
-    const sizeStats = sizeResult.rows[0] || {};
-    const largestTables = tablesResult.rows.map((row: any) => ({
+    const sizeRows = sizeResult as unknown as any[];
+    const tablesRows = tablesResult as unknown as any[];
+    const sizeStats = sizeRows[0] || {};
+    const largestTables = tablesRows.map((row: any) => ({
       table: row.table_name,
       size: row.size,
     }));
@@ -303,7 +309,8 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const rows = result as unknown as any[];
+      const stats = rows[0] || {};
       return {
         totalQueries: stats.total_queries || 0,
         avgQueryTime: stats.avg_query_time || 0,
@@ -327,7 +334,8 @@ export class DatabaseAnalytics {
         LIMIT 10
       `);
 
-      return result.rows.map((row: any) => ({
+      const rows = result as unknown as any[];
+      return rows.map((row: any) => ({
         query: row.query.substring(0, 100) + '...',
         avgTime: row.avg_time,
         calls: row.calls,
@@ -349,7 +357,8 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const rows = result as unknown as any[];
+      const stats = rows[0] || {};
       return {
         select: stats.select_count || 0,
         insert: stats.insert_count || 0,
@@ -373,7 +382,8 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    const rows = result as unknown as any[];
+    return rows.map((row: any) => ({
       table: row.table_name,
       reads: row.reads || 0,
       writes: row.writes || 0,
@@ -386,7 +396,8 @@ export class DatabaseAnalytics {
       SELECT count(*) as index_count
       FROM pg_stat_user_indexes
     `);
-    return result.rows[0]?.index_count || 0;
+    const rows = result as unknown as any[];
+    return rows[0]?.index_count || 0;
   }
 
   private async getUnusedIndexes(): Promise<IndexAnalytics['unusedIndexes']> {
@@ -400,7 +411,8 @@ export class DatabaseAnalytics {
       ORDER BY pg_relation_size(indexrelid) DESC
     `);
 
-    return result.rows.map((row: any) => ({
+    const rows = result as unknown as any[];
+    return rows.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       size: row.size,
@@ -437,8 +449,9 @@ export class DatabaseAnalytics {
       WHERE schemaname = 'public'
     `);
 
+    const existingIndexesRows = existingIndexes as unknown as any[];
     const existingIndexNames = new Set(
-      existingIndexes.rows.map((row: any) => `${row.tablename}_${row.indexname}`)
+      existingIndexesRows.map((row: any) => `${row.tablename}_${row.indexname}`)
     );
 
     return suggestions.filter(suggestion => {
@@ -463,7 +476,8 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    const rows = result as unknown as any[];
+    return rows.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       hitRatio: row.hit_ratio || 0,

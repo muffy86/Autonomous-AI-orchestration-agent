@@ -89,7 +89,7 @@ export const modelManager_tool = tool({
         case 'stats':
           return {
             success: true,
-            stats: modelManager.getStats ? modelManager.getStats() : { message: 'Stats not available' },
+            stats: modelManager.getStats(),
           };
 
         default:

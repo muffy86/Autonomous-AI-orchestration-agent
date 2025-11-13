@@ -5,20 +5,20 @@ import {
 } from 'ai';
 import { xai } from '@ai-sdk/xai';
 import { isTestEnvironment } from '../constants';
-import {
-  artifactModel,
-  chatModel,
-  reasoningModel,
-  titleModel,
-} from './models.mock';
 
-export const myProvider = isTestEnvironment
+// Conditionally import mock models only in test environment
+let mockModels: any;
+if (isTestEnvironment) {
+  mockModels = require('./models.mock');
+}
+
+export const myProvider = isTestEnvironment && mockModels
   ? customProvider({
       languageModels: {
-        'chat-model': chatModel,
-        'chat-model-reasoning': reasoningModel,
-        'title-model': titleModel,
-        'artifact-model': artifactModel,
+        'chat-model': mockModels.chatModel,
+        'chat-model-reasoning': mockModels.reasoningModel,
+        'title-model': mockModels.titleModel,
+        'artifact-model': mockModels.artifactModel,
       },
     })
   : customProvider({

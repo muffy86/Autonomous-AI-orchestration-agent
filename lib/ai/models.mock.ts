@@ -3,7 +3,43 @@
  * Used in test environment to mock AI model responses
  */
 
-import { createMockLanguageModel } from 'ai/test';
+import type { LanguageModelV1 } from 'ai';
+
+// Mock language model implementation for testing
+// Note: This is a simplified mock that only implements the methods needed for testing
+function createMockLanguageModel(config: {
+  doGenerate: (params: any) => Promise<any>;
+}): any {
+  return {
+    specificationVersion: 'v1',
+    provider: 'mock',
+    modelId: 'mock-model',
+    defaultObjectGenerationMode: 'json' as const,
+    doGenerate: config.doGenerate,
+    doStream: async (params: any) => {
+      const result = await config.doGenerate(params);
+      return {
+        stream: new ReadableStream({
+          async start(controller) {
+            controller.enqueue({
+              type: 'text-delta' as const,
+              textDelta: result.text,
+            });
+            controller.enqueue({
+              type: 'finish' as const,
+              finishReason: result.finishReason,
+              usage: result.usage,
+            });
+            controller.close();
+          },
+        }),
+        rawCall: { rawPrompt: null, rawSettings: {} },
+        rawResponse: { headers: undefined },
+        warnings: undefined,
+      };
+    },
+  };
+}
 
 export const chatModel = createMockLanguageModel({
   doGenerate: async ({ prompt }) => ({
