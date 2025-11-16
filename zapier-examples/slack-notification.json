@@ -1,0 +1,36 @@
+{
+  "name": "Slack Notification on Chat Created",
+  "description": "Sends a Slack message when a new chat is created in the AI Chatbot",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "type": "trigger",
+      "app": "webhooks",
+      "action": "catch_hook",
+      "config": {
+        "url": "https://hooks.zapier.com/hooks/catch/xxxxx/yyyyy/"
+      },
+      "note": "This webhook URL should match your ZAPIER_WEBHOOK_URL environment variable"
+    },
+    {
+      "type": "filter",
+      "conditions": [
+        {
+          "field": "event",
+          "operator": "equals",
+          "value": "chat.created"
+        }
+      ],
+      "note": "Only proceed if the event is a chat creation"
+    },
+    {
+      "type": "action",
+      "app": "slack",
+      "action": "send_channel_message",
+      "config": {
+        "channel": "#notifications",
+        "message_text": "🎉 New chat created!\n\n*Title:* {{data__title}}\n*Chat ID:* {{data__chatId}}\n*User ID:* {{userId}}\n*Visibility:* {{metadata__visibility}}\n*Time:* {{timestamp}}"
+      }
+    }
+  ]
+}

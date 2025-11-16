@@ -37,6 +37,7 @@ import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 import { ChatSDKError } from '@/lib/errors';
 import { AIPerformanceTracker } from '@/lib/performance';
+import { zapierClient } from '@/lib/zapier';
 
 export const maxDuration = 60;
 
@@ -110,6 +111,16 @@ export async function POST(request: Request) {
         title,
         visibility: selectedVisibilityType,
       });
+
+      // Trigger Zapier webhook for chat creation
+      if (zapierClient.isEnabled()) {
+        zapierClient.notifyChatCreated(
+          session.user.id,
+          id,
+          title,
+          { visibility: selectedVisibilityType }
+        ).catch(err => console.error('[Zapier] Failed to notify chat created:', err));
+      }
     } else {
       if (chat.userId !== session.user.id) {
         return new ChatSDKError('forbidden:chat').toResponse();
@@ -145,6 +156,23 @@ export async function POST(request: Request) {
         },
       ],
     });
+
+    // Trigger Zapier webhook for message creation
+    if (zapierClient.isEnabled()) {
+      const messageContent = message.parts
+        .filter((part: any) => part.type === 'text')
+        .map((part: any) => part.text)
+        .join(' ');
+      
+      zapierClient.notifyMessageCreated(
+        session.user.id,
+        id,
+        message.id,
+        messageContent,
+        'user',
+        { hasAttachments: (message.experimental_attachments?.length ?? 0) > 0 }
+      ).catch(err => console.error('[Zapier] Failed to notify message created:', err));
+    }
 
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });

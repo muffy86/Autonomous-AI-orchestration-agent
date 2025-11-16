@@ -1,0 +1,32 @@
+{
+  "name": "Google Sheets Event Logger",
+  "description": "Logs all AI Chatbot events to a Google Sheet",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "type": "trigger",
+      "app": "webhooks",
+      "action": "catch_hook",
+      "config": {
+        "url": "https://hooks.zapier.com/hooks/catch/xxxxx/yyyyy/"
+      },
+      "note": "This webhook URL should match your ZAPIER_WEBHOOK_URL environment variable"
+    },
+    {
+      "type": "action",
+      "app": "google_sheets",
+      "action": "create_spreadsheet_row",
+      "config": {
+        "spreadsheet": "AI Chatbot Event Log",
+        "worksheet": "Events",
+        "columns": {
+          "Event Type": "{{event}}",
+          "User ID": "{{userId}}",
+          "Timestamp": "{{timestamp}}",
+          "Data": "{{data}}",
+          "Metadata": "{{metadata}}"
+        }
+      }
+    }
+  ]
+}

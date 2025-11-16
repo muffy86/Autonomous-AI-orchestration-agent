@@ -1,0 +1,47 @@
+{
+  "name": "Gmail to Chat Message",
+  "description": "Creates a chat message from incoming Gmail emails",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "type": "trigger",
+      "app": "gmail",
+      "action": "new_email_matching_search",
+      "config": {
+        "search": "label:important",
+        "note": "Customize the search query to filter specific emails"
+      }
+    },
+    {
+      "type": "action",
+      "app": "webhooks",
+      "action": "post",
+      "config": {
+        "url": "https://your-app.vercel.app/api/zapier/webhook",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Zapier-Signature": "{{env.ZAPIER_WEBHOOK_SECRET}}"
+        },
+        "body": {
+          "type": "create_message",
+          "data": {
+            "chatId": "{{your-chat-id}}",
+            "content": "📧 New email from {{from_email}}\n\n**Subject:** {{subject}}\n\n**Preview:** {{body_plain_truncated}}",
+            "metadata": {
+              "source": "gmail",
+              "emailId": "{{id}}",
+              "sender": "{{from_email}}",
+              "subject": "{{subject}}"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "notes": [
+    "Replace 'your-app.vercel.app' with your actual app URL",
+    "Replace '{{your-chat-id}}' with a valid chat ID from your app",
+    "Set ZAPIER_WEBHOOK_SECRET in your environment variables for security"
+  ]
+}

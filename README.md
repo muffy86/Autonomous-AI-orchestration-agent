@@ -34,6 +34,11 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+- **[Zapier Integration](ZAPIER_INTEGRATION.md)** ⚡ NEW!
+  - Connect with 5000+ apps including Slack, Gmail, Google Sheets, Notion
+  - Bidirectional webhooks for sending and receiving data
+  - Real-time event notifications
+  - Pre-built workflow examples
 
 ## Model Providers
 
@@ -67,6 +72,8 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
+- **[Zapier Quick Start](ZAPIER_QUICKSTART.md)** ⚡ - Get started with Zapier in 5 minutes
+- **[Zapier Integration Guide](ZAPIER_INTEGRATION.md)** - Complete Zapier integration documentation
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
 
 ## 🚀 Features & Workflows

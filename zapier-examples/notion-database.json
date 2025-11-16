@@ -1,0 +1,48 @@
+{
+  "name": "Notion Database Sync",
+  "description": "Syncs important chat messages to a Notion database",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "type": "trigger",
+      "app": "webhooks",
+      "action": "catch_hook",
+      "config": {
+        "url": "https://hooks.zapier.com/hooks/catch/xxxxx/yyyyy/"
+      }
+    },
+    {
+      "type": "filter",
+      "conditions": [
+        {
+          "field": "event",
+          "operator": "equals",
+          "value": "message.created"
+        },
+        {
+          "field": "data__content",
+          "operator": "contains",
+          "value": "important"
+        }
+      ],
+      "note": "Only sync messages marked as important"
+    },
+    {
+      "type": "action",
+      "app": "notion",
+      "action": "create_database_item",
+      "config": {
+        "database": "Chat Messages",
+        "properties": {
+          "Message ID": "{{data__messageId}}",
+          "Chat ID": "{{data__chatId}}",
+          "Content": "{{data__content}}",
+          "Role": "{{data__role}}",
+          "User ID": "{{userId}}",
+          "Created": "{{timestamp}}",
+          "Has Attachments": "{{metadata__hasAttachments}}"
+        }
+      }
+    }
+  ]
+}

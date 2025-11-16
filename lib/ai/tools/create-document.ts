@@ -6,6 +6,7 @@ import {
   artifactKinds,
   documentHandlersByArtifactKind,
 } from '@/lib/artifacts/server';
+import { zapierClient } from '@/lib/zapier';
 
 interface CreateDocumentProps {
   session: Session;
@@ -60,6 +61,16 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
       });
 
       dataStream.writeData({ type: 'finish', content: '' });
+
+      // Trigger Zapier webhook for document creation
+      if (zapierClient.isEnabled() && session.user?.id) {
+        zapierClient.notifyDocumentCreated(
+          session.user.id,
+          id,
+          title,
+          { kind }
+        ).catch(err => console.error('[Zapier] Failed to notify document created:', err));
+      }
 
       return {
         id,
