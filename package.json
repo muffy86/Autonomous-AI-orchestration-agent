@@ -27,7 +27,11 @@
     "security:audit": "node scripts/security-audit.js",
     "security:deps": "pnpm audit",
     "security:check": "pnpm security:deps && pnpm security:audit",
-    "verify:connections": "node scripts/verify-connections.js"
+    "verify:connections": "node scripts/verify-connections.js",
+    "db:seed": "tsx scripts/seed-database.ts",
+    "db:backup": "./scripts/backup-database.sh",
+    "db:restore": "./scripts/restore-database.sh",
+    "setup": "./scripts/setup-everything.sh"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.11",
