@@ -62,12 +62,45 @@ pnpm dev
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
 
+## 🌐 Browser Configuration
+
+Optimize your browser for advanced AI automation and development:
+
+- **[Full Browser Setup Guide](BROWSER_AI_CONFIGURATION.md)** - Comprehensive configuration for AI-powered browsing
+- **[Quick Start](QUICK_START.md)** - Get up and running in 15 minutes
+- **[Browser Extensions](browser-configs/extensions/)** - Custom AI tools extension
+- **[Userscripts](browser-configs/scripts/)** - Tampermonkey scripts for automation
+- **[Custom Styles](browser-configs/styles/)** - Dark mode and UI enhancements
+- **[Bookmarklets](browser-configs/bookmarklets/)** - One-click productivity tools
+
+### Quick Install
+
+1. **Essential Extensions**:
+   - [uBlock Origin](https://chrome.google.com/webstore) + custom filters
+   - [Tampermonkey](https://chrome.google.com/webstore) + AI scripts
+   - [Stylus](https://chrome.google.com/webstore) + dark mode
+
+2. **Custom Search Engines**: Import from `browser-configs/configs/search-engines.json`
+   - `@p` - Perplexity AI
+   - `@gpt` - ChatGPT
+   - `@gh` - GitHub Code Search
+   - `@so` - Stack Overflow
+
+3. **Chrome Flags**: Visit `chrome://flags` and enable:
+   - WebGPU (for local AI models)
+   - Parallel Downloading
+   - Experimental Web Platform Features
+
+See [QUICK_START.md](QUICK_START.md) for detailed instructions.
+
 ## 📚 Documentation
 
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[Browser AI Configuration](BROWSER_AI_CONFIGURATION.md)** - Advanced browser setup for AI automation
+- **[Quick Start Guide](QUICK_START.md)** - Get started with browser AI tools in 15 minutes
 
 ## 🚀 Features & Workflows
 

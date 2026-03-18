@@ -1,0 +1,241 @@
+/* ==UserStyle==
+@name         Dark Mode for AI Sites
+@namespace    github.com/ai-browser-config
+@version      1.0.0
+@description  Beautiful dark mode for ChatGPT, Claude, Perplexity, and more
+@author       You
+@preprocessor default
+==/UserStyle== */
+
+/* ===== ChatGPT & OpenAI ===== */
+@-moz-document domain("chat.openai.com"), domain("chatgpt.com") {
+    :root {
+        --background: #1a1a1a;
+        --surface: #242424;
+        --surface-hover: #2d2d2d;
+        --text: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --border: #3a3a3a;
+        --accent: #10a37f;
+    }
+    
+    /* Main background */
+    body,
+    .dark {
+        background: var(--background) !important;
+        color: var(--text) !important;
+    }
+    
+    /* Chat messages */
+    .text-base {
+        color: var(--text) !important;
+    }
+    
+    /* Code blocks */
+    pre {
+        background: #1e1e1e !important;
+        border: 1px solid var(--border) !important;
+    }
+    
+    code {
+        background: #2d2d2d !important;
+        color: #e0e0e0 !important;
+    }
+    
+    /* Sidebar */
+    nav {
+        background: var(--surface) !important;
+        border-right: 1px solid var(--border) !important;
+    }
+    
+    /* Input area */
+    textarea {
+        background: var(--surface) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+    }
+    
+    /* Buttons */
+    button {
+        background: var(--surface-hover) !important;
+        color: var(--text) !important;
+    }
+    
+    button:hover {
+        background: #3a3a3a !important;
+    }
+    
+    /* Links */
+    a {
+        color: var(--accent) !important;
+    }
+}
+
+/* ===== Claude (Anthropic) ===== */
+@-moz-document domain("claude.ai") {
+    :root {
+        --claude-bg: #1a1a1a;
+        --claude-surface: #242424;
+        --claude-text: #e0e0e0;
+        --claude-accent: #c96dd8;
+    }
+    
+    body {
+        background: var(--claude-bg) !important;
+        color: var(--claude-text) !important;
+    }
+    
+    .bg-white {
+        background: var(--claude-surface) !important;
+    }
+    
+    .text-gray-900,
+    .text-black {
+        color: var(--claude-text) !important;
+    }
+    
+    pre,
+    code {
+        background: #1e1e1e !important;
+        color: #e0e0e0 !important;
+    }
+}
+
+/* ===== Perplexity ===== */
+@-moz-document domain("perplexity.ai") {
+    :root {
+        --pplx-bg: #0f0f0f;
+        --pplx-surface: #1a1a1a;
+        --pplx-text: #e8e8e8;
+        --pplx-accent: #20b4aa;
+    }
+    
+    body {
+        background: var(--pplx-bg) !important;
+        color: var(--pplx-text) !important;
+    }
+    
+    .bg-white,
+    .bg-gray-50 {
+        background: var(--pplx-surface) !important;
+    }
+    
+    .text-gray-900 {
+        color: var(--pplx-text) !important;
+    }
+    
+    pre {
+        background: #1e1e1e !important;
+        border: 1px solid #2a2a2a !important;
+    }
+}
+
+/* ===== GitHub (Enhanced) ===== */
+@-moz-document domain("github.com") {
+    .markdown-body pre,
+    .markdown-body code {
+        background: #1e1e1e !important;
+        color: #e0e0e0 !important;
+    }
+    
+    /* Better syntax highlighting */
+    .pl-c {
+        color: #6a9955 !important;
+    }
+    
+    .pl-k {
+        color: #569cd6 !important;
+    }
+    
+    .pl-s {
+        color: #ce9178 !important;
+    }
+    
+    .pl-v {
+        color: #4ec9b0 !important;
+    }
+}
+
+/* ===== Stack Overflow ===== */
+@-moz-document domain("stackoverflow.com") {
+    body {
+        background: #1a1a1a !important;
+        color: #e0e0e0 !important;
+    }
+    
+    .s-prose pre,
+    .s-prose code {
+        background: #1e1e1e !important;
+        color: #e0e0e0 !important;
+    }
+    
+    .s-prose code {
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+    }
+}
+
+/* ===== Wider Content Areas ===== */
+@-moz-document domain("chat.openai.com"), domain("chatgpt.com") {
+    /* Wider conversation */
+    .xl\:max-w-3xl,
+    .max-w-3xl {
+        max-width: 90% !important;
+    }
+    
+    .lg\:max-w-\[40rem\],
+    .lg\:max-w-2xl {
+        max-width: 85% !important;
+    }
+}
+
+/* ===== Smooth Animations ===== */
+@-moz-document regexp("https://.*") {
+    * {
+        transition: background-color 0.2s ease, color 0.2s ease !important;
+    }
+    
+    pre,
+    code {
+        transition: none !important;
+    }
+}
+
+/* ===== Custom Scrollbar ===== */
+@-moz-document regexp("https://.*") {
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #3a3a3a;
+        border-radius: 6px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #4a4a4a;
+    }
+}
+
+/* ===== Remove Clutter ===== */
+@-moz-document regexp("https://.*") {
+    /* Hide cookie banners */
+    [id*="cookie"],
+    [class*="cookie"],
+    [class*="gdpr"],
+    [class*="consent"] {
+        display: none !important;
+    }
+    
+    /* Hide promotional banners */
+    [class*="banner"],
+    [class*="promo"],
+    [class*="advertisement"] {
+        display: none !important;
+    }
+}

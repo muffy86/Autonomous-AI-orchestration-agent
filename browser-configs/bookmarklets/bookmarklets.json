@@ -1,0 +1,84 @@
+{
+  "bookmarklets": [
+    {
+      "name": "Ask ChatGPT",
+      "description": "Send selected text to ChatGPT",
+      "code": "javascript:(function(){const t=window.getSelection().toString()||prompt('Ask ChatGPT:');if(t){window.open('https://chat.openai.com/?q='+encodeURIComponent(t),'_blank')}})();"
+    },
+    {
+      "name": "Search Perplexity",
+      "description": "Search selected text on Perplexity",
+      "code": "javascript:(function(){const t=window.getSelection().toString()||prompt('Search:');if(t){window.open('https://www.perplexity.ai/search?q='+encodeURIComponent(t),'_blank')}})();"
+    },
+    {
+      "name": "GitHub Code Search",
+      "description": "Search code on GitHub",
+      "code": "javascript:(function(){const t=window.getSelection().toString()||prompt('Search GitHub:');if(t){window.open('https://github.com/search?type=code&q='+encodeURIComponent(t),'_blank')}})();"
+    },
+    {
+      "name": "Copy as Markdown",
+      "description": "Convert page to Markdown and copy",
+      "code": "javascript:(function(){const s=document.createElement('script');s.src='https://unpkg.com/turndown/dist/turndown.js';s.onload=function(){const td=new TurndownService();const md=td.turndown(document.body);navigator.clipboard.writeText(md).then(()=>alert('Copied as Markdown!')).catch(()=>prompt('Copy this:',md))};document.head.appendChild(s)})();"
+    },
+    {
+      "name": "Extract Links",
+      "description": "Get all links from current page",
+      "code": "javascript:(function(){const links=[...document.querySelectorAll('a')].map(a=>a.href).filter(Boolean).join('\\n');const w=window.open('','_blank');w.document.write('<pre>'+links.replace(/</g,'&lt;')+'</pre>');w.document.title='Links from '+document.title})();"
+    },
+    {
+      "name": "Readability Mode",
+      "description": "Clean reading experience",
+      "code": "javascript:(function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@mozilla/readability@0.4.4/Readability.min.js';s.onload=function(){const r=new Readability(document.cloneNode(true)).parse();document.body.innerHTML='<style>body{max-width:800px;margin:40px auto;padding:20px;font-family:Georgia,serif;line-height:1.6;font-size:18px}h1{font-size:2em}img{max-width:100%}</style><h1>'+r.title+'</h1>'+r.content};document.head.appendChild(s)})();"
+    },
+    {
+      "name": "Performance Check",
+      "description": "Show page performance metrics",
+      "code": "javascript:(function(){const p=performance.timing;const load=p.loadEventEnd-p.navigationStart;const dom=p.domContentLoadedEventEnd-p.navigationStart;const network=p.responseEnd-p.fetchStart;alert('Performance:\\n\\nTotal Load: '+load+'ms\\nDOM Ready: '+dom+'ms\\nNetwork: '+network+'ms')})();"
+    },
+    {
+      "name": "Dark Mode Toggle",
+      "description": "Quick dark mode for any site",
+      "code": "javascript:(function(){const s=document.documentElement.style;if(s.filter==='invert(90%) hue-rotate(180deg)'){s.filter='';document.querySelectorAll('img,video,iframe').forEach(e=>e.style.filter='')}else{s.filter='invert(90%) hue-rotate(180deg)';document.querySelectorAll('img,video,iframe').forEach(e=>e.style.filter='invert(110%) hue-rotate(180deg)')}})();"
+    },
+    {
+      "name": "JSON Formatter",
+      "description": "Format JSON on current page",
+      "code": "javascript:(function(){try{const json=JSON.parse(document.body.textContent);document.body.innerHTML='<pre style=\"background:#1e1e1e;color:#e0e0e0;padding:20px;border-radius:8px;overflow:auto\">'+JSON.stringify(json,null,2).replace(/</g,'&lt;')+'</pre>'}catch(e){alert('Not valid JSON: '+e.message)}})();"
+    },
+    {
+      "name": "Export Console Logs",
+      "description": "Copy all console logs",
+      "code": "javascript:(function(){const logs=[];const old=console.log;console.log=function(...args){logs.push(args.join(' '));old.apply(console,arguments)};setTimeout(()=>{navigator.clipboard.writeText(logs.join('\\n'));alert('Logs copied! ('+logs.length+' entries)');console.log=old},5000);alert('Collecting logs for 5 seconds...')})();"
+    },
+    {
+      "name": "Word Counter",
+      "description": "Count words on page or selection",
+      "code": "javascript:(function(){const text=window.getSelection().toString()||document.body.innerText;const words=text.trim().split(/\\s+/).length;const chars=text.length;const lines=text.split('\\n').length;alert('Statistics:\\n\\nWords: '+words+'\\nCharacters: '+chars+'\\nLines: '+lines)})();"
+    },
+    {
+      "name": "Screenshot Element",
+      "description": "Highlight element for screenshot",
+      "code": "javascript:(function(){let e=null;document.addEventListener('click',function highlight(evt){evt.preventDefault();evt.stopPropagation();if(e)e.style.outline='';e=evt.target;e.style.outline='4px solid #f00';alert('Element highlighted! Take screenshot and refresh page.');document.removeEventListener('click',highlight,true)},true)})();"
+    },
+    {
+      "name": "Find & Replace",
+      "description": "Find and replace text on page",
+      "code": "javascript:(function(){const find=prompt('Find:');if(!find)return;const replace=prompt('Replace with:');if(replace===null)return;document.body.innerHTML=document.body.innerHTML.replace(new RegExp(find.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&'),'g'),replace);alert('Replaced!')})();"
+    },
+    {
+      "name": "QR Code Generator",
+      "description": "Generate QR code for current URL",
+      "code": "javascript:(function(){const url=encodeURIComponent(window.location.href);const qr='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+url;const w=window.open('','_blank');w.document.write('<img src=\"'+qr+'\" alt=\"QR Code\"><br><p>'+window.location.href+'</p>');w.document.title='QR Code'})();"
+    },
+    {
+      "name": "Email Extractor",
+      "description": "Extract all emails from page",
+      "code": "javascript:(function(){const text=document.body.innerText;const emails=[...new Set(text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g)||[])];if(emails.length){const w=window.open();w.document.write('<pre>'+emails.join('\\n')+'</pre>');w.document.title='Emails ('+emails.length+')'}else{alert('No emails found')}})();"
+    },
+    {
+      "name": "SEO Quick Check",
+      "description": "Basic SEO information",
+      "code": "javascript:(function(){const title=document.title;const desc=document.querySelector('meta[name=\"description\"]')?.content||'None';const h1=document.querySelectorAll('h1').length;const img=document.querySelectorAll('img:not([alt])').length;const links=document.querySelectorAll('a').length;alert('SEO Quick Check:\\n\\nTitle: '+title+'\\nDescription: '+desc+'\\nH1 tags: '+h1+'\\nImages w/o alt: '+img+'\\nLinks: '+links)})();"
+    }
+  ]
+}

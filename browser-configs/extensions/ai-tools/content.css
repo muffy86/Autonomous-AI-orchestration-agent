@@ -1,0 +1,30 @@
+/* Content styles - injected into all pages */
+
+/* Ensure extension UI is always on top */
+#ai-tools-hint,
+#ai-tools-widget,
+.ai-tools-overlay {
+  z-index: 2147483647 !important;
+}
+
+/* Smooth animations for extension elements */
+.ai-tools-animate-in {
+  animation: aiToolsFadeIn 0.3s ease-out;
+}
+
+@keyframes aiToolsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Selection highlight (optional feature) */
+.ai-tools-selected {
+  background-color: rgba(102, 126, 234, 0.2) !important;
+  transition: background-color 0.2s;
+}
