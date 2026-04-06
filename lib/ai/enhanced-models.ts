@@ -273,7 +273,7 @@ export class ModelManager {
     }
   }
 
-  checkRateLimit(modelId: string, tokensRequested: number = 0): {
+  checkRateLimit(modelId: string, tokensRequested = 0): {
     allowed: boolean;
     remaining: { requests: number; tokens: number };
     resetTime: Date;
@@ -283,7 +283,11 @@ export class ModelManager {
       return { allowed: false, remaining: { requests: 0, tokens: 0 }, resetTime: new Date() };
     }
 
-    const usage = this.usage.get(modelId)!;
+    const usage = this.usage.get(modelId);
+    if (!usage) {
+      return { allowed: false, remaining: { requests: 0, tokens: 0 }, resetTime: new Date() };
+    }
+    
     const now = new Date();
     const minutesSinceReset = (now.getTime() - usage.lastReset.getTime()) / (1000 * 60);
 

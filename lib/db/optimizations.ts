@@ -7,7 +7,7 @@ import 'server-only';
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { eq, and, desc, asc, count, sql, type SQL } from 'drizzle-orm';
+import { eq, and, desc, asc, count, sql, } from 'drizzle-orm';
 import { chat, message, user, document, vote, stream } from './schema';
 import type { Chat, DBMessage, User, Document } from './schema';
 
@@ -30,7 +30,11 @@ const dbConfig = {
 };
 
 // Enhanced database client with optimizations
-const client = postgres(process.env.POSTGRES_URL!, dbConfig);
+const postgresUrl = process.env.POSTGRES_URL;
+if (!postgresUrl) {
+  throw new Error('POSTGRES_URL environment variable is not set');
+}
+const client = postgres(postgresUrl, dbConfig);
 const db = drizzle(client, {
   logger: process.env.NODE_ENV === 'development',
 });
@@ -241,7 +245,7 @@ export const optimizedQueries = {
     );
   },
 
-  async getRecentChatsByUserId(userId: string, limit: number = 10): Promise<Chat[]> {
+  async getRecentChatsByUserId(userId: string, limit = 10): Promise<Chat[]> {
     const cacheKey = `chats:recent:${userId}:${limit}`;
     
     return executeQuery(
@@ -261,8 +265,8 @@ export const optimizedQueries = {
   // Message queries with pagination optimization
   async getMessagesByChatIdPaginated(
     chatId: string, 
-    limit: number = 50, 
-    offset: number = 0
+    limit = 50, 
+    offset = 0
   ): Promise<DBMessage[]> {
     const cacheKey = `messages:${chatId}:${limit}:${offset}`;
     
@@ -281,7 +285,7 @@ export const optimizedQueries = {
     );
   },
 
-  async getLatestMessagesByChatId(chatId: string, limit: number = 10): Promise<DBMessage[]> {
+  async getLatestMessagesByChatId(chatId: string, limit = 10): Promise<DBMessage[]> {
     const cacheKey = `messages:latest:${chatId}:${limit}`;
     
     return executeQuery(
@@ -302,7 +306,7 @@ export const optimizedQueries = {
   async searchDocuments(
     userId: string, 
     searchTerm: string, 
-    limit: number = 20
+    limit = 20
   ): Promise<Document[]> {
     return executeQuery(
       async () => {
@@ -514,7 +518,7 @@ export const dbMaintenance = {
   },
 
   // Clean up old data
-  async cleanupOldData(daysToKeep: number = 90): Promise<{
+  async cleanupOldData(daysToKeep = 90): Promise<{
     deletedMessages: number;
     deletedStreams: number;
     deletedVotes: number;

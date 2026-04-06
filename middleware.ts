@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { guestRegex, isDevelopmentEnvironment } from './lib/constants';
-import { RateLimiter, rateLimitConfig, applySecurityHeaders, isTrustedOrigin } from './lib/security';
+import { checkRateLimit, rateLimitConfig, applySecurityHeaders, isTrustedOrigin } from './lib/security';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -30,13 +30,13 @@ export async function middleware(request: NextRequest) {
   let rateLimitResult: { allowed: boolean; remaining: number; resetTime: number } | undefined;
   
   if (pathname.startsWith('/api/auth')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'auth', rateLimitConfig.auth);
+    rateLimitResult = checkRateLimit(clientIP, 'auth', rateLimitConfig.auth);
   } else if (pathname.startsWith('/api/chat')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'chat', rateLimitConfig.chat);
+    rateLimitResult = checkRateLimit(clientIP, 'chat', rateLimitConfig.chat);
   } else if (pathname.startsWith('/api/files/upload')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'upload', rateLimitConfig.upload);
+    rateLimitResult = checkRateLimit(clientIP, 'upload', rateLimitConfig.upload);
   } else if (pathname.startsWith('/api')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'api', rateLimitConfig.api);
+    rateLimitResult = checkRateLimit(clientIP, 'api', rateLimitConfig.api);
   }
 
   // Check rate limit

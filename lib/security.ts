@@ -325,68 +325,66 @@ export function applySecurityHeaders(headers: Headers): void {
 /**
  * Rate limiting for API routes
  */
-export class RateLimiter {
-  private static instances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
+const rateLimiterInstances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
 
-  static check(
-    identifier: string,
-    endpoint: string,
-    config: { windowMs: number; max: number }
-  ): { allowed: boolean; remaining: number; resetTime: number } {
-    const now = Date.now();
-    
-    if (!RateLimiter.instances.has(endpoint)) {
-      RateLimiter.instances.set(endpoint, new Map());
-    }
-    
-    const endpointLimits = RateLimiter.instances.get(endpoint);
-    if (!endpointLimits) {
-      throw new Error('Failed to get endpoint limits');
-    }
-    const userLimit = endpointLimits.get(identifier);
-    
-    if (!userLimit || now > userLimit.resetTime) {
-      // Reset or create new limit
-      endpointLimits.set(identifier, {
-        count: 1,
-        resetTime: now + config.windowMs,
-      });
-      return {
-        allowed: true,
-        remaining: config.max - 1,
-        resetTime: now + config.windowMs,
-      };
-    }
-    
-    if (userLimit.count >= config.max) {
-      return {
-        allowed: false,
-        remaining: 0,
-        resetTime: userLimit.resetTime,
-      };
-    }
-    
-    userLimit.count++;
+export function checkRateLimit(
+  identifier: string,
+  endpoint: string,
+  config: { windowMs: number; max: number }
+): { allowed: boolean; remaining: number; resetTime: number } {
+  const now = Date.now();
+  
+  if (!rateLimiterInstances.has(endpoint)) {
+    rateLimiterInstances.set(endpoint, new Map());
+  }
+  
+  const endpointLimits = rateLimiterInstances.get(endpoint);
+  if (!endpointLimits) {
+    throw new Error('Failed to get endpoint limits');
+  }
+  const userLimit = endpointLimits.get(identifier);
+  
+  if (!userLimit || now > userLimit.resetTime) {
+    // Reset or create new limit
+    endpointLimits.set(identifier, {
+      count: 1,
+      resetTime: now + config.windowMs,
+    });
     return {
       allowed: true,
-      remaining: config.max - userLimit.count,
+      remaining: config.max - 1,
+      resetTime: now + config.windowMs,
+    };
+  }
+  
+  if (userLimit.count >= config.max) {
+    return {
+      allowed: false,
+      remaining: 0,
       resetTime: userLimit.resetTime,
     };
   }
+  
+  userLimit.count++;
+  return {
+    allowed: true,
+    remaining: config.max - userLimit.count,
+    resetTime: userLimit.resetTime,
+  };
+}
 
-  static cleanup(): void {
-    const now = Date.now();
+export function cleanupRateLimiter(): void {
+  const now = Date.now();
+  
+  for (const [endpoint, limits] of rateLimiterInstances) {
+    for (const [identifier, limit] of limits) {
+      if (now > limit.resetTime) {
+        limits.delete(identifier);
+      }
+    }
     
-    for (const [endpoint, limits] of RateLimiter.instances) {
-      for (const [identifier, limit] of limits) {
-        if (now > limit.resetTime) {
-          limits.delete(identifier);
-        }
-      }
-      
-      if (limits.size === 0) {
-        RateLimiter.instances.delete(endpoint);
-      }
+    if (limits.size === 0) {
+      rateLimiterInstances.delete(endpoint);
     }
   }
 }
@@ -394,6 +392,6 @@ export class RateLimiter {
 // Cleanup rate limiter every 5 minutes
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
-    RateLimiter.cleanup();
+    cleanupRateLimiter();
   }, 5 * 60 * 1000);
 }
