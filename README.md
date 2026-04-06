@@ -34,6 +34,11 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+- **Telegram Bot Integration** 🆕
+  - Connect multiple Telegram bots to your AI chatbot
+  - Persistent conversation history per user
+  - Full AI capabilities through Telegram
+  - See [TELEGRAM_BOT_SETUP.md](TELEGRAM_BOT_SETUP.md) for setup instructions
 
 ## Model Providers
 
@@ -68,6 +73,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[Telegram Bot Setup](TELEGRAM_BOT_SETUP.md)** - Set up Telegram bots to work with your chatbot
 
 ## 🚀 Features & Workflows
 
