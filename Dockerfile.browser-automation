@@ -1,0 +1,79 @@
+# Browser Automation Docker Image
+# Includes Puppeteer, Playwright, Selenium, and AI tools
+
+FROM node:20-slim
+
+# Install dependencies for headless browsers
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    libu2f-udev \
+    libvulkan1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Chrome for Puppeteer
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY browser-configs/automation/package*.json ./
+
+# Install Node dependencies
+RUN npm ci --only=production
+
+# Install Playwright browsers
+RUN npx playwright install chromium --with-deps
+
+# Copy application files
+COPY browser-configs/automation/ ./
+COPY browser-configs/ai-models/ ./ai-models/
+
+# Create directories for outputs
+RUN mkdir -p screenshots pdfs data logs
+
+# Set environment variables
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+    NODE_ENV=production
+
+# Add non-root user
+RUN groupadd -r automation && useradd -r -g automation -G audio,video automation \
+    && chown -R automation:automation /app
+
+USER automation
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node -e "console.log('healthy')" || exit 1
+
+# Default command
+CMD ["node", "puppeteer-automation.js"]
+
+# Build: docker build -f Dockerfile.browser-automation -t browser-automation .
+# Run: docker run -v $(pwd)/output:/app/output browser-automation
