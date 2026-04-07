@@ -324,9 +324,36 @@ export function applySecurityHeaders(headers: Headers): void {
 
 /**
  * Rate limiting for API routes
+ * 
+ * @internal - Internal state for rate limiting
  */
 const rateLimiterInstances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
 
+/**
+ * Check if a request should be rate limited
+ * 
+ * @param identifier - Unique identifier (typically IP address or user ID)
+ * @param endpoint - API endpoint name for separate rate limiting
+ * @param config - Rate limit configuration
+ * @param config.windowMs - Time window in milliseconds
+ * @param config.max - Maximum requests allowed in window
+ * 
+ * @returns Rate limit result with allowed status, remaining requests, and reset time
+ * 
+ * @example
+ * ```typescript
+ * const result = checkRateLimit('192.168.1.1', 'chat', {
+ *   windowMs: 60000, // 1 minute
+ *   max: 10,         // 10 requests
+ * });
+ * 
+ * if (!result.allowed) {
+ *   return new Response('Rate limit exceeded', { status: 429 });
+ * }
+ * ```
+ * 
+ * @since 3.0.24
+ */
 export function checkRateLimit(
   identifier: string,
   endpoint: string,
@@ -373,6 +400,23 @@ export function checkRateLimit(
   };
 }
 
+/**
+ * Clean up expired rate limit entries
+ * 
+ * Removes rate limit entries that have expired to prevent memory leaks.
+ * This function is automatically called periodically, but can be called
+ * manually if needed.
+ * 
+ * @example
+ * ```typescript
+ * // Clean up before tests
+ * beforeEach(() => {
+ *   cleanupRateLimiter();
+ * });
+ * ```
+ * 
+ * @since 3.0.24
+ */
 export function cleanupRateLimiter(): void {
   const now = Date.now();
   

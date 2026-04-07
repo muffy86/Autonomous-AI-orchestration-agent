@@ -68,6 +68,11 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+- **[Code Quality Guide](docs/CODE_QUALITY_IMPROVEMENTS.md)** - Quality improvements and best practices
+- **[Migration Guide](docs/MIGRATION_GUIDE_v3.0.24.md)** - Migrating to v3.0.24
+- **[Performance Guide](docs/PERFORMANCE_OPTIMIZATION.md)** - Performance optimization strategies
+- **[Security Audit](docs/SECURITY_AUDIT.md)** - Latest security audit results
 
 ## 🚀 Features & Workflows
 
