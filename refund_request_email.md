@@ -6,6 +6,8 @@
 
 ---
 
+**SEND TO:** support@browser-use.com
+
 ## Email Body:
 
 Dear Browser Use Support Team,
@@ -69,17 +71,27 @@ odencrazy1986@gmail.com
 ## Important Notes:
 
 ### Where to Send:
-Based on your screenshot showing Stripe billing, you may want to:
-1. **Check for a support email** - Look for a "Contact Support" or "Help" link in your Browser Use account
-2. **Use Stripe's dispute process** - If Browser Use doesn't respond, you can file a dispute through your Stripe customer portal
-3. **Contact directly** - Look for support@browseruse.com or similar contact information
+**Official Support Email:** support@browser-use.com
+
+**Alternative Options:**
+1. **Manage Subscription:** Visit cloud.browser-use.com/manage to cancel or manage your subscription
+2. **Stripe Dispute:** If Browser Use doesn't respond favorably, you can file a dispute through your Stripe customer portal
+3. **Terms of Service:** According to browser-use.com/legal/terms-of-service, payments are generally final and non-refundable unless otherwise determined by the company - however, given your minimal usage, it's worth requesting
 
 ### Regarding Zero API Credits:
-This could be due to several reasons:
-1. **Credits already consumed** - Even minimal usage might have depleted them
-2. **Subscription tier** - Your plan may not include API credits
-3. **Account issue** - There might be a technical issue with your account
-4. **Expiration** - Credits may have expired
+Based on common platform behaviors, this could be due to:
+
+1. **Credit Expiration** - Many platforms expire unused API credits after 12 months from grant/purchase date
+2. **Background Usage** - Automated tasks, scheduled agents, or third-party integrations may have consumed credits without your knowledge
+3. **Token Consumption** - Even light usage can consume credits faster than expected based on token processing
+4. **Subscription Tier** - Your Browser Use Premium plan may not include separate API credits (check pricing at browser-use.com/pricing)
+5. **Organization/Project Settings** - Credits might be managed at a different level than expected
+6. **Billing Issues** - Previous usage may have created a negative balance that was deducted from new credits
+
+**What to Check:**
+- Review your Browser Use billing dashboard for detailed usage logs
+- Check if your subscription includes API credits vs. browser automation credits
+- Look for any background processes or integrations that might be using credits
 
 ### Tips for Better Results:
 1. Be polite and professional (you are!)
@@ -89,9 +101,42 @@ This could be due to several reasons:
 5. Document all communications
 
 ### Next Steps:
-1. Copy the email version you prefer
-2. Find the correct support contact for Browser Use
-3. Send the email
-4. Keep records of all correspondence
-5. If no response in 5-7 business days, follow up
-6. Consider a credit card chargeback if they refuse (typically you have 60-120 days from the charge date)
+1. **Send the Email:**
+   - Use: support@browser-use.com
+   - Subject: "Request for Refund - Minimal Usage of Browser Use Premium"
+   - Copy the email version you prefer from above
+
+2. **Manage Your Subscription:**
+   - Visit: cloud.browser-use.com/manage
+   - Confirm cancellation is complete
+   - Review any remaining billing information
+
+3. **Document Everything:**
+   - Save copies of all emails sent
+   - Screenshot your billing history and usage stats
+   - Note dates of all communications
+
+4. **Follow Up Timeline:**
+   - Wait 3-5 business days for initial response
+   - Send polite follow-up if no response after 7 days
+   - Escalate after 14 days with no response
+
+5. **If Denied:**
+   - **Stripe Dispute:** File through your Stripe customer portal
+   - **Credit Card Chargeback:** Contact your bank/card issuer (you have 60-120 days from charge date)
+   - **Be Aware:** Their terms state payments are "generally final and non-refundable" but companies often make exceptions for goodwill, especially with minimal usage
+
+### Important Resources:
+- **Support Email:** support@browser-use.com
+- **Manage Subscription:** cloud.browser-use.com/manage
+- **Terms of Service:** browser-use.com/legal/terms-of-service
+- **Pricing Info:** browser-use.com/pricing
+
+### What Makes Your Case Strong:
+✓ Minimal actual usage of the service  
+✓ Canceled subscription promptly after realizing it wasn't needed  
+✓ Unused API credits/features  
+✓ Multiple months of charges with little value received  
+✓ Polite, professional approach
+
+Even though their policy states refunds are generally not given, many companies will honor refund requests in cases of minimal usage as a goodwill gesture. Your approach is professional and reasonable.
