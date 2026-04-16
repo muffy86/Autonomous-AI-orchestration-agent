@@ -33,6 +33,13 @@ const customJestConfig = {
       statements: 70,
     },
   },
+  coverageReporters: [
+    'text',
+    'text-summary',
+    'html',
+    'lcov',
+    'json-summary',
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

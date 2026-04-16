@@ -1,0 +1,179 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    name: Linting & Code Style
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run ESLint
+        run: pnpm next lint
+        continue-on-error: false
+      
+      - name: Run Biome
+        run: pnpm exec biome lint --write=false
+        continue-on-error: false
+      
+      - name: Check formatting
+        run: pnpm exec biome format --write=false
+        continue-on-error: false
+
+  type-check:
+    name: TypeScript Type Checking
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Type check
+        run: pnpm exec tsc --noEmit
+
+  test:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run unit tests
+        run: pnpm test:unit
+        env:
+          NODE_ENV: test
+      
+      - name: Run integration tests
+        run: pnpm test:integration
+        env:
+          NODE_ENV: test
+
+  build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Create .env.local for build
+        run: |
+          echo "POSTGRES_URL=postgresql://user:pass@localhost:5432/test" > .env.local
+          echo "AUTH_SECRET=test-secret-key-minimum-32-characters-long" >> .env.local
+      
+      - name: Build Next.js app
+        run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: true
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Run pnpm audit
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Check for known vulnerabilities
+        run: |
+          pnpm audit --json > audit-results.json || true
+          cat audit-results.json
+
+  quality-summary:
+    name: Quality Summary
+    needs: [lint, type-check, test, build, security]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## Quality Gates Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Linting | ${{ needs.lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Check | ${{ needs.type-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.lint.result }}" == "success" ] && \
+             [ "${{ needs.type-check.result }}" == "success" ] && \
+             [ "${{ needs.test.result }}" == "success" ] && \
+             [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ All quality gates passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some quality gates failed. Please review the logs." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

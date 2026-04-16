@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Pre-commit hook for AI Chatbot
+# Ensures code quality before commits
+
+echo "🔍 Running pre-commit checks..."
+
+# 1. Lint staged files
+echo "📝 Linting..."
+pnpm exec lint-staged
+
+# 2. Type check
+echo "🔎 Type checking..."
+pnpm exec tsc --noEmit --incremental false
+
+# 3. Run tests related to changed files
+echo "🧪 Running tests..."
+pnpm test:unit --bail --findRelatedTests
+
+echo "✅ Pre-commit checks passed!"

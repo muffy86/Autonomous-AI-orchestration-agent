@@ -7,18 +7,50 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 10
     reviewers:
       - "muffy86"
     assignees:
       - "muffy86"
     commit-message:
-      prefix: "chore"
-      prefix-development: "chore"
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
       include: "scope"
     labels:
       - "dependencies"
-      - "javascript"
+      - "automated"
+    # Group updates
+    groups:
+      npm-production:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    # Version strategies
+    versioning-strategy: "increase"
+    # Security updates
+    insecure-external-code-execution: "deny"
+    # Ignore specific dependencies if needed
+    ignore:
+      # Ignore major version updates for React (manual review)
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      # Ignore major Next.js updates (manual review)
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+    # Pull request settings
+    pull-request-branch-name:
+      separator: "/"
+    rebase-strategy: "auto"
+    target-branch: "main"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -27,14 +59,38 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 5
     reviewers:
       - "muffy86"
-    assignees:
-      - "muffy86"
     commit-message:
-      prefix: "chore"
+      prefix: "chore(ci)"
       include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
+      - "automated"
+    # Group all GitHub Actions updates
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # Enable version updates for Docker (if using Docker)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "muffy86"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"

@@ -52,7 +52,9 @@ const voteSchema = z.object({
 });
 
 export async function PATCH(request: Request) {
-  let chatId: string, messageId: string, type: 'up' | 'down';
+  let chatId: string;
+  let messageId: string;
+  let type: 'up' | 'down';
   
   try {
     const body = await request.json();

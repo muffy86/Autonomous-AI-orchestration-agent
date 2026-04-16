@@ -8,7 +8,8 @@ import {
   generateSecureToken, 
   validateAndSanitize, 
   securitySchemas,
-  RateLimiter 
+  checkRateLimit,
+  cleanupRateLimiter
 } from '@/lib/security';
 
 describe('Security Utils', () => {
@@ -115,12 +116,12 @@ describe('Security Utils', () => {
   describe('RateLimiter', () => {
     beforeEach(() => {
       // Clear rate limiter state before each test
-      RateLimiter.cleanup();
+      cleanupRateLimiter();
     });
 
     it('should allow requests within limit', () => {
       const config = { windowMs: 60000, max: 5 };
-      const result = RateLimiter.check('test-ip', 'test-endpoint', config);
+      const result = checkRateLimit('test-ip', 'test-endpoint', config);
       
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(4);
@@ -130,17 +131,17 @@ describe('Security Utils', () => {
       const config = { windowMs: 60000, max: 2 };
       
       // First request - should be allowed
-      let result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      let result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(1);
       
       // Second request - should be allowed
-      result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(0);
       
       // Third request - should be blocked
-      result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(false);
       expect(result.remaining).toBe(0);
     });
@@ -149,19 +150,19 @@ describe('Security Utils', () => {
       const config = { windowMs: 60000, max: 1 };
       
       // First IP - should be allowed
-      let result1 = RateLimiter.check('ip1', 'test-endpoint', config);
+      let result1 = checkRateLimit('ip1', 'test-endpoint', config);
       expect(result1.allowed).toBe(true);
       
       // Second IP - should also be allowed
-      let result2 = RateLimiter.check('ip2', 'test-endpoint', config);
+      let result2 = checkRateLimit('ip2', 'test-endpoint', config);
       expect(result2.allowed).toBe(true);
       
       // First IP second request - should be blocked
-      result1 = RateLimiter.check('ip1', 'test-endpoint', config);
+      result1 = checkRateLimit('ip1', 'test-endpoint', config);
       expect(result1.allowed).toBe(false);
       
       // Second IP second request - should be blocked
-      result2 = RateLimiter.check('ip2', 'test-endpoint', config);
+      result2 = checkRateLimit('ip2', 'test-endpoint', config);
       expect(result2.allowed).toBe(false);
     });
   });
