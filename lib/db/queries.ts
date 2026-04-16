@@ -85,11 +85,15 @@ export async function saveChat({
   userId,
   title,
   visibility,
+  telegramUserId,
+  botToken,
 }: {
   id: string;
   userId: string;
   title: string;
   visibility: VisibilityType;
+  telegramUserId?: string;
+  botToken?: string;
 }) {
   try {
     return await db.insert(chat).values({
@@ -98,6 +102,8 @@ export async function saveChat({
       userId,
       title,
       visibility,
+      telegramUserId,
+      botToken,
     });
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to save chat');
@@ -533,6 +539,32 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get stream ids by chat id',
+    );
+  }
+}
+
+export async function getChatByTelegramId({
+  telegramUserId,
+  botToken,
+}: {
+  telegramUserId: string;
+  botToken: string;
+}) {
+  try {
+    const [selectedChat] = await db
+      .select()
+      .from(chat)
+      .where(
+        and(
+          eq(chat.telegramUserId, telegramUserId),
+          eq(chat.botToken, botToken),
+        ),
+      );
+    return selectedChat;
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get chat by telegram id',
     );
   }
 }

@@ -29,6 +29,8 @@ export const chat = pgTable('Chat', {
   visibility: varchar('visibility', { enum: ['public', 'private'] })
     .notNull()
     .default('private'),
+  telegramUserId: varchar('telegramUserId', { length: 64 }),
+  botToken: varchar('botToken', { length: 256 }),
 });
 
 export type Chat = InferSelectModel<typeof chat>;

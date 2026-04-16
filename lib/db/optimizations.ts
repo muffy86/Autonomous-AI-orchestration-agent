@@ -226,12 +226,14 @@ export const optimizedQueries = {
             title: chat.title,
             userId: chat.userId,
             visibility: chat.visibility,
+            telegramUserId: chat.telegramUserId,
+            botToken: chat.botToken,
             messageCount: count(message.id),
           })
           .from(chat)
           .leftJoin(message, eq(chat.id, message.chatId))
           .where(eq(chat.id, chatId))
-          .groupBy(chat.id, chat.createdAt, chat.title, chat.userId, chat.visibility)
+          .groupBy(chat.id, chat.createdAt, chat.title, chat.userId, chat.visibility, chat.telegramUserId, chat.botToken)
           .limit(1);
 
         return result[0] || null;
