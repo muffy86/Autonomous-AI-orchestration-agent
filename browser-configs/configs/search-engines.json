@@ -1,0 +1,163 @@
+{
+  "name": "AI-Optimized Search Engines",
+  "description": "Custom search engines for Chrome/Edge - Import via chrome://settings/searchEngines",
+  "version": "1.0",
+  "searchEngines": [
+    {
+      "name": "Perplexity",
+      "keyword": "@p",
+      "url": "https://www.perplexity.ai/search?q=%s",
+      "description": "AI-powered search with sources"
+    },
+    {
+      "name": "Phind",
+      "keyword": "@ph",
+      "url": "https://www.phind.com/search?q=%s",
+      "description": "Developer-focused AI search"
+    },
+    {
+      "name": "You.com",
+      "keyword": "@you",
+      "url": "https://you.com/search?q=%s",
+      "description": "AI search with citations"
+    },
+    {
+      "name": "Brave Search",
+      "keyword": "@brave",
+      "url": "https://search.brave.com/search?q=%s",
+      "description": "Privacy-focused search"
+    },
+    {
+      "name": "Kagi",
+      "keyword": "@k",
+      "url": "https://kagi.com/search?q=%s",
+      "description": "Premium ad-free search"
+    },
+    {
+      "name": "ChatGPT",
+      "keyword": "@gpt",
+      "url": "https://chat.openai.com/?q=%s",
+      "description": "Ask ChatGPT directly"
+    },
+    {
+      "name": "Claude",
+      "keyword": "@claude",
+      "url": "https://claude.ai/new?q=%s",
+      "description": "Ask Claude AI"
+    },
+    {
+      "name": "GitHub Code",
+      "keyword": "@ghc",
+      "url": "https://github.com/search?type=code&q=%s",
+      "description": "Search code on GitHub"
+    },
+    {
+      "name": "GitHub Repos",
+      "keyword": "@gh",
+      "url": "https://github.com/search?q=%s",
+      "description": "Search repositories"
+    },
+    {
+      "name": "Stack Overflow",
+      "keyword": "@so",
+      "url": "https://stackoverflow.com/search?q=%s",
+      "description": "Programming Q&A"
+    },
+    {
+      "name": "MDN Web Docs",
+      "keyword": "@mdn",
+      "url": "https://developer.mozilla.org/en-US/search?q=%s",
+      "description": "Web development documentation"
+    },
+    {
+      "name": "npm",
+      "keyword": "@npm",
+      "url": "https://www.npmjs.com/search?q=%s",
+      "description": "Node packages"
+    },
+    {
+      "name": "PyPI",
+      "keyword": "@pip",
+      "url": "https://pypi.org/search/?q=%s",
+      "description": "Python packages"
+    },
+    {
+      "name": "crates.io",
+      "keyword": "@crate",
+      "url": "https://crates.io/search?q=%s",
+      "description": "Rust packages"
+    },
+    {
+      "name": "Docker Hub",
+      "keyword": "@docker",
+      "url": "https://hub.docker.com/search?q=%s",
+      "description": "Container images"
+    },
+    {
+      "name": "Reddit",
+      "keyword": "@r",
+      "url": "https://www.reddit.com/search/?q=%s",
+      "description": "Reddit discussions"
+    },
+    {
+      "name": "YouTube",
+      "keyword": "@yt",
+      "url": "https://www.youtube.com/results?search_query=%s",
+      "description": "Video search"
+    },
+    {
+      "name": "Hacker News",
+      "keyword": "@hn",
+      "url": "https://hn.algolia.com/?q=%s",
+      "description": "Tech news and discussions"
+    },
+    {
+      "name": "arXiv",
+      "keyword": "@arxiv",
+      "url": "https://arxiv.org/search/?query=%s",
+      "description": "Research papers"
+    },
+    {
+      "name": "Google Scholar",
+      "keyword": "@scholar",
+      "url": "https://scholar.google.com/scholar?q=%s",
+      "description": "Academic search"
+    },
+    {
+      "name": "Dev.to",
+      "keyword": "@dev",
+      "url": "https://dev.to/search?q=%s",
+      "description": "Developer community"
+    },
+    {
+      "name": "Medium",
+      "keyword": "@medium",
+      "url": "https://medium.com/search?q=%s",
+      "description": "Articles and blogs"
+    },
+    {
+      "name": "W3Schools",
+      "keyword": "@w3",
+      "url": "https://www.w3schools.com/search/search_asp.asp?search=%s",
+      "description": "Web tutorials"
+    },
+    {
+      "name": "Can I Use",
+      "keyword": "@caniuse",
+      "url": "https://caniuse.com/?search=%s",
+      "description": "Browser compatibility"
+    },
+    {
+      "name": "Regex101",
+      "keyword": "@regex",
+      "url": "https://regex101.com/?regex=%s",
+      "description": "Regex tester"
+    }
+  ],
+  "installation": {
+    "chrome": "1. Go to chrome://settings/searchEngines\n2. Click 'Add' under 'Site search'\n3. Fill in: Name, Keyword, URL\n4. Use by typing keyword + Tab in address bar",
+    "firefox": "1. Right-click search field on any website\n2. Select 'Add a Keyword for this Search'\n3. Enter keyword when prompted",
+    "edge": "Same as Chrome - edge://settings/searchEngines"
+  },
+  "usage": "Type the keyword (e.g. '@p') in the address bar, press Tab, then type your search query"
+}

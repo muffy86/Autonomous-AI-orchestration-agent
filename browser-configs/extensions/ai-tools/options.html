@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .setting-item {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .setting-description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .success-message {
+            display: none;
+            background: #10b981;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shortcut-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .shortcut-info code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ AI Tools Settings</h1>
+            <p>Customize your AI browser experience</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">🔍 Search Preferences</h2>
+                
+                <div class="setting-item">
+                    <label class="setting-label">Default Search Engine</label>
+                    <div class="setting-description">Choose which AI search to use by default</div>
+                    <select id="defaultSearch">
+                        <option value="perplexity">Perplexity</option>
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="google">Google</option>
+                        <option value="brave">Brave Search</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="openInNewTab" checked>
+                        <label class="setting-label" for="openInNewTab" style="margin: 0;">Open searches in new tab</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">⌨️ Keyboard Shortcuts</h2>
+                
+                <div class="shortcut-info">
+                    <p><strong>To customize keyboard shortcuts:</strong></p>
+                    <ol style="margin-left: 20px; margin-top: 8px;">
+                        <li>Go to <code>chrome://extensions/shortcuts</code></li>
+                        <li>Find "AI Tools - Browser Enhancement"</li>
+                        <li>Click the edit icon next to each shortcut</li>
+                        <li>Press your desired key combination</li>
+                    </ol>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <p><strong>Current shortcuts:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.8;">
+                        <li><code>Ctrl+Shift+P</code> - Search on Perplexity</li>
+                        <li><code>Ctrl+Shift+G</code> - Ask ChatGPT</li>
+                        <li><code>Ctrl+Shift+M</code> - Copy as Markdown</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">🎨 Interface</h2>
+                
+                <div class="setting-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="showHints">
+                        <label class="setting-label" for="showHints" style="margin: 0;">Show keyboard shortcut hints</label>
+                    </div>
+                    <div class="setting-description" style="margin-left: 30px;">Display a hint notification when visiting new pages</div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="enableContextMenu" checked>
+                        <label class="setting-label" for="enableContextMenu" style="margin: 0;">Enable context menu</label>
+                    </div>
+                    <div class="setting-description" style="margin-left: 30px;">Show AI Tools in right-click menu</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">🔗 Custom Search Engines</h2>
+                
+                <div class="setting-item">
+                    <label class="setting-label">Add Custom Search</label>
+                    <div class="setting-description">Add your own search engine (use %s for query)</div>
+                    <input type="text" id="customName" placeholder="Name (e.g., My Search)" style="margin-bottom: 8px;">
+                    <input type="url" id="customUrl" placeholder="URL (e.g., https://example.com/search?q=%s)">
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">🔒 Privacy</h2>
+                
+                <div class="setting-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="noTracking" checked>
+                        <label class="setting-label" for="noTracking" style="margin: 0;">Remove tracking parameters from URLs</label>
+                    </div>
+                    <div class="setting-description" style="margin-left: 30px;">Strip utm_*, fbclid, gclid, etc. from links</div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="privateMode">
+                        <label class="setting-label" for="privateMode" style="margin: 0;">Privacy mode</label>
+                    </div>
+                    <div class="setting-description" style="margin-left: 30px;">Don't store search history locally</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="saveSettings">💾 Save Settings</button>
+                <button class="btn btn-secondary" id="resetSettings">🔄 Reset to Defaults</button>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                ✓ Settings saved successfully!
+            </div>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e0e0e0; text-align: center; color: #666; font-size: 13px;">
+                <p>AI Tools Extension v1.0.0</p>
+                <p style="margin-top: 8px;">
+                    <a href="https://github.com/your-repo" style="color: #667eea; text-decoration: none;">Documentation</a> • 
+                    <a href="https://github.com/your-repo/issues" style="color: #667eea; text-decoration: none;">Report Issue</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved settings
+        document.addEventListener('DOMContentLoaded', () => {
+            chrome.storage.sync.get({
+                defaultSearch: 'perplexity',
+                openInNewTab: true,
+                showHints: false,
+                enableContextMenu: true,
+                noTracking: true,
+                privateMode: false
+            }, (items) => {
+                document.getElementById('defaultSearch').value = items.defaultSearch;
+                document.getElementById('openInNewTab').checked = items.openInNewTab;
+                document.getElementById('showHints').checked = items.showHints;
+                document.getElementById('enableContextMenu').checked = items.enableContextMenu;
+                document.getElementById('noTracking').checked = items.noTracking;
+                document.getElementById('privateMode').checked = items.privateMode;
+            });
+        });
+
+        // Save settings
+        document.getElementById('saveSettings').addEventListener('click', () => {
+            const settings = {
+                defaultSearch: document.getElementById('defaultSearch').value,
+                openInNewTab: document.getElementById('openInNewTab').checked,
+                showHints: document.getElementById('showHints').checked,
+                enableContextMenu: document.getElementById('enableContextMenu').checked,
+                noTracking: document.getElementById('noTracking').checked,
+                privateMode: document.getElementById('privateMode').checked
+            };
+
+            chrome.storage.sync.set(settings, () => {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            });
+        });
+
+        // Reset settings
+        document.getElementById('resetSettings').addEventListener('click', () => {
+            if (confirm('Reset all settings to defaults?')) {
+                chrome.storage.sync.clear(() => {
+                    location.reload();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

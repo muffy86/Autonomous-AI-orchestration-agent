@@ -1,0 +1,286 @@
+! Title: AI-Optimized uBlock Origin Filters
+! Description: Remove clutter, ads, and distractions for focused AI work
+! Last modified: 2026-03-18
+! Homepage: https://github.com/your-repo
+
+! ===== Google Search Enhancements =====
+
+! Remove "People also ask"
+google.*##.related-question-pair
+google.*##div[jsname="yEVEwb"]
+
+! Remove "People also search for"
+google.*##.kp-wholepage
+
+! Remove search suggestions clutter
+google.*##.card-section
+google.*##.AJLUJb
+
+! Remove Google Shopping ads
+google.*###tvcap
+google.*###bottomads
+
+! Remove Knowledge Graph clutter (keep main content)
+google.*##.kp-wholepage-osrp
+
+! ===== YouTube Clean Interface =====
+
+! Remove homepage recommendations (optional - comment out if you want them)
+! www.youtube.com##ytd-browse[page-subtype="home"]
+
+! Remove comments section (optional)
+! www.youtube.com##ytd-comments
+
+! Remove end screen suggestions
+www.youtube.com##.ytp-ce-element
+
+! Remove merch shelf
+www.youtube.com##ytd-merch-shelf-renderer
+
+! ===== GitHub Enhancements =====
+
+! Remove "Trending developers" sidebar
+github.com##.dashboard-sidebar
+
+! Remove suggested repositories
+github.com###suggested-repositories
+
+! Remove marketplace ads
+github.com##.js-marketplace-callout
+
+! ===== Stack Overflow =====
+
+! Remove sidebar ads
+stackoverflow.com##.s-sidebarwidget--yellow
+
+! Remove job listings
+stackoverflow.com###hiringresources
+
+! Remove newsletter popups
+stackoverflow.com###hnc-new
+
+! ===== Reddit =====
+
+! Remove new Reddit bloat
+www.reddit.com##.happening-now-dropdown
+www.reddit.com##.ListingLayout-outerContainer
+
+! Old Reddit - remove promoted posts
+old.reddit.com##.promoted
+
+! ===== Twitter/X =====
+
+! Remove "Who to follow"
+twitter.com##aside[aria-label="Who to follow"]
+x.com##aside[aria-label="Who to follow"]
+
+! Remove trending sidebar
+twitter.com##aside[aria-label="Trending"]
+x.com##aside[aria-label="Trending"]
+
+! Remove promoted tweets
+twitter.com##div[data-testid="placementTracking"]
+x.com##div[data-testid="placementTracking"]
+
+! ===== ChatGPT =====
+
+! Remove upsell messages
+chat.openai.com##div[class*="upsell"]
+chatgpt.com##div[class*="upsell"]
+
+! Remove upgrade prompts (optional)
+! chat.openai.com##div[class*="upgrade"]
+! chatgpt.com##div[class*="upgrade"]
+
+! ===== Medium =====
+
+! Remove paywall (use with Bypass Paywalls extension for best results)
+medium.com##div[data-testid="paywall"]
+
+! Remove signup modal
+medium.com##div[data-testid="headerSignup"]
+
+! Remove bottom CTA
+medium.com##div[data-testid="articleFooter"]
+
+! ===== LinkedIn =====
+
+! Remove "People you may know"
+linkedin.com##.pymk-container
+
+! Remove feed ads
+linkedin.com##div[data-ad-banner-id]
+
+! Remove premium upsells
+linkedin.com##div.premium-upsell-link
+
+! ===== Documentation Sites =====
+
+! Remove cookie banners universally
+##div[class*="cookie" i]
+##div[id*="cookie" i]
+##div[class*="gdpr" i]
+##div[class*="consent" i]
+
+! Remove newsletter popups
+##div[class*="newsletter" i]:has(input[type="email"])
+##div[id*="newsletter" i]:has(input[type="email"])
+
+! Remove live chat widgets
+###drift-widget
+###intercom-container
+##.intercom-app
+##.crisp-client
+
+! ===== Developer Tools =====
+
+! npm - remove ads
+npmjs.com##.marketing-banner
+
+! PyPI - remove donation banner
+pypi.org##.notification-bar
+
+! Docker Hub - remove marketing
+hub.docker.com##.marketing-block
+
+! ===== General Annoyances =====
+
+! Remove "Accept cookies" banners
+###accept-cookies
+###cookie-banner
+##.cookie-notice
+##.cookie-consent
+
+! Remove "Download App" banners
+##.app-banner
+##.mobile-app-banner
+###download-app
+
+! Remove video overlays
+##.video-overlay-ad
+##.pre-roll-ad
+
+! Remove floating social media buttons
+##.social-share-floating
+##.floating-social
+
+! Remove "Back to top" buttons (use keyboard: Home/End)
+! ##.back-to-top
+! ##.scroll-to-top
+
+! ===== Anti-Adblock Killers =====
+
+! Remove anti-adblock warnings
+###adblock-warning
+##.adblock-notice
+##div[class*="adblocker-detected" i]
+
+! ===== Performance Improvements =====
+
+! Block unnecessary tracking scripts (uBlock handles most, these are extras)
+||analytics.google.com^$important
+||googletagmanager.com^$important
+||doubleclick.net^$important
+||google-analytics.com^$important
+
+! Block social media trackers
+||facebook.com/tr/*$third-party
+||facebook.net/en_US/fbevents.js$third-party
+||connect.facebook.net/*$third-party
+
+! Block marketing platforms
+||mixpanel.com^$third-party
+||segment.com^$third-party
+||amplitude.com^$third-party
+
+! ===== Site-Specific AI Tool Optimizations =====
+
+! Perplexity - remove distractions
+perplexity.ai##.marketing-banner
+
+! Phind - clean interface
+phind.com##aside.sidebar-ads
+
+! Hugging Face - remove model ads
+huggingface.co##.sponsored-models
+
+! ===== Custom Rules for Focus =====
+
+! Hide YouTube Shorts (if you find them distracting)
+www.youtube.com##ytd-rich-shelf-renderer:has-text(/Shorts/)
+www.youtube.com##ytd-reel-shelf-renderer
+
+! Hide Instagram feed (keep direct messages)
+! instagram.com##main[role="main"]
+
+! Hide Facebook feed (keep messenger)
+! facebook.com##div[role="feed"]
+
+! ===== Productivity Filters =====
+
+! Block time-wasting sites during work hours
+! (Uncomment and modify as needed)
+
+! Block Reddit during work
+! ||reddit.com^$doc,domain=~old.reddit.com
+
+! Block social media
+! ||twitter.com^$doc
+! ||facebook.com^$doc
+! ||instagram.com^$doc
+
+! Block news sites (if you get distracted)
+! ||news.ycombinator.com^$doc
+! ||cnn.com^$doc
+! ||bbc.com^$doc
+
+! ===== Clean URLs =====
+
+! Remove Google tracking parameters
+$removeparam=gclid
+$removeparam=fbclid
+$removeparam=utm_source
+$removeparam=utm_medium
+$removeparam=utm_campaign
+$removeparam=utm_term
+$removeparam=utm_content
+
+! ===== AI-Specific Enhancements =====
+
+! Remove ChatGPT rate limit messages (cosmetic only, won't bypass limits)
+! chat.openai.com##div:has-text(/rate limit/i)
+
+! Clean Claude interface
+claude.ai##div[class*="promo"]
+
+! Remove Midjourney gallery NSFW content
+! midjourney.com##div[data-nsfw="true"]
+
+! ===== Enable Advanced Features =====
+
+! Allow WebGPU and WASM (ensure they're not blocked)
+@@||cdn.jsdelivr.net/npm/@tensorflow/tfjs^$script
+@@||unpkg.com/@mediapipe/*$script
+@@||cdn.jsdelivr.net/npm/onnxruntime-web^$script
+
+! ===== Notes =====
+
+! Lines starting with ! are comments
+! Lines starting with ## are cosmetic filters (hide elements)
+! Lines starting with || block domains
+! Lines starting with @@ are exceptions (allow)
+! Use $important to prioritize rules
+! Use $third-party to block only third-party requests
+
+! To import these filters:
+! 1. Install uBlock Origin
+! 2. Click uBlock icon → Dashboard
+! 3. My filters tab
+! 4. Copy and paste this file
+! 5. Apply changes
+
+! ===== Testing =====
+
+! Test your filters: chrome://net-internals/#dns
+! Clear DNS cache if sites don't load: chrome://net-internals/#dns → Clear host cache
+! Disable filters temporarily: Click uBlock icon → Power button

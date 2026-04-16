@@ -1,0 +1,237 @@
+/* ==UserStyle==
+@name         Complete AI Sites Theme Collection
+@namespace    github.com/ai-browser-config
+@version      2.0.0
+@description  Beautiful custom themes for all major websites
+@author       You
+@preprocessor default
+==/UserStyle== */
+
+/* ===== Global Variables ===== */
+:root {
+    --primary: #667eea;
+    --secondary: #764ba2;
+    --accent: #10a37f;
+    --bg-dark: #1a1a1a;
+    --bg-surface: #242424;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border: #3a3a3a;
+}
+
+/* ===== YouTube Minimal ===== */
+@-moz-document domain("youtube.com") {
+    /* Hide distractions */
+    #related, ytd-comments,
+    ytd-compact-video-renderer,
+    .ytp-ce-element {
+        display: none !important;
+    }
+    
+    /* Theater mode by default */
+    .html5-video-player {
+        max-width: 100% !important;
+    }
+}
+
+/* ===== GitHub Dark Pro ===== */
+@-moz-document domain("github.com") {
+    [data-color-mode="light"] {
+        --color-canvas-default: #0d1117 !important;
+        --color-canvas-subtle: #161b22 !important;
+        --color-fg-default: #c9d1d9 !important;
+    }
+    
+    .markdown-body {
+        background: #0d1117 !important;
+        color: #c9d1d9 !important;
+    }
+    
+    /* Better code blocks */
+    .highlight {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-radius: 8px !important;
+    }
+}
+
+/* ===== Twitter/X Clean ===== */
+@-moz-document domain("twitter.com"), domain("x.com") {
+    /* Hide promoted content */
+    [data-testid="placementTracking"],
+    aside[aria-label="Who to follow"],
+    aside[aria-label="Trending"] {
+        display: none !important;
+    }
+    
+    /* Wider timeline */
+    [data-testid="primaryColumn"] {
+        max-width: 100% !important;
+    }
+}
+
+/* ===== Reddit Old Style ===== */
+@-moz-document domain("reddit.com") {
+    /* Force old Reddit look */
+    body {
+        font-family: 'Segoe UI', Tahoma, sans-serif !important;
+    }
+    
+    .promoted {
+        display: none !important;
+    }
+}
+
+/* ===== LinkedIn Minimal ===== */
+@-moz-document domain("linkedin.com") {
+    /* Hide feed ads */
+    .feed-shared-update-v2--is-boosted,
+    .artdeco-card--sponsored {
+        display: none !important;
+    }
+    
+    /* Cleaner profile */
+    .pv-top-card-v3--list-bullet {
+        display: none !important;
+    }
+}
+
+/* ===== Gmail Focus Mode ===== */
+@-moz-document domain("mail.google.com") {
+    /* Hide distractions */
+    .aKh, /* Chat */
+    .bkL, /* Meet */
+    [data-tooltip*="Calendar"] {
+        display: none !important;
+    }
+    
+    /* Compact view */
+    .aic {
+        height: 32px !important;
+    }
+}
+
+/* ===== Notion Beautiful ===== */
+@-moz-document domain("notion.so") {
+    .notion-frame {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+    }
+    
+    .notion-page-content {
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important;
+        border-radius: 12px !important;
+    }
+}
+
+/* ===== Google Docs Clean ===== */
+@-moz-document domain("docs.google.com") {
+    /* Full width */
+    .kix-appview-editor {
+        max-width: 90% !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Hide suggestions */
+    .docs-explore-widget {
+        display: none !important;
+    }
+}
+
+/* ===== Stack Overflow Pro ===== */
+@-moz-document domain("stackoverflow.com") {
+    body {
+        background: #0d1117 !important;
+    }
+    
+    .s-prose {
+        color: #c9d1d9 !important;
+    }
+    
+    code {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        color: #79c0ff !important;
+    }
+}
+
+/* ===== Medium Reader Mode ===== */
+@-moz-document domain("medium.com") {
+    /* Remove paywall */
+    [data-testid="paywall"] {
+        display: none !important;
+    }
+    
+    /* Clean typography */
+    article {
+        max-width: 700px !important;
+        margin: 0 auto !important;
+        font-family: 'Georgia', serif !important;
+        line-height: 1.8 !important;
+    }
+}
+
+/* ===== Documentation Sites Enhancement ===== */
+@-moz-document regexp("https://.*(docs|documentation).*") {
+    /* Wider content */
+    main, article {
+        max-width: 90% !important;
+    }
+    
+    /* Better code blocks */
+    pre {
+        background: #1e1e1e !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ===== Universal Dark Theme ===== */
+@media (prefers-color-scheme: dark) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #4a4a4a #1a1a1a;
+    }
+    
+    *::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    *::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+    
+    *::-webkit-scrollbar-thumb {
+        background: #4a4a4a;
+        border-radius: 6px;
+    }
+}
+
+/* ===== Focus Mode Global ===== */
+.ai-focus-mode {
+    /* Hide everything except main content */
+    header, footer, aside, nav, [role="complementary"] {
+        display: none !important;
+    }
+    
+    main, article, [role="main"] {
+        max-width: 800px !important;
+        margin: 40px auto !important;
+        padding: 20px !important;
+    }
+}
+
+/* ===== Print Optimization ===== */
+@media print {
+    /* Hide UI elements */
+    header, footer, nav, aside, button {
+        display: none !important;
+    }
+    
+    /* Clean content */
+    * {
+        background: white !important;
+        color: black !important;
+    }
+}
