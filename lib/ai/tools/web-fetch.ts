@@ -175,7 +175,7 @@ export const webFetch = tool({
 
       // Truncate content if needed
       if (content.length > max_length) {
-        content = content.substring(0, max_length) + '\n\n... (content truncated)';
+        content = `${content.substring(0, max_length)}\n\n... (content truncated)`;
       }
 
       return {
@@ -223,8 +223,8 @@ export const webSearch = tool({
       // Extract results using regex (simple approach)
       const resultRegex = /<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>[\s\S]*?<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/g;
       
-      let match;
-      while ((match = resultRegex.exec(html)) !== null && results.length < max_results) {
+      let match = resultRegex.exec(html);
+      while (match !== null && results.length < max_results) {
         const url = match[1].replace(/^\/\/duckduckgo\.com\/l\/\?uddg=/, '').replace(/&amp;/g, '&');
         const title = match[2].replace(/<[^>]+>/g, '').trim();
         const snippet = match[3].replace(/<[^>]+>/g, '').trim();
@@ -244,6 +244,8 @@ export const webSearch = tool({
             snippet,
           });
         }
+        
+        match = resultRegex.exec(html);
       }
 
       return {
