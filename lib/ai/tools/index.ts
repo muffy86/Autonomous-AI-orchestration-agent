@@ -9,39 +9,17 @@ import { requestSuggestions } from './request-suggestions';
 import { getWeather } from './get-weather';
 import { codeAnalyzer } from './code-analyzer';
 import { documentAnalyzer } from './document-analyzer';
+import { githubIntegration } from './github-integration';
+import { webFetch, webSearch } from './web-fetch';
 import { tool } from 'ai';
 import { z } from 'zod';
 import { modelManager } from '../enhanced-models';
 import { contextManager } from '../context-manager';
 import { promptOptimizer } from '../prompt-optimizer';
 
-// Enhanced search and research tool
-export const webSearch = tool({
-  description: 'Search the web for current information and provide comprehensive results',
-  parameters: z.object({
-    query: z.string().min(1, 'Search query is required'),
-    maxResults: z.number().min(1).max(10).default(5),
-    includeImages: z.boolean().default(false),
-    timeRange: z.enum(['day', 'week', 'month', 'year', 'all']).default('all'),
-  }),
-  execute: async ({ query, maxResults, includeImages, timeRange }) => {
-    // In a real implementation, this would use a search API
-    return {
-      success: true,
-      query,
-      results: [
-        {
-          title: `Search results for: ${query}`,
-          url: 'https://example.com',
-          snippet: 'This is a simulated search result. In a real implementation, this would connect to a search API.',
-          timestamp: new Date().toISOString(),
-        }
-      ],
-      totalResults: 1,
-      searchTime: '0.1s',
-    };
-  },
-});
+// Web search and fetch tools are now imported from web-fetch.ts
+// Export them for use in this module
+export { webSearch, webFetch };
 
 // AI model management tool
 export const modelManager_tool = tool({
@@ -430,6 +408,8 @@ export const enhancedAITools = {
   codeAnalyzer,
   documentAnalyzer,
   webSearch,
+  webFetch,
+  githubIntegration,
   modelManager: modelManager_tool,
   contextManager: contextManager_tool,
   promptOptimizer: promptOptimizer_tool,
@@ -446,12 +426,12 @@ export const toolCategories = {
   },
   development: {
     name: 'Development',
-    tools: ['codeAnalyzer'],
+    tools: ['codeAnalyzer', 'githubIntegration'],
     description: 'Tools for code analysis and development',
   },
   research: {
     name: 'Research & Information',
-    tools: ['webSearch', 'knowledgeBase', 'getWeather'],
+    tools: ['webSearch', 'webFetch', 'knowledgeBase', 'getWeather'],
     description: 'Tools for finding and retrieving information',
   },
   management: {

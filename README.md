@@ -34,10 +34,43 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+- **AI Tools & Integrations**
+  - **GitHub Integration** - Search repos, fetch issues/PRs, read code files, explore commits
+  - **Web Fetch** - Extract content from any web page with metadata parsing
+  - **Web Search** - Search the web using DuckDuckGo (no API key required)
+  - **Weather Data** - Real-time weather information via Open-Meteo
+  - **Document Management** - Create and update rich documents with artifacts
 
 ## Model Providers
 
 This template ships with [xAI](https://x.ai) `grok-2-1212` as the default chat model. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+
+## AI Tools & Capabilities
+
+The chatbot comes with powerful built-in tools that connect to external data sources:
+
+### GitHub Integration
+Access GitHub data directly from the chat:
+- **Search repositories** by keywords, language, or topics
+- **Fetch repository details** including stars, forks, and metadata
+- **Browse issues and pull requests** with full details
+- **Read file contents** from any public repository
+- **Explore commits** and repository history
+- **Get user profiles** and their repositories
+
+**Setup:** Add your `GITHUB_TOKEN` to environment variables for higher rate limits and private repository access. Works without a token for public repositories.
+
+### Web Integration
+Fetch and analyze content from the web:
+- **Web Search** - Search the web using DuckDuckGo (no API key required)
+- **Web Fetch** - Extract content, text, and metadata from any URL
+- **JSON API support** - Fetch and parse JSON data from APIs
+- **Metadata extraction** - Automatically parse title, description, and Open Graph data
+
+### Other Tools
+- **Weather** - Real-time weather forecasts via Open-Meteo API
+- **Documents** - Create and update rich documents with code, charts, and artifacts
+- **Suggestions** - AI-powered response suggestions for better conversations
 
 ## Deploy Your Own
 
@@ -68,6 +101,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[AI Tools Guide](docs/AI_TOOLS.md)** - Complete guide to available AI tools and integrations
 
 ## 🚀 Features & Workflows
 
