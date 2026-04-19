@@ -209,7 +209,7 @@ describe('Enhanced AI Models', () => {
       // Get stats
       const stats = modelManager.getUsageStats(modelId);
       expect(stats).toBeTruthy();
-      expect(stats!.tokens).toBeGreaterThanOrEqual(100);
+      expect(stats?.tokens).toBeGreaterThanOrEqual(100);
     });
   });
 });

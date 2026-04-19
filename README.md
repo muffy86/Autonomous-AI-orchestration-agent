@@ -122,11 +122,17 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 
 ## 📚 Documentation
 
+### Getting Started
+- **[Quick Start Guide](QUICK_START.md)** - 5-minute setup for local development ⚡
+- **[Next Steps Guide](NEXT_STEPS.md)** - Complete setup and deployment instructions 📋
+- **[AI Tools Guide](docs/AI_TOOLS.md)** - Complete guide to available AI tools and integrations 🤖
+- **[AI Tools Examples](examples/AI_TOOLS_EXAMPLES.md)** - Practical usage examples 💡
+
+### Development & Deployment
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
-- **[AI Tools Guide](docs/AI_TOOLS.md)** - Complete guide to available AI tools and integrations
 
 ## 🚀 Features & Workflows
 

@@ -19,7 +19,7 @@ async function githubAPI({ endpoint, token, accept = 'application/vnd.github+jso
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const response = await fetch(`https://api.github.com${endpoint}`, {

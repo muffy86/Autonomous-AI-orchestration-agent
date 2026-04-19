@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from '@jest/globals';
+import { describe, it, expect, } from '@jest/globals';
 import { githubIntegration } from '@/lib/ai/tools/github-integration';
 import { webFetch, webSearch } from '@/lib/ai/tools/web-fetch';
 

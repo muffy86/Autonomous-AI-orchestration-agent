@@ -54,7 +54,7 @@ export const modelManager_tool = tool({
             comparison: modelManager.compareModels(modelIds),
           };
 
-        case 'recommend':
+        case 'recommend': {
           if (!task) {
             return { success: false, error: 'Task type required for recommendation' };
           }
@@ -63,6 +63,7 @@ export const modelManager_tool = tool({
             success: true,
             recommendation: recommended,
           };
+        }
 
         case 'stats':
           return {
@@ -98,7 +99,7 @@ export const contextManager_tool = tool({
   execute: async ({ action, chatId, preferences }) => {
     try {
       switch (action) {
-        case 'get':
+        case 'get': {
           const context = contextManager.getContext(chatId);
           return {
             success: true,
@@ -109,6 +110,7 @@ export const contextManager_tool = tool({
               metadata: context.metadata,
             } : null,
           };
+        }
 
         case 'update':
           // This would typically be called automatically during conversation
@@ -117,7 +119,7 @@ export const contextManager_tool = tool({
             message: 'Context updated automatically during conversation',
           };
 
-        case 'preferences':
+        case 'preferences': {
           if (!preferences) {
             return { success: false, error: 'Preferences object required' };
           }
@@ -126,13 +128,15 @@ export const contextManager_tool = tool({
             success: updated,
             message: updated ? 'Preferences updated' : 'Chat context not found',
           };
+        }
 
-        case 'summary':
+        case 'summary': {
           const summary = contextManager.getSummary(chatId);
           return {
             success: true,
             summary,
           };
+        }
 
         case 'stats':
           return {
@@ -206,7 +210,7 @@ export const promptOptimizer_tool = tool({
             };
           }
 
-        case 'render':
+        case 'render': {
           if (!templateId || !variables) {
             return { success: false, error: 'Template ID and variables required for rendering' };
           }
@@ -215,6 +219,7 @@ export const promptOptimizer_tool = tool({
             success: rendered !== null,
             rendered,
           };
+        }
 
         default:
           return { success: false, error: 'Invalid action' };
@@ -342,7 +347,7 @@ export const knowledgeBase = tool({
       ];
 
       switch (action) {
-        case 'search':
+        case 'search': {
           if (!query) {
             return { success: false, error: 'Query required for search' };
           }
@@ -357,13 +362,15 @@ export const knowledgeBase = tool({
             results,
             totalResults: results.length,
           };
+        }
 
-        case 'categories':
+        case 'categories': {
           const categories = [...new Set(mockKnowledge.map(item => item.category))];
           return {
             success: true,
             categories,
           };
+        }
 
         case 'add':
           return {
