@@ -1,0 +1,103 @@
+{
+  "recommendations": [
+    // Language Support
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "biomejs.biome",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "golang.go",
+    "rust-lang.rust-analyzer",
+    
+    // Framework & Libraries
+    "bradlc.vscode-tailwindcss",
+    "csstools.postcss",
+    "dsznajder.es7-react-js-snippets",
+    "styled-components.vscode-styled-components",
+    "prisma.prisma",
+    "unifiedjs.vscode-mdx",
+    
+    // AI & Development
+    "github.copilot",
+    "github.copilot-chat",
+    "continue.continue",
+    "anthropic.claude-dev",
+    
+    // Git & Version Control
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    "github.vscode-github-actions",
+    "donjayamanne.githistory",
+    "mhutchie.git-graph",
+    
+    // Docker & Containers
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    
+    // Testing
+    "orta.vscode-jest",
+    "hbenl.vscode-test-explorer",
+    "ms-playwright.playwright",
+    
+    // Code Quality
+    "sonarsource.sonarlint-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "shardulm94.trailing-spaces",
+    
+    // Database
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "mongodb.mongodb-vscode",
+    "redis.redis-for-vscode",
+    
+    // API Development
+    "humao.rest-client",
+    "42crunch.vscode-openapi",
+    "rangav.vscode-thunder-client",
+    
+    // Productivity
+    "aaron-bond.better-comments",
+    "alefragnani.bookmarks",
+    "wayou.vscode-todo-highlight",
+    "gruntfuggly.todo-tree",
+    "pflannery.vscode-versionlens",
+    
+    // Documentation
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-mermaid",
+    "shd101wyy.markdown-preview-enhanced",
+    "yzane.markdown-pdf",
+    
+    // Monitoring & Logs
+    "amazonwebservices.aws-toolkit-vscode",
+    "ms-azuretools.vscode-azureresourcegroups",
+    "redhat.vscode-yaml",
+    "p1c2u.docker-compose",
+    
+    // Performance
+    "wix.vscode-import-cost",
+    "kisstkondoros.vscode-gutter-preview",
+    
+    // Utilities
+    "christian-kohler.path-intellisense",
+    "visualstudioexptteam.vscodeintellicode",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "editorconfig.editorconfig",
+    "mikestead.dotenv",
+    
+    // Security
+    "snyk-security.snyk-vulnerability-scanner",
+    "github.vscode-codeql",
+    
+    // Collaboration
+    "ms-vsliveshare.vsliveshare",
+    "ms-vsliveshare.vsliveshare-audio",
+    
+    // Theme & Icons
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "catppuccin.catppuccin-vsc"
+  ]
+}

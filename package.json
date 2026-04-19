@@ -26,7 +26,15 @@
     "analyze:bundle:detailed": "pnpm add -D @next/bundle-analyzer && ANALYZE=true pnpm build",
     "security:audit": "node scripts/security-audit.js",
     "security:deps": "pnpm audit",
-    "security:check": "pnpm security:deps && pnpm security:audit"
+    "security:check": "pnpm security:deps && pnpm security:audit",
+    "orchestration": "tsx scripts/orchestration-cli.ts",
+    "orchestration:start": "docker-compose -f docker-compose.orchestration.yml up -d",
+    "orchestration:stop": "docker-compose -f docker-compose.orchestration.yml down",
+    "orchestration:logs": "docker-compose -f docker-compose.orchestration.yml logs -f",
+    "mcp:dev": "cd mcp && pnpm dev",
+    "mcp:build": "cd mcp && pnpm build",
+    "webhook:dev": "cd orchestration && pnpm webhook",
+    "setup:all": "pnpm install && cd mcp && pnpm install && cd ../orchestration && pnpm install && cd ../scripts && pnpm install"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.11",
