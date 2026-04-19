@@ -1,0 +1,36 @@
+================================================================================
+PASTE THESE IN YOUR TERMINAL (Local Machine with gcloud CLI)
+================================================================================
+
+Download and run the deployment script:
+
+curl -O https://raw.githubusercontent.com/muffy86/Autonomous-AI-orchestration-agent/cursor/full-orchestration-mcp-environment-e9c0/quick-deploy-gcp.sh
+chmod +x quick-deploy-gcp.sh
+./quick-deploy-gcp.sh
+
+
+Then SSH to the VM (command will be shown) and run:
+
+curl -O https://raw.githubusercontent.com/muffy86/Autonomous-AI-orchestration-agent/cursor/full-orchestration-mcp-environment-e9c0/setup-on-vm.sh
+chmod +x setup-on-vm.sh
+./setup-on-vm.sh
+
+
+================================================================================
+OR - For Google Cloud Shell (paste in Cloud Shell terminal):
+================================================================================
+
+git clone https://github.com/muffy86/Autonomous-AI-orchestration-agent.git
+cd Autonomous-AI-orchestration-agent
+git checkout cursor/full-orchestration-mcp-environment-e9c0
+npm install -g pnpm
+pnpm setup:all
+cp .env.orchestration .env
+docker-compose -f docker-compose.minimal.yml up -d
+pnpm db:migrate
+pnpm dev
+
+
+Then click "Web Preview" -> "Preview on port 3000"
+
+================================================================================
