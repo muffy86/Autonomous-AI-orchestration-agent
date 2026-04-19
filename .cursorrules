@@ -1,0 +1,190 @@
+# Cursor AI Rules for AI Chatbot Project
+
+## Project Context
+This is a Next.js 15 AI Chatbot application using:
+- **Framework**: Next.js 15 (App Router, React Server Components)
+- **AI SDK**: Vercel AI SDK with xAI (Grok) as default model
+- **Database**: PostgreSQL with Drizzle ORM
+- **Auth**: NextAuth.js v5
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Testing**: Jest (unit) + Playwright (E2E)
+- **Code Quality**: Biome (formatter/linter) + ESLint
+
+## Code Style Guidelines
+
+### TypeScript
+- Use TypeScript for all files
+- Prefer interfaces over types for object shapes
+- Use strict mode
+- Always define return types for functions
+- Use `satisfies` operator when appropriate
+
+### React & Next.js
+- Use React Server Components by default
+- Add 'use client' only when necessary (hooks, event handlers, browser APIs)
+- Prefer async/await server components over useEffect
+- Use Next.js App Router conventions
+- Implement proper error boundaries
+- Use Suspense for loading states
+
+### Formatting
+- Use Biome for formatting (configured)
+- 2 spaces for indentation
+- Single quotes for strings
+- Trailing commas in objects/arrays
+- Max line length: 100 characters
+
+### Imports
+- Group imports: React, Next.js, third-party, local
+- Use absolute imports from `@/` alias
+- Sort imports alphabetically within groups
+
+### Components
+- Prefer functional components
+- Use proper component composition
+- Extract reusable logic into custom hooks
+- Keep components focused and small
+- Use shadcn/ui components when available
+
+### Database
+- Use Drizzle ORM for all database operations
+- Define schema in `lib/db/schema.ts`
+- Create migrations: `pnpm db:generate`
+- Apply migrations: `pnpm db:migrate`
+- Never use raw SQL unless absolutely necessary
+
+### AI Integration
+- Use AI SDK hooks: `useChat`, `useCompletion`, `useAssistant`
+- Implement proper streaming
+- Handle errors gracefully
+- Add rate limiting to AI endpoints
+- Use server actions for AI operations
+
+### Testing
+- Write tests for all new features
+- Unit tests in `__tests__` directory
+- E2E tests in `tests` directory
+- Aim for >80% coverage
+- Mock external dependencies
+
+### Security
+- Validate all inputs with Zod
+- Sanitize user content
+- Use environment variables for secrets
+- Implement rate limiting
+- Follow OWASP guidelines
+- Use proper CORS configuration
+- Implement CSP headers
+
+### Performance
+- Optimize images with Next.js Image
+- Implement proper caching strategies
+- Use React.memo() for expensive components
+- Lazy load components when appropriate
+- Monitor bundle size
+
+## Naming Conventions
+
+### Files
+- Components: PascalCase (e.g., `ChatMessage.tsx`)
+- Utilities: camelCase (e.g., `formatDate.ts`)
+- Server Actions: kebab-case (e.g., `create-chat.ts`)
+- Tests: `*.test.ts` or `*.spec.ts`
+
+### Variables & Functions
+- Variables: camelCase (e.g., `userName`)
+- Functions: camelCase (e.g., `getUserData()`)
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_RETRIES`)
+- Types/Interfaces: PascalCase (e.g., `UserData`)
+
+### Components
+- Components: PascalCase (e.g., `ChatInput`)
+- Props interfaces: `ComponentNameProps`
+- Event handlers: `handleEventName`
+
+## Common Patterns
+
+### Server Actions
+```typescript
+'use server'
+
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { z } from 'zod'
+
+const schema = z.object({
+  // define schema
+})
+
+export async function actionName(data: FormData) {
+  const session = await auth()
+  if (!session) throw new Error('Unauthorized')
+  
+  const validated = schema.parse(Object.fromEntries(data))
+  // perform action
+  return result
+}
+```
+
+### Client Components
+```typescript
+'use client'
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+
+export function ComponentName() {
+  const [state, setState] = useState()
+  
+  return (
+    <div>
+      {/* content */}
+    </div>
+  )
+}
+```
+
+### API Routes
+```typescript
+import { auth } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(req: NextRequest) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
+  const body = await req.json()
+  // handle request
+  return NextResponse.json({ data })
+}
+```
+
+## Environment Setup
+- Required: `AUTH_SECRET`, `XAI_API_KEY`, `POSTGRES_URL`, `BLOB_READ_WRITE_TOKEN`
+- Optional: `REDIS_URL`
+- Never commit `.env` file
+- Use `.env.example` as template
+
+## Commands Reference
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm lint` - Run linting
+- `pnpm test:unit` - Run unit tests
+- `pnpm test` - Run E2E tests
+- `pnpm db:migrate` - Run database migrations
+- `pnpm db:studio` - Open database GUI
+
+## AI Assistant Guidelines
+When helping with this codebase:
+1. Follow Next.js 15 App Router best practices
+2. Use Server Components by default
+3. Implement proper error handling
+4. Add TypeScript types
+5. Write tests for new features
+6. Follow security best practices
+7. Optimize for performance
+8. Use existing patterns and components
+9. Update documentation when needed
+10. Run linting before suggesting code
