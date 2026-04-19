@@ -9,39 +9,17 @@ import { requestSuggestions } from './request-suggestions';
 import { getWeather } from './get-weather';
 import { codeAnalyzer } from './code-analyzer';
 import { documentAnalyzer } from './document-analyzer';
+import { githubIntegration } from './github-integration';
+import { webFetch, webSearch } from './web-fetch';
 import { tool } from 'ai';
 import { z } from 'zod';
 import { modelManager } from '../enhanced-models';
 import { contextManager } from '../context-manager';
 import { promptOptimizer } from '../prompt-optimizer';
 
-// Enhanced search and research tool
-export const webSearch = tool({
-  description: 'Search the web for current information and provide comprehensive results',
-  parameters: z.object({
-    query: z.string().min(1, 'Search query is required'),
-    maxResults: z.number().min(1).max(10).default(5),
-    includeImages: z.boolean().default(false),
-    timeRange: z.enum(['day', 'week', 'month', 'year', 'all']).default('all'),
-  }),
-  execute: async ({ query, maxResults, includeImages, timeRange }) => {
-    // In a real implementation, this would use a search API
-    return {
-      success: true,
-      query,
-      results: [
-        {
-          title: `Search results for: ${query}`,
-          url: 'https://example.com',
-          snippet: 'This is a simulated search result. In a real implementation, this would connect to a search API.',
-          timestamp: new Date().toISOString(),
-        }
-      ],
-      totalResults: 1,
-      searchTime: '0.1s',
-    };
-  },
-});
+// Web search and fetch tools are now imported from web-fetch.ts
+// Export them for use in this module
+export { webSearch, webFetch };
 
 // AI model management tool
 export const modelManager_tool = tool({
@@ -76,7 +54,7 @@ export const modelManager_tool = tool({
             comparison: modelManager.compareModels(modelIds),
           };
 
-        case 'recommend':
+        case 'recommend': {
           if (!task) {
             return { success: false, error: 'Task type required for recommendation' };
           }
@@ -85,6 +63,7 @@ export const modelManager_tool = tool({
             success: true,
             recommendation: recommended,
           };
+        }
 
         case 'stats':
           return {
@@ -120,7 +99,7 @@ export const contextManager_tool = tool({
   execute: async ({ action, chatId, preferences }) => {
     try {
       switch (action) {
-        case 'get':
+        case 'get': {
           const context = contextManager.getContext(chatId);
           return {
             success: true,
@@ -131,6 +110,7 @@ export const contextManager_tool = tool({
               metadata: context.metadata,
             } : null,
           };
+        }
 
         case 'update':
           // This would typically be called automatically during conversation
@@ -139,7 +119,7 @@ export const contextManager_tool = tool({
             message: 'Context updated automatically during conversation',
           };
 
-        case 'preferences':
+        case 'preferences': {
           if (!preferences) {
             return { success: false, error: 'Preferences object required' };
           }
@@ -148,13 +128,15 @@ export const contextManager_tool = tool({
             success: updated,
             message: updated ? 'Preferences updated' : 'Chat context not found',
           };
+        }
 
-        case 'summary':
+        case 'summary': {
           const summary = contextManager.getSummary(chatId);
           return {
             success: true,
             summary,
           };
+        }
 
         case 'stats':
           return {
@@ -228,7 +210,7 @@ export const promptOptimizer_tool = tool({
             };
           }
 
-        case 'render':
+        case 'render': {
           if (!templateId || !variables) {
             return { success: false, error: 'Template ID and variables required for rendering' };
           }
@@ -237,6 +219,7 @@ export const promptOptimizer_tool = tool({
             success: rendered !== null,
             rendered,
           };
+        }
 
         default:
           return { success: false, error: 'Invalid action' };
@@ -364,7 +347,7 @@ export const knowledgeBase = tool({
       ];
 
       switch (action) {
-        case 'search':
+        case 'search': {
           if (!query) {
             return { success: false, error: 'Query required for search' };
           }
@@ -379,13 +362,15 @@ export const knowledgeBase = tool({
             results,
             totalResults: results.length,
           };
+        }
 
-        case 'categories':
+        case 'categories': {
           const categories = [...new Set(mockKnowledge.map(item => item.category))];
           return {
             success: true,
             categories,
           };
+        }
 
         case 'add':
           return {
@@ -430,6 +415,8 @@ export const enhancedAITools = {
   codeAnalyzer,
   documentAnalyzer,
   webSearch,
+  webFetch,
+  githubIntegration,
   modelManager: modelManager_tool,
   contextManager: contextManager_tool,
   promptOptimizer: promptOptimizer_tool,
@@ -446,12 +433,12 @@ export const toolCategories = {
   },
   development: {
     name: 'Development',
-    tools: ['codeAnalyzer'],
+    tools: ['codeAnalyzer', 'githubIntegration'],
     description: 'Tools for code analysis and development',
   },
   research: {
     name: 'Research & Information',
-    tools: ['webSearch', 'knowledgeBase', 'getWeather'],
+    tools: ['webSearch', 'webFetch', 'knowledgeBase', 'getWeather'],
     description: 'Tools for finding and retrieving information',
   },
   management: {

@@ -7,7 +7,6 @@ import 'server-only';
 
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { sql } from 'drizzle-orm';
 
 export interface ConnectionConfig {
   host: string;
@@ -45,7 +44,7 @@ class DatabaseConnectionPool {
   private drizzleInstances: Map<string, ReturnType<typeof drizzle>> = new Map();
   private healthStatus: Map<string, ConnectionHealth> = new Map();
   private stats: Map<string, PoolStats> = new Map();
-  private currentPrimary: string = 'primary';
+  private currentPrimary = 'primary';
   private readonly maxFailures = 3;
   private readonly healthCheckInterval = 30000; // 30 seconds
   private healthCheckTimer?: NodeJS.Timeout;
@@ -103,7 +102,7 @@ class DatabaseConnectionPool {
     const parsed = new URL(url);
     return {
       host: parsed.hostname,
-      port: parseInt(parsed.port) || 5432,
+      port: Number.parseInt(parsed.port) || 5432,
       database: parsed.pathname.slice(1),
       username: parsed.username,
       password: parsed.password,

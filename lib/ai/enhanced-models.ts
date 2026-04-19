@@ -273,7 +273,7 @@ export class ModelManager {
     }
   }
 
-  checkRateLimit(modelId: string, tokensRequested: number = 0): {
+  checkRateLimit(modelId: string, tokensRequested = 0): {
     allowed: boolean;
     remaining: { requests: number; tokens: number };
     resetTime: Date;

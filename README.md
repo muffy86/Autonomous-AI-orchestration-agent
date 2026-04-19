@@ -34,10 +34,43 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+- **AI Tools & Integrations**
+  - **GitHub Integration** - Search repos, fetch issues/PRs, read code files, explore commits
+  - **Web Fetch** - Extract content from any web page with metadata parsing
+  - **Web Search** - Search the web using DuckDuckGo (no API key required)
+  - **Weather Data** - Real-time weather information via Open-Meteo
+  - **Document Management** - Create and update rich documents with artifacts
 
 ## Model Providers
 
 This template ships with [xAI](https://x.ai) `grok-2-1212` as the default chat model. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+
+## AI Tools & Capabilities
+
+The chatbot comes with powerful built-in tools that connect to external data sources:
+
+### GitHub Integration
+Access GitHub data directly from the chat:
+- **Search repositories** by keywords, language, or topics
+- **Fetch repository details** including stars, forks, and metadata
+- **Browse issues and pull requests** with full details
+- **Read file contents** from any public repository
+- **Explore commits** and repository history
+- **Get user profiles** and their repositories
+
+**Setup:** Add your `GITHUB_TOKEN` to environment variables for higher rate limits and private repository access. Works without a token for public repositories.
+
+### Web Integration
+Fetch and analyze content from the web:
+- **Web Search** - Search the web using DuckDuckGo (no API key required)
+- **Web Fetch** - Extract content, text, and metadata from any URL
+- **JSON API support** - Fetch and parse JSON data from APIs
+- **Metadata extraction** - Automatically parse title, description, and Open Graph data
+
+### Other Tools
+- **Weather** - Real-time weather forecasts via Open-Meteo API
+- **Documents** - Create and update rich documents with code, charts, and artifacts
+- **Suggestions** - AI-powered response suggestions for better conversations
 
 ## Deploy Your Own
 
@@ -47,23 +80,55 @@ You can deploy your own version of the Next.js AI Chatbot to Vercel with one cli
 
 ## Running locally
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+### 🚀 Quick Start (5 minutes)
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
+See **[QUICK_START.md](QUICK_START.md)** for the fastest path to get running on your local machine.
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+### 📖 Complete Setup Guide
 
+For detailed setup instructions, environment configuration, and deployment options, see **[NEXT_STEPS.md](NEXT_STEPS.md)**.
+
+### Basic Setup
+
+You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot.
+
+**Minimum Required Variables:**
+```bash
+AUTH_SECRET=     # Generate: openssl rand -base64 32
+XAI_API_KEY=     # Get from: https://console.x.ai/
+POSTGRES_URL=    # Local PostgreSQL or Neon: https://neon.tech
+```
+
+**Optional but Recommended:**
+```bash
+GITHUB_TOKEN=    # For enhanced GitHub integration (60 → 5000 req/hour)
+REDIS_URL=       # For resumable streams
+BLOB_READ_WRITE_TOKEN=  # For file uploads
+```
+
+**Quick Commands:**
 ```bash
 pnpm install
+pnpm db:migrate
 pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
 
+> **Note:** For production deployment with Vercel, use:
+> 1. `npm i -g vercel`
+> 2. `vercel link`
+> 3. `vercel env pull`
+
 ## 📚 Documentation
 
+### Getting Started
+- **[Quick Start Guide](QUICK_START.md)** - 5-minute setup for local development ⚡
+- **[Next Steps Guide](NEXT_STEPS.md)** - Complete setup and deployment instructions 📋
+- **[AI Tools Guide](docs/AI_TOOLS.md)** - Complete guide to available AI tools and integrations 🤖
+- **[AI Tools Examples](examples/AI_TOOLS_EXAMPLES.md)** - Practical usage examples 💡
+
+### Development & Deployment
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting

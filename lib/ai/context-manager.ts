@@ -239,7 +239,7 @@ export class ConversationContextManager {
     const summary = await this.createSummary(messagesToCompress);
     
     // Update context
-    context.summary = summary.userIntent + '\n\n' + summary.conversationFlow.join('\n');
+    context.summary = `${summary.userIntent}\n\n${summary.conversationFlow.join('\n')}`;
     context.messages = context.messages.slice(-20); // Keep only recent messages
     context.metadata.compressionRatio = 
       context.metadata.tokenCount / this.estimateTokenCount(context.messages);
@@ -433,7 +433,7 @@ export class ConversationContextManager {
     return context.preferences.preferredModel;
   }
 
-  cleanup(olderThanDays: number = 30): number {
+  cleanup(olderThanDays = 30): number {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
