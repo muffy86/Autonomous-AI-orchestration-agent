@@ -26,6 +26,16 @@
   - Unified API for generating text, structured objects, and tool calls with LLMs
   - Hooks for building dynamic chat and generative user interfaces
   - Supports xAI (default), OpenAI, Fireworks, and other model providers
+- **🚀 NEW: MCP (Model Context Protocol) Server**
+  - Full autonomous AI capabilities with multi-model support
+  - 7+ AI providers (OpenAI, Anthropic, Google, xAI, Groq, OpenRouter, Together AI)
+  - **FREE TIER**: Google Gemini, Groq, OpenRouter (no API cost!)
+  - 10 autonomous tools (code execution, web search, file ops, git, database, etc.)
+  - 8 complex skills (code analysis, research, automation, testing, etc.)
+  - Webhook integrations (GitHub, Slack, Discord)
+  - Resource packs for different use cases
+  - Full HTTP API for programmatic access
+  - **[Quick Start Guide](QUICKSTART.md)** | **[Setup Guide](MCP_SETUP.md)** | **[Example Prompts](MCP_PROMPTS.md)**
 - [shadcn/ui](https://ui.shadcn.com)
   - Styling with [Tailwind CSS](https://tailwindcss.com)
   - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
@@ -47,6 +57,8 @@ You can deploy your own version of the Next.js AI Chatbot to Vercel with one cli
 
 ## Running locally
 
+### Standard Setup
+
 You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
 
 > Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
@@ -61,6 +73,32 @@ pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
+
+### 🚀 MCP Full Stack Setup (Recommended)
+
+For the complete autonomous AI experience with MCP server:
+
+1. **Quick Start**: See **[QUICKSTART.md](QUICKSTART.md)** for 5-minute setup
+2. **Full Setup**: See **[MCP_SETUP.md](MCP_SETUP.md)** for detailed configuration
+3. **Free Tier**: Use Google Gemini, Groq, or OpenRouter (no cost!)
+
+```bash
+# Install dependencies
+pnpm install
+
+# Configure MCP (optional, works without API keys)
+cp .env.mcp.example .env.mcp
+
+# Test the setup
+pnpm test:mcp
+
+# Run with MCP server
+pnpm dev:mcp
+```
+
+Access:
+- Web app: [localhost:3000](http://localhost:3000)
+- MCP API: [localhost:3001](http://localhost:3001/health)
 
 ## 📚 Documentation
 

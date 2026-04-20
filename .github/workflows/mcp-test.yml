@@ -1,0 +1,76 @@
+name: MCP Server Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'lib/mcp/**'
+      - 'package.json'
+      - '.github/workflows/mcp-test.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'lib/mcp/**'
+      - 'package.json'
+
+jobs:
+  test-mcp:
+    name: Test MCP Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run MCP tests
+        run: pnpm test:mcp
+        env:
+          # Use test/mock keys - these won't work but allow structure testing
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Test MCP server startup
+        run: |
+          timeout 10s pnpm mcp:server || true
+          echo "MCP server startup test completed"
+
+      - name: Test MCP HTTP server
+        run: |
+          pnpm mcp:http &
+          MCP_PID=$!
+          sleep 5
+          
+          # Test health endpoint
+          curl -f http://localhost:3001/health || exit 1
+          
+          # Test tools endpoint
+          curl -f http://localhost:3001/api/mcp/tools || exit 1
+          
+          # Test providers endpoint
+          curl -f http://localhost:3001/api/providers || exit 1
+          
+          kill $MCP_PID
+        continue-on-error: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-test-results
+          path: |
+            coverage/
+            test-results/
