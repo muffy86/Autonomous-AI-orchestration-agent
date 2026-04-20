@@ -89,7 +89,6 @@ class DatabaseConnectionPool {
         connect_timeout: 10,
         prepare: true,
         transform: { undefined: null },
-        readonly: true,
       });
     }
 
@@ -287,7 +286,7 @@ class DatabaseConnectionPool {
       retryDelay = 1000,
       preferredPool = 'write',
     } = options;
-    let lastError: Error;
+    let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {

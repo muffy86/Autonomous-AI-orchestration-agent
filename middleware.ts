@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   // Get client IP for rate limiting
   const clientIP =
-    request.ip ||
+    (request as any).ip ||
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
     request.headers.get('x-real-ip') ||
     'unknown';

@@ -478,9 +478,9 @@ export const dbMaintenance = {
         `);
 
       return {
-        slowQueries: slowQueries.rows as any[],
-        indexUsage: indexUsage.rows as any[],
-        tableStats: tableStats.rows as any[],
+        slowQueries: slowQueriesas any[],
+        indexUsage: indexUsageas any[],
+        tableStats: tableStatsas any[],
       };
     });
   },

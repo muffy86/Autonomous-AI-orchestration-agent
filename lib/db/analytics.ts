@@ -203,7 +203,7 @@ export class DatabaseAnalytics {
     const result = await db.execute(sql`
       SELECT EXTRACT(EPOCH FROM (now() - pg_postmaster_start_time())) as uptime
     `);
-    return result.rows[0]?.uptime || 0;
+    return (result as any)[0]?.uptime || 0;
   }
 
   private async getConnectionStats(): Promise<DatabaseHealth['connections']> {
@@ -217,7 +217,7 @@ export class DatabaseAnalytics {
       WHERE datname = current_database()
     `);
 
-    const stats = result.rows[0] || {};
+    const stats = (result as any)[0] || {};
     return {
       active: stats.active || 0,
       idle: stats.idle || 0,
@@ -281,7 +281,7 @@ export class DatabaseAnalytics {
     ]);
 
     const sizeStats = sizeResult.rows[0] || {};
-    const largestTables = tablesResult.rows.map((row: any) => ({
+    const largestTables = tablesResult.map((row: any) => ({
       table: row.table_name,
       size: row.size,
     }));
@@ -305,7 +305,7 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const stats = (result as any)[0] || {};
       return {
         totalQueries: stats.total_queries || 0,
         avgQueryTime: stats.avg_query_time || 0,
@@ -329,7 +329,7 @@ export class DatabaseAnalytics {
         LIMIT 10
       `);
 
-      return result.rows.map((row: any) => ({
+      return result.map((row: any) => ({
         query: `${row.query.substring(0, 100)}...`,
         avgTime: row.avg_time,
         calls: row.calls,
@@ -353,7 +353,7 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const stats = (result as any)[0] || {};
       return {
         select: stats.select_count || 0,
         insert: stats.insert_count || 0,
@@ -377,7 +377,7 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       reads: row.reads || 0,
       writes: row.writes || 0,
@@ -390,7 +390,7 @@ export class DatabaseAnalytics {
       SELECT count(*) as index_count
       FROM pg_stat_user_indexes
     `);
-    return result.rows[0]?.index_count || 0;
+    return (result as any)[0]?.index_count || 0;
   }
 
   private async getUnusedIndexes(): Promise<IndexAnalytics['unusedIndexes']> {
@@ -404,7 +404,7 @@ export class DatabaseAnalytics {
       ORDER BY pg_relation_size(indexrelid) DESC
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       size: row.size,
@@ -444,7 +444,7 @@ export class DatabaseAnalytics {
     `);
 
     const existingIndexNames = new Set(
-      existingIndexes.rows.map(
+      existingIndexes.map(
         (row: any) => `${row.tablename}_${row.indexname}`,
       ),
     );
@@ -473,7 +473,7 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       hitRatio: row.hit_ratio || 0,
