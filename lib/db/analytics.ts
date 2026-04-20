@@ -243,8 +243,8 @@ export class DatabaseAnalytics {
         FROM pg_statio_user_tables
       `);
 
-      const queryStats = queryStatsResult.rows[0] || {};
-      const cacheStats = cacheStatsResult.rows[0] || {};
+      const queryStats = (queryStatsResult as any)[0] || {};
+      const cacheStats = (cacheStatsResult as any)[0] || {};
 
       return {
         avgQueryTime: queryStats.avg_query_time || 0,
@@ -280,7 +280,7 @@ export class DatabaseAnalytics {
       `),
     ]);
 
-    const sizeStats = sizeResult.rows[0] || {};
+    const sizeStats = (sizeResult as any)[0] || {};
     const largestTables = tablesResult.map((row: any) => ({
       table: row.table_name,
       size: row.size,
