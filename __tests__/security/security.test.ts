@@ -2,13 +2,14 @@
  * Security tests for the AI Chatbot application
  */
 
-import { 
-  sanitizeHtml, 
-  sanitizeText, 
-  generateSecureToken, 
-  validateAndSanitize, 
+import {
+  sanitizeHtml,
+  sanitizeText,
+  generateSecureToken,
+  validateAndSanitize,
   securitySchemas,
-  RateLimiter 
+  checkRateLimit,
+  cleanupRateLimiter,
 } from '@/lib/security';
 
 describe('Security Utils', () => {
@@ -38,13 +39,17 @@ describe('Security Utils', () => {
     it('should escape HTML entities', () => {
       const text = '<script>alert("xss")</script>';
       const sanitized = sanitizeText(text);
-      expect(sanitized).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+      expect(sanitized).toBe(
+        '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
+      );
     });
 
     it('should escape quotes and ampersands', () => {
       const text = 'Test & "quotes" & \'apostrophes\'';
       const sanitized = sanitizeText(text);
-      expect(sanitized).toBe('Test &amp; &quot;quotes&quot; &amp; &#x27;apostrophes&#x27;');
+      expect(sanitized).toBe(
+        'Test &amp; &quot;quotes&quot; &amp; &#x27;apostrophes&#x27;',
+      );
     });
   });
 
@@ -68,7 +73,10 @@ describe('Security Utils', () => {
 
   describe('validateAndSanitize', () => {
     it('should validate valid email', () => {
-      const result = validateAndSanitize('test@example.com', securitySchemas.email);
+      const result = validateAndSanitize(
+        'test@example.com',
+        securitySchemas.email,
+      );
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe('test@example.com');
@@ -76,7 +84,10 @@ describe('Security Utils', () => {
     });
 
     it('should reject invalid email', () => {
-      const result = validateAndSanitize('invalid-email', securitySchemas.email);
+      const result = validateAndSanitize(
+        'invalid-email',
+        securitySchemas.email,
+      );
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toContain('Invalid email format');
@@ -84,12 +95,18 @@ describe('Security Utils', () => {
     });
 
     it('should reject email with suspicious patterns', () => {
-      const result = validateAndSanitize('test<script>@example.com', securitySchemas.email);
+      const result = validateAndSanitize(
+        'test<script>@example.com',
+        securitySchemas.email,
+      );
       expect(result.success).toBe(false);
     });
 
     it('should validate strong password', () => {
-      const result = validateAndSanitize('StrongP@ssw0rd123', securitySchemas.password);
+      const result = validateAndSanitize(
+        'StrongP@ssw0rd123',
+        securitySchemas.password,
+      );
       expect(result.success).toBe(true);
     });
 
@@ -115,53 +132,53 @@ describe('Security Utils', () => {
   describe('RateLimiter', () => {
     beforeEach(() => {
       // Clear rate limiter state before each test
-      RateLimiter.cleanup();
+      cleanupRateLimiter();
     });
 
     it('should allow requests within limit', () => {
       const config = { windowMs: 60000, max: 5 };
-      const result = RateLimiter.check('test-ip', 'test-endpoint', config);
-      
+      const result = checkRateLimit('test-ip', 'test-endpoint', config);
+
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(4);
     });
 
     it('should block requests exceeding limit', () => {
       const config = { windowMs: 60000, max: 2 };
-      
+
       // First request - should be allowed
-      let result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      let result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(1);
-      
+
       // Second request - should be allowed
-      result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(0);
-      
+
       // Third request - should be blocked
-      result = RateLimiter.check('test-ip-2', 'test-endpoint-2', config);
+      result = checkRateLimit('test-ip-2', 'test-endpoint-2', config);
       expect(result.allowed).toBe(false);
       expect(result.remaining).toBe(0);
     });
 
     it('should handle different IPs independently', () => {
       const config = { windowMs: 60000, max: 1 };
-      
+
       // First IP - should be allowed
-      let result1 = RateLimiter.check('ip1', 'test-endpoint', config);
+      let result1 = checkRateLimit('ip1', 'test-endpoint', config);
       expect(result1.allowed).toBe(true);
-      
+
       // Second IP - should also be allowed
-      let result2 = RateLimiter.check('ip2', 'test-endpoint', config);
+      let result2 = checkRateLimit('ip2', 'test-endpoint', config);
       expect(result2.allowed).toBe(true);
-      
+
       // First IP second request - should be blocked
-      result1 = RateLimiter.check('ip1', 'test-endpoint', config);
+      result1 = checkRateLimit('ip1', 'test-endpoint', config);
       expect(result1.allowed).toBe(false);
-      
+
       // Second IP second request - should be blocked
-      result2 = RateLimiter.check('ip2', 'test-endpoint', config);
+      result2 = checkRateLimit('ip2', 'test-endpoint', config);
       expect(result2.allowed).toBe(false);
     });
   });
@@ -175,8 +192,8 @@ describe('Security Schemas', () => {
         'user.name@domain.co.uk',
         'user+tag@example.org',
       ];
-      
-      validEmails.forEach(email => {
+
+      validEmails.forEach((email) => {
         const result = securitySchemas.email.safeParse(email);
         expect(result.success).toBe(true);
       });
@@ -190,8 +207,8 @@ describe('Security Schemas', () => {
         'test<script>@example.com',
         'test@example.com<script>',
       ];
-      
-      invalidEmails.forEach(email => {
+
+      invalidEmails.forEach((email) => {
         const result = securitySchemas.email.safeParse(email);
         expect(result.success).toBe(false);
       });
@@ -205,8 +222,8 @@ describe('Security Schemas', () => {
         'MySecure!Pass1',
         'C0mpl3x&P@ssw0rd',
       ];
-      
-      strongPasswords.forEach(password => {
+
+      strongPasswords.forEach((password) => {
         const result = securitySchemas.password.safeParse(password);
         expect(result.success).toBe(true);
       });
@@ -223,8 +240,8 @@ describe('Security Schemas', () => {
         'pass@123', // Missing uppercase
         'PASS@123', // Missing lowercase
       ];
-      
-      weakPasswords.forEach(password => {
+
+      weakPasswords.forEach((password) => {
         const result = securitySchemas.password.safeParse(password);
         expect(result.success).toBe(false);
       });
@@ -238,8 +255,8 @@ describe('Security Schemas', () => {
         'This is a normal chat message.',
         'Can you help me with coding?',
       ];
-      
-      safeMessages.forEach(message => {
+
+      safeMessages.forEach((message) => {
         const result = securitySchemas.chatMessage.safeParse(message);
         expect(result.success).toBe(true);
       });
@@ -252,8 +269,8 @@ describe('Security Schemas', () => {
         'data:text/html,<script>alert("xss")</script>',
         '<img onerror="alert(\'xss\')" src="x">',
       ];
-      
-      dangerousMessages.forEach(message => {
+
+      dangerousMessages.forEach((message) => {
         const result = securitySchemas.chatMessage.safeParse(message);
         expect(result.success).toBe(false);
       });
@@ -273,8 +290,8 @@ describe('Security Schemas', () => {
         'https://api.example.com/endpoint',
         'http://localhost:3000',
       ];
-      
-      validUrls.forEach(url => {
+
+      validUrls.forEach((url) => {
         const result = securitySchemas.url.safeParse(url);
         expect(result.success).toBe(true);
       });
@@ -287,8 +304,8 @@ describe('Security Schemas', () => {
         'ftp://example.com',
         'not-a-url',
       ];
-      
-      invalidUrls.forEach(url => {
+
+      invalidUrls.forEach((url) => {
         const result = securitySchemas.url.safeParse(url);
         expect(result.success).toBe(false);
       });
@@ -302,33 +319,33 @@ describe('Security Schemas', () => {
         size: 1024 * 1024, // 1MB
         type: 'application/pdf',
       };
-      
+
       const result = securitySchemas.fileUpload.safeParse(validFile);
       expect(result.success).toBe(true);
     });
 
     it('should reject files with dangerous names', () => {
       // Test directory traversal
-      let result = securitySchemas.fileUpload.safeParse({ 
-        name: '../../../etc/passwd.txt', 
-        size: 1024, 
-        type: 'text/plain' 
+      let result = securitySchemas.fileUpload.safeParse({
+        name: '../../../etc/passwd.txt',
+        size: 1024,
+        type: 'text/plain',
       });
       expect(result.success).toBe(false);
-      
+
       // Test invalid characters
-      result = securitySchemas.fileUpload.safeParse({ 
-        name: 'file<script>.txt', 
-        size: 1024, 
-        type: 'text/plain' 
+      result = securitySchemas.fileUpload.safeParse({
+        name: 'file<script>.txt',
+        size: 1024,
+        type: 'text/plain',
       });
       expect(result.success).toBe(false);
-      
+
       // Test Windows reserved name
-      result = securitySchemas.fileUpload.safeParse({ 
-        name: 'con.txt', 
-        size: 1024, 
-        type: 'text/plain' 
+      result = securitySchemas.fileUpload.safeParse({
+        name: 'con.txt',
+        size: 1024,
+        type: 'text/plain',
       });
       expect(result.success).toBe(false);
     });
@@ -339,7 +356,7 @@ describe('Security Schemas', () => {
         size: 20 * 1024 * 1024, // 20MB
         type: 'application/pdf',
       };
-      
+
       const result = securitySchemas.fileUpload.safeParse(largeFile);
       expect(result.success).toBe(false);
     });
@@ -350,7 +367,7 @@ describe('Security Schemas', () => {
         size: 1024,
         type: 'application/x-executable',
       };
-      
+
       const result = securitySchemas.fileUpload.safeParse(disallowedFile);
       expect(result.success).toBe(false);
     });

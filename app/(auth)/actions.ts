@@ -3,7 +3,7 @@
 import { z } from 'zod';
 
 import { createUser, getUser } from '@/lib/db/queries';
-import { securitySchemas, } from '@/lib/security';
+import { securitySchemas } from '@/lib/security';
 
 import { signIn } from './auth';
 

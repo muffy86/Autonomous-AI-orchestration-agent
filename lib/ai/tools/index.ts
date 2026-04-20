@@ -17,7 +17,8 @@ import { promptOptimizer } from '../prompt-optimizer';
 
 // Enhanced search and research tool
 export const webSearch = tool({
-  description: 'Search the web for current information and provide comprehensive results',
+  description:
+    'Search the web for current information and provide comprehensive results',
   parameters: z.object({
     query: z.string().min(1, 'Search query is required'),
     maxResults: z.number().min(1).max(10).default(5),
@@ -33,9 +34,10 @@ export const webSearch = tool({
         {
           title: `Search results for: ${query}`,
           url: 'https://example.com',
-          snippet: 'This is a simulated search result. In a real implementation, this would connect to a search API.',
+          snippet:
+            'This is a simulated search result. In a real implementation, this would connect to a search API.',
           timestamp: new Date().toISOString(),
-        }
+        },
       ],
       totalResults: 1,
       searchTime: '0.1s',
@@ -45,7 +47,8 @@ export const webSearch = tool({
 
 // AI model management tool
 export const modelManager_tool = tool({
-  description: 'Manage AI models, compare capabilities, and get recommendations',
+  description:
+    'Manage AI models, compare capabilities, and get recommendations',
   parameters: z.object({
     action: z.enum(['list', 'compare', 'recommend', 'stats']),
     modelIds: z.array(z.string()).optional(),
@@ -58,7 +61,7 @@ export const modelManager_tool = tool({
         case 'list':
           return {
             success: true,
-            models: modelManager.getAvailableModels().map(model => ({
+            models: modelManager.getAvailableModels().map((model) => ({
               id: model.id,
               name: model.name,
               description: model.description,
@@ -69,27 +72,34 @@ export const modelManager_tool = tool({
 
         case 'compare':
           if (!modelIds || modelIds.length < 2) {
-            return { success: false, error: 'At least 2 model IDs required for comparison' };
+            return {
+              success: false,
+              error: 'At least 2 model IDs required for comparison',
+            };
           }
           return {
             success: true,
             comparison: modelManager.compareModels(modelIds),
           };
 
-        case 'recommend':
+        case 'recommend': {
           if (!task) {
-            return { success: false, error: 'Task type required for recommendation' };
+            return {
+              success: false,
+              error: 'Task type required for recommendation',
+            };
           }
           const recommended = modelManager.getBestModelForTask(task);
           return {
             success: true,
             recommendation: recommended,
           };
+        }
 
         case 'stats':
           return {
             success: true,
-            stats: modelManager.getStats ? modelManager.getStats() : { message: 'Stats not available' },
+            stats: { message: 'Stats not available' },
           };
 
         default:
@@ -110,27 +120,34 @@ export const contextManager_tool = tool({
   parameters: z.object({
     action: z.enum(['get', 'update', 'preferences', 'summary', 'stats']),
     chatId: z.string(),
-    preferences: z.object({
-      preferredModel: z.string().optional(),
-      responseStyle: z.enum(['concise', 'detailed', 'technical', 'casual']).optional(),
-      temperature: z.number().min(0).max(2).optional(),
-      useReasoning: z.boolean().optional(),
-    }).optional(),
+    preferences: z
+      .object({
+        preferredModel: z.string().optional(),
+        responseStyle: z
+          .enum(['concise', 'detailed', 'technical', 'casual'])
+          .optional(),
+        temperature: z.number().min(0).max(2).optional(),
+        useReasoning: z.boolean().optional(),
+      })
+      .optional(),
   }),
   execute: async ({ action, chatId, preferences }) => {
     try {
       switch (action) {
-        case 'get':
+        case 'get': {
           const context = contextManager.getContext(chatId);
           return {
             success: true,
-            context: context ? {
-              id: context.id,
-              topics: context.topics,
-              preferences: context.preferences,
-              metadata: context.metadata,
-            } : null,
+            context: context
+              ? {
+                  id: context.id,
+                  topics: context.topics,
+                  preferences: context.preferences,
+                  metadata: context.metadata,
+                }
+              : null,
           };
+        }
 
         case 'update':
           // This would typically be called automatically during conversation
@@ -139,7 +156,7 @@ export const contextManager_tool = tool({
             message: 'Context updated automatically during conversation',
           };
 
-        case 'preferences':
+        case 'preferences': {
           if (!preferences) {
             return { success: false, error: 'Preferences object required' };
           }
@@ -148,13 +165,15 @@ export const contextManager_tool = tool({
             success: updated,
             message: updated ? 'Preferences updated' : 'Chat context not found',
           };
+        }
 
-        case 'summary':
+        case 'summary': {
           const summary = contextManager.getSummary(chatId);
           return {
             success: true,
             summary,
           };
+        }
 
         case 'stats':
           return {
@@ -182,7 +201,17 @@ export const promptOptimizer_tool = tool({
     prompt: z.string().optional(),
     templateId: z.string().optional(),
     variables: z.record(z.any()).optional(),
-    category: z.enum(['coding', 'writing', 'analysis', 'creative', 'business', 'educational', 'general']).optional(),
+    category: z
+      .enum([
+        'coding',
+        'writing',
+        'analysis',
+        'creative',
+        'business',
+        'educational',
+        'general',
+      ])
+      .optional(),
   }),
   execute: async ({ action, prompt, templateId, variables, category }) => {
     try {
@@ -198,7 +227,10 @@ export const promptOptimizer_tool = tool({
 
         case 'optimize':
           if (!prompt) {
-            return { success: false, error: 'Prompt required for optimization' };
+            return {
+              success: false,
+              error: 'Prompt required for optimization',
+            };
           }
           return {
             success: true,
@@ -213,12 +245,12 @@ export const promptOptimizer_tool = tool({
               template,
             };
           } else {
-            const templates = category 
+            const templates = category
               ? promptOptimizer.getTemplatesByCategory(category)
               : promptOptimizer.getAllTemplates();
             return {
               success: true,
-              templates: templates.map(t => ({
+              templates: templates.map((t) => ({
                 id: t.id,
                 name: t.name,
                 description: t.description,
@@ -228,15 +260,22 @@ export const promptOptimizer_tool = tool({
             };
           }
 
-        case 'render':
+        case 'render': {
           if (!templateId || !variables) {
-            return { success: false, error: 'Template ID and variables required for rendering' };
+            return {
+              success: false,
+              error: 'Template ID and variables required for rendering',
+            };
           }
-          const rendered = promptOptimizer.renderTemplate(templateId, variables);
+          const rendered = promptOptimizer.renderTemplate(
+            templateId,
+            variables,
+          );
           return {
             success: rendered !== null,
             rendered,
           };
+        }
 
         default:
           return { success: false, error: 'Invalid action' };
@@ -304,8 +343,13 @@ export const performanceMonitor = tool({
         case 'usage':
           return {
             success: true,
-            usage: modelId 
-              ? { [modelId]: mockMetrics.models[modelId as keyof typeof mockMetrics.models] }
+            usage: modelId
+              ? {
+                  [modelId]:
+                    mockMetrics.models[
+                      modelId as keyof typeof mockMetrics.models
+                    ],
+                }
               : mockMetrics.models,
           };
 
@@ -348,7 +392,8 @@ export const knowledgeBase = tool({
         {
           id: 'kb_1',
           title: 'AI Model Comparison',
-          content: 'Comprehensive comparison of different AI models and their capabilities',
+          content:
+            'Comprehensive comparison of different AI models and their capabilities',
           category: 'ai',
           tags: ['models', 'comparison', 'capabilities'],
           lastUpdated: new Date().toISOString(),
@@ -364,14 +409,17 @@ export const knowledgeBase = tool({
       ];
 
       switch (action) {
-        case 'search':
+        case 'search': {
           if (!query) {
             return { success: false, error: 'Query required for search' };
           }
-          const results = mockKnowledge.filter(item => 
-            item.title.toLowerCase().includes(query.toLowerCase()) ||
-            item.content.toLowerCase().includes(query.toLowerCase()) ||
-            item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+          const results = mockKnowledge.filter(
+            (item) =>
+              item.title.toLowerCase().includes(query.toLowerCase()) ||
+              item.content.toLowerCase().includes(query.toLowerCase()) ||
+              item.tags.some((tag) =>
+                tag.toLowerCase().includes(query.toLowerCase()),
+              ),
           );
           return {
             success: true,
@@ -379,13 +427,17 @@ export const knowledgeBase = tool({
             results,
             totalResults: results.length,
           };
+        }
 
-        case 'categories':
-          const categories = [...new Set(mockKnowledge.map(item => item.category))];
+        case 'categories': {
+          const categories = [
+            ...new Set(mockKnowledge.map((item) => item.category)),
+          ];
           return {
             success: true,
             categories,
           };
+        }
 
         case 'add':
           return {
@@ -425,7 +477,7 @@ export const enhancedAITools = {
   updateDocument,
   requestSuggestions,
   getWeather,
-  
+
   // New enhanced tools
   codeAnalyzer,
   documentAnalyzer,
@@ -456,7 +508,12 @@ export const toolCategories = {
   },
   management: {
     name: 'AI Management',
-    tools: ['modelManager', 'contextManager', 'promptOptimizer', 'performanceMonitor'],
+    tools: [
+      'modelManager',
+      'contextManager',
+      'promptOptimizer',
+      'performanceMonitor',
+    ],
     description: 'Tools for managing AI capabilities and performance',
   },
   interaction: {
@@ -470,11 +527,13 @@ export const toolCategories = {
 export function getToolsByCategory(category: keyof typeof toolCategories) {
   const categoryInfo = toolCategories[category];
   if (!categoryInfo) return [];
-  
-  return categoryInfo.tools.map(toolName => ({
-    name: toolName,
-    tool: enhancedAITools[toolName as keyof typeof enhancedAITools],
-  })).filter(item => item.tool);
+
+  return categoryInfo.tools
+    .map((toolName) => ({
+      name: toolName,
+      tool: enhancedAITools[toolName as keyof typeof enhancedAITools],
+    }))
+    .filter((item) => item.tool);
 }
 
 // Get all available tools
@@ -482,9 +541,10 @@ export function getAllTools() {
   return Object.entries(enhancedAITools).map(([name, tool]) => ({
     name,
     tool,
-    category: Object.entries(toolCategories).find(([_, cat]) => 
-      cat.tools.includes(name)
-    )?.[0] || 'other',
+    category:
+      Object.entries(toolCategories).find(([_, cat]) =>
+        cat.tools.includes(name),
+      )?.[0] || 'other',
   }));
 }
 
@@ -493,9 +553,12 @@ export function getToolStats() {
   return {
     totalTools: Object.keys(enhancedAITools).length,
     categories: Object.keys(toolCategories).length,
-    toolsByCategory: Object.entries(toolCategories).reduce((acc, [key, cat]) => {
-      acc[key] = cat.tools.length;
-      return acc;
-    }, {} as Record<string, number>),
+    toolsByCategory: Object.entries(toolCategories).reduce(
+      (acc, [key, cat]) => {
+        acc[key] = cat.tools.length;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ),
   };
 }

@@ -108,14 +108,14 @@ describe('Database Optimizations', () => {
     it('should record cache hits and misses', () => {
       mockDbMetrics.recordCacheHit();
       mockDbMetrics.recordCacheMiss();
-      
+
       expect(mockDbMetrics.recordCacheHit).toHaveBeenCalled();
       expect(mockDbMetrics.recordCacheMiss).toHaveBeenCalled();
     });
 
     it('should provide comprehensive metrics', () => {
       const metrics = mockDbMetrics.getMetrics();
-      
+
       expect(metrics).toHaveProperty('queryCount');
       expect(metrics).toHaveProperty('errorCount');
       expect(metrics).toHaveProperty('avgQueryTime');
@@ -136,10 +136,13 @@ describe('Database Optimizations', () => {
         const mockUser = { id: '1', email: 'test@example.com' };
         mockOptimizedQueries.getUserByEmail.mockResolvedValue(mockUser);
 
-        const result = await mockOptimizedQueries.getUserByEmail('test@example.com');
-        
+        const result =
+          await mockOptimizedQueries.getUserByEmail('test@example.com');
+
         expect(result).toEqual(mockUser);
-        expect(mockOptimizedQueries.getUserByEmail).toHaveBeenCalledWith('test@example.com');
+        expect(mockOptimizedQueries.getUserByEmail).toHaveBeenCalledWith(
+          'test@example.com',
+        );
       });
 
       it('should get user by ID with caching', async () => {
@@ -147,7 +150,7 @@ describe('Database Optimizations', () => {
         mockOptimizedQueries.getUserById.mockResolvedValue(mockUser);
 
         const result = await mockOptimizedQueries.getUserById('1');
-        
+
         expect(result).toEqual(mockUser);
         expect(mockOptimizedQueries.getUserById).toHaveBeenCalledWith('1');
       });
@@ -155,8 +158,10 @@ describe('Database Optimizations', () => {
       it('should return null for non-existent user', async () => {
         mockOptimizedQueries.getUserByEmail.mockResolvedValue(null);
 
-        const result = await mockOptimizedQueries.getUserByEmail('nonexistent@example.com');
-        
+        const result = await mockOptimizedQueries.getUserByEmail(
+          'nonexistent@example.com',
+        );
+
         expect(result).toBeNull();
       });
     });
@@ -171,67 +176,148 @@ describe('Database Optimizations', () => {
           createdAt: new Date(),
           visibility: 'private' as const,
         };
-        mockOptimizedQueries.getChatWithMessageCount.mockResolvedValue(mockChat);
+        mockOptimizedQueries.getChatWithMessageCount.mockResolvedValue(
+          mockChat,
+        );
 
         const result = await mockOptimizedQueries.getChatWithMessageCount('1');
-        
+
         expect(result).toEqual(mockChat);
-        expect(mockOptimizedQueries.getChatWithMessageCount).toHaveBeenCalledWith('1');
+        expect(
+          mockOptimizedQueries.getChatWithMessageCount,
+        ).toHaveBeenCalledWith('1');
       });
 
       it('should get recent chats by user ID', async () => {
         const mockChats = [
-          { id: '1', title: 'Chat 1', userId: '1', createdAt: new Date(), visibility: 'private' as const },
-          { id: '2', title: 'Chat 2', userId: '1', createdAt: new Date(), visibility: 'private' as const },
+          {
+            id: '1',
+            title: 'Chat 1',
+            userId: '1',
+            createdAt: new Date(),
+            visibility: 'private' as const,
+          },
+          {
+            id: '2',
+            title: 'Chat 2',
+            userId: '1',
+            createdAt: new Date(),
+            visibility: 'private' as const,
+          },
         ];
-        mockOptimizedQueries.getRecentChatsByUserId.mockResolvedValue(mockChats);
+        mockOptimizedQueries.getRecentChatsByUserId.mockResolvedValue(
+          mockChats,
+        );
 
-        const result = await mockOptimizedQueries.getRecentChatsByUserId('1', 10);
-        
+        const result = await mockOptimizedQueries.getRecentChatsByUserId(
+          '1',
+          10,
+        );
+
         expect(result).toEqual(mockChats);
-        expect(mockOptimizedQueries.getRecentChatsByUserId).toHaveBeenCalledWith('1', 10);
+        expect(
+          mockOptimizedQueries.getRecentChatsByUserId,
+        ).toHaveBeenCalledWith('1', 10);
       });
     });
 
     describe('Message Queries', () => {
       it('should get paginated messages', async () => {
         const mockMessages = [
-          { id: '1', chatId: '1', role: 'user', parts: [], attachments: [], createdAt: new Date() },
-          { id: '2', chatId: '1', role: 'assistant', parts: [], attachments: [], createdAt: new Date() },
+          {
+            id: '1',
+            chatId: '1',
+            role: 'user',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
+          {
+            id: '2',
+            chatId: '1',
+            role: 'assistant',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
         ];
-        mockOptimizedQueries.getMessagesByChatIdPaginated.mockResolvedValue(mockMessages);
+        mockOptimizedQueries.getMessagesByChatIdPaginated.mockResolvedValue(
+          mockMessages,
+        );
 
-        const result = await mockOptimizedQueries.getMessagesByChatIdPaginated('1', 50, 0);
-        
+        const result = await mockOptimizedQueries.getMessagesByChatIdPaginated(
+          '1',
+          50,
+          0,
+        );
+
         expect(result).toEqual(mockMessages);
-        expect(mockOptimizedQueries.getMessagesByChatIdPaginated).toHaveBeenCalledWith('1', 50, 0);
+        expect(
+          mockOptimizedQueries.getMessagesByChatIdPaginated,
+        ).toHaveBeenCalledWith('1', 50, 0);
       });
 
       it('should get latest messages', async () => {
         const mockMessages = [
-          { id: '2', chatId: '1', role: 'assistant', parts: [], attachments: [], createdAt: new Date() },
-          { id: '1', chatId: '1', role: 'user', parts: [], attachments: [], createdAt: new Date() },
+          {
+            id: '2',
+            chatId: '1',
+            role: 'assistant',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
+          {
+            id: '1',
+            chatId: '1',
+            role: 'user',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
         ];
-        mockOptimizedQueries.getLatestMessagesByChatId.mockResolvedValue(mockMessages);
+        mockOptimizedQueries.getLatestMessagesByChatId.mockResolvedValue(
+          mockMessages,
+        );
 
-        const result = await mockOptimizedQueries.getLatestMessagesByChatId('1', 10);
-        
+        const result = await mockOptimizedQueries.getLatestMessagesByChatId(
+          '1',
+          10,
+        );
+
         expect(result).toEqual(mockMessages);
-        expect(mockOptimizedQueries.getLatestMessagesByChatId).toHaveBeenCalledWith('1', 10);
+        expect(
+          mockOptimizedQueries.getLatestMessagesByChatId,
+        ).toHaveBeenCalledWith('1', 10);
       });
     });
 
     describe('Document Queries', () => {
       it('should search documents with full-text search', async () => {
         const mockDocuments = [
-          { id: '1', title: 'Test Document', content: 'Test content', userId: '1', kind: 'text' as const, createdAt: new Date() },
+          {
+            id: '1',
+            title: 'Test Document',
+            content: 'Test content',
+            userId: '1',
+            kind: 'text' as const,
+            createdAt: new Date(),
+          },
         ];
         mockOptimizedQueries.searchDocuments.mockResolvedValue(mockDocuments);
 
-        const result = await mockOptimizedQueries.searchDocuments('1', 'test', 20);
-        
+        const result = await mockOptimizedQueries.searchDocuments(
+          '1',
+          'test',
+          20,
+        );
+
         expect(result).toEqual(mockDocuments);
-        expect(mockOptimizedQueries.searchDocuments).toHaveBeenCalledWith('1', 'test', 20);
+        expect(mockOptimizedQueries.searchDocuments).toHaveBeenCalledWith(
+          '1',
+          'test',
+          20,
+        );
       });
     });
 
@@ -246,7 +332,7 @@ describe('Database Optimizations', () => {
         mockOptimizedQueries.getUserStats.mockResolvedValue(mockStats);
 
         const result = await mockOptimizedQueries.getUserStats('1');
-        
+
         expect(result).toEqual(mockStats);
         expect(mockOptimizedQueries.getUserStats).toHaveBeenCalledWith('1');
       });
@@ -255,21 +341,37 @@ describe('Database Optimizations', () => {
     describe('Batch Operations', () => {
       it('should batch create messages', async () => {
         const messages = [
-          { chatId: '1', role: 'user', parts: [], attachments: [], createdAt: new Date() },
-          { chatId: '1', role: 'assistant', parts: [], attachments: [], createdAt: new Date() },
+          {
+            chatId: '1',
+            role: 'user',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
+          {
+            chatId: '1',
+            role: 'assistant',
+            parts: [],
+            attachments: [],
+            createdAt: new Date(),
+          },
         ];
 
         await mockOptimizedQueries.batchCreateMessages(messages);
-        
-        expect(mockOptimizedQueries.batchCreateMessages).toHaveBeenCalledWith(messages);
+
+        expect(mockOptimizedQueries.batchCreateMessages).toHaveBeenCalledWith(
+          messages,
+        );
       });
 
       it('should batch delete messages', async () => {
         const messageIds = ['1', '2', '3'];
 
         await mockOptimizedQueries.batchDeleteMessages(messageIds);
-        
-        expect(mockOptimizedQueries.batchDeleteMessages).toHaveBeenCalledWith(messageIds);
+
+        expect(mockOptimizedQueries.batchDeleteMessages).toHaveBeenCalledWith(
+          messageIds,
+        );
       });
     });
   });
@@ -277,17 +379,23 @@ describe('Database Optimizations', () => {
   describe('Cache Invalidation', () => {
     it('should invalidate user-related caches', () => {
       mockCacheInvalidation.invalidateUser('user-1');
-      expect(mockCacheInvalidation.invalidateUser).toHaveBeenCalledWith('user-1');
+      expect(mockCacheInvalidation.invalidateUser).toHaveBeenCalledWith(
+        'user-1',
+      );
     });
 
     it('should invalidate chat-related caches', () => {
       mockCacheInvalidation.invalidateChat('chat-1');
-      expect(mockCacheInvalidation.invalidateChat).toHaveBeenCalledWith('chat-1');
+      expect(mockCacheInvalidation.invalidateChat).toHaveBeenCalledWith(
+        'chat-1',
+      );
     });
 
     it('should invalidate message-related caches', () => {
       mockCacheInvalidation.invalidateMessage('chat-1');
-      expect(mockCacheInvalidation.invalidateMessage).toHaveBeenCalledWith('chat-1');
+      expect(mockCacheInvalidation.invalidateMessage).toHaveBeenCalledWith(
+        'chat-1',
+      );
     });
 
     it('should invalidate all caches', () => {
@@ -298,27 +406,47 @@ describe('Database Optimizations', () => {
 
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
-      mockOptimizedQueries.getUserByEmail.mockRejectedValue(new Error('Connection failed'));
+      mockOptimizedQueries.getUserByEmail.mockRejectedValue(
+        new Error('Connection failed'),
+      );
 
-      await expect(mockOptimizedQueries.getUserByEmail('test@example.com')).rejects.toThrow('Connection failed');
+      await expect(
+        mockOptimizedQueries.getUserByEmail('test@example.com'),
+      ).rejects.toThrow('Connection failed');
     });
 
     it('should handle query timeout errors', async () => {
-      mockOptimizedQueries.getMessagesByChatIdPaginated.mockRejectedValue(new Error('Query timeout'));
+      mockOptimizedQueries.getMessagesByChatIdPaginated.mockRejectedValue(
+        new Error('Query timeout'),
+      );
 
-      await expect(mockOptimizedQueries.getMessagesByChatIdPaginated('1', 50, 0)).rejects.toThrow('Query timeout');
+      await expect(
+        mockOptimizedQueries.getMessagesByChatIdPaginated('1', 50, 0),
+      ).rejects.toThrow('Query timeout');
     });
   });
 
   describe('Performance Characteristics', () => {
     it('should use appropriate cache TTL for different query types', () => {
       // User queries should have longer cache TTL (10 minutes)
-      mockQueryCache.set('user:email:test@example.com', { id: '1' }, 10 * 60 * 1000);
-      expect(mockQueryCache.set).toHaveBeenCalledWith('user:email:test@example.com', { id: '1' }, 10 * 60 * 1000);
+      mockQueryCache.set(
+        'user:email:test@example.com',
+        { id: '1' },
+        10 * 60 * 1000,
+      );
+      expect(mockQueryCache.set).toHaveBeenCalledWith(
+        'user:email:test@example.com',
+        { id: '1' },
+        10 * 60 * 1000,
+      );
 
       // Message queries should have shorter cache TTL (30 seconds)
       mockQueryCache.set('messages:chat-1:50:0', [], 30 * 1000);
-      expect(mockQueryCache.set).toHaveBeenCalledWith('messages:chat-1:50:0', [], 30 * 1000);
+      expect(mockQueryCache.set).toHaveBeenCalledWith(
+        'messages:chat-1:50:0',
+        [],
+        30 * 1000,
+      );
     });
 
     it('should handle pagination efficiently', async () => {
@@ -330,27 +458,50 @@ describe('Database Optimizations', () => {
         attachments: [],
         createdAt: new Date(),
       }));
-      
-      mockOptimizedQueries.getMessagesByChatIdPaginated.mockResolvedValue(mockMessages);
 
-      const result = await mockOptimizedQueries.getMessagesByChatIdPaginated('1', 50, 100);
-      
+      mockOptimizedQueries.getMessagesByChatIdPaginated.mockResolvedValue(
+        mockMessages,
+      );
+
+      const result = await mockOptimizedQueries.getMessagesByChatIdPaginated(
+        '1',
+        50,
+        100,
+      );
+
       expect(result).toHaveLength(50);
-      expect(mockOptimizedQueries.getMessagesByChatIdPaginated).toHaveBeenCalledWith('1', 50, 100);
+      expect(
+        mockOptimizedQueries.getMessagesByChatIdPaginated,
+      ).toHaveBeenCalledWith('1', 50, 100);
     });
 
     it('should optimize search queries', async () => {
       const searchTerm = 'important document';
       const mockResults = [
-        { id: '1', title: 'Important Document', content: 'This is important', userId: '1', kind: 'text' as const, createdAt: new Date() },
+        {
+          id: '1',
+          title: 'Important Document',
+          content: 'This is important',
+          userId: '1',
+          kind: 'text' as const,
+          createdAt: new Date(),
+        },
       ];
-      
+
       mockOptimizedQueries.searchDocuments.mockResolvedValue(mockResults);
 
-      const result = await mockOptimizedQueries.searchDocuments('1', searchTerm, 20);
-      
+      const result = await mockOptimizedQueries.searchDocuments(
+        '1',
+        searchTerm,
+        20,
+      );
+
       expect(result).toEqual(mockResults);
-      expect(mockOptimizedQueries.searchDocuments).toHaveBeenCalledWith('1', searchTerm, 20);
+      expect(mockOptimizedQueries.searchDocuments).toHaveBeenCalledWith(
+        '1',
+        searchTerm,
+        20,
+      );
     });
   });
 
@@ -365,16 +516,20 @@ describe('Database Optimizations', () => {
       }));
 
       await mockOptimizedQueries.batchCreateMessages(largeMessageBatch);
-      
-      expect(mockOptimizedQueries.batchCreateMessages).toHaveBeenCalledWith(largeMessageBatch);
+
+      expect(mockOptimizedQueries.batchCreateMessages).toHaveBeenCalledWith(
+        largeMessageBatch,
+      );
     });
 
     it('should handle batch deletions with proper cache invalidation', async () => {
       const messageIds = Array.from({ length: 100 }, (_, i) => `message-${i}`);
 
       await mockOptimizedQueries.batchDeleteMessages(messageIds);
-      
-      expect(mockOptimizedQueries.batchDeleteMessages).toHaveBeenCalledWith(messageIds);
+
+      expect(mockOptimizedQueries.batchDeleteMessages).toHaveBeenCalledWith(
+        messageIds,
+      );
     });
   });
 

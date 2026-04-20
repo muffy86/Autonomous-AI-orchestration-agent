@@ -3,7 +3,11 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   experimental: {
     ppr: true,
-    optimizePackageImports: ['@ai-sdk/openai', '@ai-sdk/anthropic', 'lucide-react'],
+    optimizePackageImports: [
+      '@ai-sdk/openai',
+      '@ai-sdk/anthropic',
+      'lucide-react',
+    ],
     turbo: {
       rules: {
         '*.svg': {
@@ -13,12 +17,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  
+
   // Performance optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
+
   // Image optimization
   images: {
     remotePatterns: [
@@ -31,7 +35,7 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
-  
+
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     // Optimize bundle splitting
@@ -73,16 +77,16 @@ const nextConfig: NextConfig = {
         },
       };
     }
-    
+
     // Optimize SVG imports
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-    
+
     return config;
   },
-  
+
   // Headers for performance and security
   async headers() {
     return [
@@ -151,13 +155,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
+
   // Compression
   compress: true,
-  
+
   // Power optimizations
   poweredByHeader: false,
-  
+
   // Output optimization
   output: 'standalone',
 };

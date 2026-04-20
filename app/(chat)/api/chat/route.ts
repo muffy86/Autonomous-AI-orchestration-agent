@@ -65,7 +65,7 @@ function getStreamContext() {
 export async function POST(request: Request) {
   // Start performance tracking
   const perfId = AIPerformanceTracker.startTracking('chat-api-request');
-  
+
   let requestBody: PostRequestBody;
 
   try {
