@@ -41,3 +41,7 @@ yarn-error.log*
 /playwright-report/
 /blob-report/
 /playwright/*
+app-release.apk
+app-release_extracted/
+apk-analysis/
+apk-resources/

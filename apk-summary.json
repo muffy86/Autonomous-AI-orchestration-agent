@@ -1,0 +1,98 @@
+{
+  "apk_file": "app-release.apk",
+  "analysis_date": "2026-04-20",
+  "summary": {
+    "app_type": "React Native",
+    "total_size_mb": 137.44,
+    "architecture": ["arm64-v8a", "x86_64"],
+    "build_system": "Gradle 9.0.0",
+    "language": "Kotlin 2.1.20"
+  },
+  "key_features": {
+    "ai_ml": {
+      "enabled": true,
+      "library": "GGML/LLaMA",
+      "optimizations": [
+        "ARM dotprod",
+        "ARM i8mm (8-bit matrix multiply)",
+        "Hexagon DSP",
+        "OpenCL GPU"
+      ],
+      "library_variants": 5,
+      "total_size_mb": 40.1
+    },
+    "react_native": {
+      "bundle_size_mb": 9.19,
+      "engine": "Hermes",
+      "libraries": [
+        "react-native",
+        "react-navigation",
+        "react-native-screens",
+        "react-native-gesture-handler",
+        "react-native-svg",
+        "expo"
+      ]
+    },
+    "capabilities": [
+      "camera",
+      "location",
+      "biometric_auth",
+      "barcode_scanning",
+      "local_storage",
+      "networking"
+    ]
+  },
+  "resources": {
+    "fonts": {
+      "count": 9,
+      "families": ["Inter", "Material Icons", "Material Community Icons"]
+    },
+    "images": {
+      "count": 257,
+      "format": "PNG"
+    },
+    "native_libraries": {
+      "arm64_count": 37,
+      "x86_64_count": 30,
+      "largest_mb": 8.88
+    }
+  },
+  "analysis_tools": [
+    {
+      "name": "apk-analyzer.py",
+      "purpose": "Comprehensive APK analysis",
+      "output_formats": ["text", "json"]
+    },
+    {
+      "name": "apk-extractor.sh",
+      "purpose": "Extract resources from APK",
+      "extracts": ["fonts", "images", "bundle", "libraries", "metadata"]
+    }
+  ],
+  "use_cases": [
+    "Reverse engineering and code analysis",
+    "Learning React Native + native integration",
+    "Understanding on-device AI implementation",
+    "Extracting reusable resources (fonts, icons)",
+    "Security analysis and auditing",
+    "Performance profiling and optimization",
+    "Testing on devices and emulators",
+    "Creating integration documentation"
+  ],
+  "documentation": {
+    "quick_start": "QUICK_START.md",
+    "full_capabilities": "APK_CAPABILITIES.md",
+    "analysis_report": "APK_ANALYSIS_REPORT.md",
+    "tools_guide": "APK_TOOLS_README.md"
+  },
+  "extracted_resources_location": "apk-resources/",
+  "notable_findings": [
+    "Professional React Native app with on-device AI",
+    "Multiple LLaMA library variants for different ARM optimizations",
+    "Hexagon DSP support for Qualcomm Snapdragon acceleration",
+    "Comprehensive feature set: camera, location, ML, auth",
+    "Well-optimized bundle size (9.2 MB for full functionality)",
+    "Modern build tools (Gradle 9.0.0, Kotlin 2.1.20)",
+    "Extensive UI resources (Material Design icons, Inter fonts)"
+  ]
+}
