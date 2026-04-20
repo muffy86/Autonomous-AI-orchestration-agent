@@ -276,6 +276,30 @@ test: add unit tests for message component
 - [ ] Performance impact considered
 - [ ] Security implications reviewed
 
+## 🤖 Auto-merge Workflow
+
+This repository uses an automated pull request merging workflow to streamline the development process.
+
+### How It Works
+
+1. **Create a PR**: Submit your pull request with your changes
+2. **Automated Checks**: The following checks run automatically:
+   - Lint and Type Check
+   - Unit and Integration Tests
+   - Playwright E2E Tests
+3. **Get Approval**: At least one approval from a maintainer is required
+4. **Auto-merge**: Once approved and all checks pass, the PR is automatically merged
+
+### Opting Out of Auto-merge
+
+If you want to prevent auto-merging for a specific PR:
+- Add the `no-merge` label to your PR
+- Mark the PR as a draft
+
+### Manual Merge
+
+Maintainers can still manually merge PRs at any time, even if auto-merge is enabled.
+
 ## 🚀 Deployment
 
 The project uses automated deployment:

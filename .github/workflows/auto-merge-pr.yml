@@ -1,0 +1,103 @@
+name: Auto-merge Pull Requests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: ["Lint and Type Check", "Unit Tests", "E2E Tests", "Build and Deploy"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # Only run if we have a pull request
+    if: github.event.pull_request != null
+    
+    steps:
+      - name: Check if PR is ready for auto-merge
+        id: pr-check
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              console.log('No pull_request found in payload, skipping auto-merge');
+              core.setOutput('ready', false);
+              return false;
+            }
+            
+            // Skip draft PRs
+            if (pr.draft) {
+              console.log('PR is a draft, skipping auto-merge');
+              core.setOutput('ready', false);
+              return false;
+            }
+            
+            // Skip PRs with no-merge label
+            const hasNoMergeLabel = pr.labels.some(label => label.name === 'no-merge');
+            if (hasNoMergeLabel) {
+              console.log('PR has no-merge label, skipping auto-merge');
+              core.setOutput('ready', false);
+              return false;
+            }
+            
+            core.setOutput('ready', true);
+            return true;
+
+      - name: Check PR approval status
+        id: approval
+        if: steps.pr-check.outputs.ready == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            
+            const approvedReviews = reviews.filter(review => review.state === 'APPROVED');
+            const hasApproval = approvedReviews.length > 0;
+            
+            console.log(`PR has ${approvedReviews.length} approvals`);
+            core.setOutput('approved', hasApproval);
+            return hasApproval;
+
+      - name: Wait for required checks
+        if: steps.approval.outputs.approved == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-regexp: 'Lint and Type Check|Unit and Integration Tests|Playwright E2E Tests'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success,skipped
+          running-workflow-name: 'auto-merge'
+
+      - name: Enable auto-merge
+        if: steps.approval.outputs.approved == 'true'
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+          gh pr comment "$PR_URL" --body "🤖 Auto-merge has been enabled for this PR. It will be merged automatically once all required checks have passed and approval has been received."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on unapproved PR
+        if: steps.pr-check.outputs.ready == 'true' && steps.approval.outputs.approved != 'true'
+        run: |
+          gh pr comment "$PR_URL" --body "⏳ This PR is waiting for approval before it can be auto-merged. Once approved and all checks pass, it will be merged automatically."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
