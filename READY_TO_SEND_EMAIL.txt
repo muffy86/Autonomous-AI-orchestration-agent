@@ -1,0 +1,59 @@
+=====================================================
+COPY EVERYTHING BELOW THIS LINE AND SEND TO:
+support@browser-use.com
+=====================================================
+
+Subject: Request for Refund - Minimal Usage of Browser Use Premium
+
+Dear Browser Use Support Team,
+
+I hope this message finds you well. I am writing to respectfully request a refund for my Browser Use Premium subscription.
+
+Account Details:
+- Email: odencrazy1986@gmail.com
+- Subscription: Browser Use Premium ($30.00/month)
+- Recent payments: Feb 25, Jan 25, Dec 25, 2025
+
+Reason for Request:
+
+I subscribed to Browser Use Premium several months ago to experiment with the service. However, after minimal usage during my initial trial period, I found that I did not have an ongoing need for the service. I have recently canceled my subscription but have made very little use of the premium features during my subscription period.
+
+Additionally, I notice that my account shows zero API credits/tokens, which I did not utilize. Given the minimal usage and the unused credits, I would like to respectfully request a partial or full refund for the unused subscription periods.
+
+What I'm Requesting:
+
+I would appreciate a refund for the subscription fees paid, particularly for the periods where I had minimal to no usage of the service. I understand that your terms state payments are generally final and non-refundable, but I hope you will consider my situation given the minimal usage and my prompt cancellation upon realizing the service didn't meet my needs.
+
+Additional Question:
+
+I also have a question regarding my API credits - my account currently shows zero tokens/credits available, and I'm unsure why this is the case. Could you please clarify:
+1. Does Browser Use Premium include API credits?
+2. If yes, can you provide a usage breakdown?
+3. If no, what was I paying for versus plans that include API access?
+
+I have been satisfied with the quality of your service during my limited testing, but unfortunately, my needs did not align with continued use of the premium features. I appreciate your understanding and consideration of this request.
+
+Thank you for your time and assistance. I look forward to hearing from you soon.
+
+Best regards,
+Odencrazy
+odencrazy1986@gmail.com
+
+=====================================================
+END OF EMAIL - DO NOT COPY BELOW THIS LINE
+=====================================================
+
+SEND TO: support@browser-use.com
+
+ALTERNATIVE ACTIONS IF NO RESPONSE:
+1. Wait 5-7 business days
+2. Send follow-up email
+3. After 14 days: File Stripe dispute at cloud.browser-use.com/manage
+4. After 30 days: Contact credit card company for chargeback
+
+KEEP RECORDS OF:
+- This email and when you sent it
+- Any responses received
+- Screenshots of your billing history
+- Screenshots showing minimal usage
+- Cancellation confirmation
