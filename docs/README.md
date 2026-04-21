@@ -54,6 +54,24 @@ This folder contains comprehensive documentation for the Auth0 authentication in
 - Account security best practices
 - **Important for understanding user account management**
 
+**[AUTH0_TESTING_GUIDE.md](AUTH0_TESTING_GUIDE.md)** 🧪
+- Comprehensive testing procedures
+- Test cases for all scenarios
+- Security testing guidelines
+- Performance testing
+- Troubleshooting common issues
+- Automated testing examples
+- **Essential for QA and deployment validation**
+
+**[AUTH0_CONFIGURATION_REFERENCE.md](AUTH0_CONFIGURATION_REFERENCE.md)** ⚙️
+- Complete environment variable reference
+- Auth0 Dashboard configuration guide
+- NextAuth.js configuration options
+- Security and deployment settings
+- Advanced features (MFA, custom domains)
+- Troubleshooting configuration issues
+- **Complete reference for all configuration options**
+
 ## 🚀 Quick Reference
 
 ### Getting Started
