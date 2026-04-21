@@ -34,9 +34,11 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
-  - Email/password authentication
-  - OAuth integration with Auth0 (optional)
-  - Guest mode support
+  - **Multiple authentication methods:**
+    - Email/password authentication
+    - OAuth integration with Auth0 (optional) - [Setup Guide](docs/AUTH0_QUICK_START.md)
+    - Guest mode for quick access
+  - Seamless account linking across methods
 
 ## Model Providers
 
