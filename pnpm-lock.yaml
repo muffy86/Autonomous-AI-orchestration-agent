@@ -35,6 +35,9 @@ importers:
       '@opentelemetry/api-logs':
         specifier: ^0.200.0
         version: 0.200.0
+      '@pipedream/sdk':
+        specifier: ^2.4.3
+        version: 2.4.3
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.2
         version: 1.1.6(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@19.0.0-rc-45804af1-20241021(react@19.0.0-rc-45804af1-20241021))(react@19.0.0-rc-45804af1-20241021)
@@ -1974,6 +1977,10 @@ packages:
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
+
+  '@pipedream/sdk@2.4.3':
+    resolution: {integrity: sha512-EKW7jayboTWBCyTlytHqRt0okQeR7Wse6M6IhrPSCRqEfp0efAlhf/LIg3m5GSHT9n9Cp7sc+TTOr9i2Xtkr9w==}
+    engines: {node: '>=18.0.0'}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -7910,6 +7917,8 @@ snapshots:
   '@opentelemetry/semantic-conventions@1.28.0': {}
 
   '@panva/hkdf@1.2.1': {}
+
+  '@pipedream/sdk@2.4.3': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
