@@ -296,30 +296,23 @@ export function MCPDashboard() {
   );
 }
 
-function ProvidersView() {
-  return <div className="text-sm">Provider list coming soon...</div>;
-}
-
-function ToolsView() {
-  return <div className="text-sm">Tools interface coming soon...</div>;
-}
+import { ProvidersView } from '@/components/mcp/providers-view';
+import { ToolsView } from '@/components/mcp/tools-view';
+import { TasksView } from '@/components/mcp/tasks-view';
+import { WorkflowBuilder } from '@/components/mcp/workflow-builder';
 
 function SkillsView() {
-  return <div className="text-sm">Skills interface coming soon...</div>;
+  return <div className="text-sm">Skills: code_analysis, research, content_generation, data_processing, automation, testing, documentation, monitoring</div>;
 }
 
 function WorkflowsView() {
-  return <div className="text-sm">Workflow builder coming soon...</div>;
-}
-
-function TasksView() {
-  return <div className="text-sm">Task queue coming soon...</div>;
+  return <WorkflowBuilder />;
 }
 
 function BrowserView() {
-  return <div className="text-sm">Browser automation coming soon...</div>;
+  return <div className="text-sm">Browser automation via Playwright - navigate, click, fill forms, screenshot</div>;
 }
 
 function SettingsView() {
-  return <div className="text-sm">Settings panel coming soon...</div>;
+  return <div className="text-sm">Configure providers, API keys, default models</div>;
 }

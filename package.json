@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev --turbo",
     "dev:mcp": "concurrently \"pnpm dev\" \"pnpm mcp:server\"",
+    "dev:desktop": "tauri dev",
     "build": "tsx lib/db/migrate && next build",
+    "build:desktop": "tauri build",
     "start": "next start",
     "mcp:server": "tsx lib/mcp/server/cli.ts",
     "mcp:http": "tsx lib/mcp/server/http.ts",
