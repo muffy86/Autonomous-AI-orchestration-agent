@@ -324,6 +324,60 @@ class ModelProviderManager {
         },
       ],
     });
+
+    // Ollama (LOCAL, SOVEREIGN, UNCENSORED!)
+    const ollama = createOpenAI({
+      baseURL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434/v1',
+      apiKey: 'ollama',
+    });
+
+    this.providers.set('ollama', {
+      id: 'ollama',
+      name: 'Ollama',
+      description: 'Local AI models - fully sovereign, uncensored, runs on your machine',
+      apiKeyEnv: 'OLLAMA_BASE_URL',
+      free: true,
+      apiKeyConfigured: true,
+      provider: ollama,
+      models: [
+        {
+          id: 'dolphin-mixtral:8x7b',
+          name: 'Dolphin Mixtral 8x7B (UNCENSORED)',
+          description: 'Uncensored Mixtral - no restrictions, runs locally',
+          capabilities: ['text', 'code', 'uncensored', 'local'],
+          contextWindow: 32768,
+          maxOutput: 8192,
+          pricing: { input: 0, output: 0 },
+        },
+        {
+          id: 'nous-hermes2:latest',
+          name: 'Nous Hermes 2 (UNCENSORED)',
+          description: 'Uncensored and highly capable - runs locally',
+          capabilities: ['text', 'code', 'reasoning', 'uncensored', 'local'],
+          contextWindow: 8192,
+          maxOutput: 4096,
+          pricing: { input: 0, output: 0 },
+        },
+        {
+          id: 'llama3.2:latest',
+          name: 'Llama 3.2 (LOCAL)',
+          description: 'Latest Meta model - runs locally',
+          capabilities: ['text', 'multilingual', 'local'],
+          contextWindow: 8192,
+          maxOutput: 4096,
+          pricing: { input: 0, output: 0 },
+        },
+        {
+          id: 'llava:latest',
+          name: 'LLaVA (VISION + LOCAL)',
+          description: 'Vision and language model - runs locally',
+          capabilities: ['vision', 'text', 'local'],
+          contextWindow: 4096,
+          maxOutput: 2048,
+          pricing: { input: 0, output: 0 },
+        },
+      ],
+    });
   }
 
   listProviders() {
