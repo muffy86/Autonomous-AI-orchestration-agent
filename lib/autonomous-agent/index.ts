@@ -11,6 +11,10 @@ export * from './execution-pipeline';
 export * from './security';
 export * from './resilience';
 export * from './observability';
+export * from './computer-vision';
+export * from './mcp-integration';
+export * from './oauth-providers';
+export * from './open-interpreter';
 
 import {
   AgentOrchestrator,
@@ -83,6 +87,39 @@ import {
   LogLevel,
 } from './observability';
 
+import {
+  UnifiedCVEngine,
+  OpenCVEngine,
+  YOLOEngine,
+  SAMEngine,
+  CLIPEngine,
+  VideoAnalyzer,
+  type CVTask,
+} from './computer-vision';
+
+import {
+  MCPChannelManager,
+  MultiModelRouter,
+  setupMCPChannels,
+  type MCPChannel,
+  type MCPProvider,
+} from './mcp-integration';
+
+import {
+  OAuthManager,
+  APIIntegrationManager,
+  setupAPIIntegrations,
+  OAUTH_PROVIDERS,
+  type OAuthProvider,
+} from './oauth-providers';
+
+import {
+  OpenInterpreterAgent,
+  CappyAgent,
+  OpenHandsAgent,
+  type InterpreterConfig,
+} from './open-interpreter';
+
 // ============================================================================
 // Autonomous Agent OS - Complete System
 // ============================================================================
@@ -131,6 +168,34 @@ export interface AgentOSConfig {
     logging?: LogLevel;
     alerts?: boolean;
   };
+  computerVision?: {
+    enabled?: boolean;
+    backends?: Array<'opencv' | 'yolo' | 'sam' | 'clip'>;
+    videoAnalysis?: boolean;
+  };
+  mcp?: {
+    enabled?: boolean;
+    autoSetup?: boolean;
+  };
+  oauth?: {
+    enabled?: boolean;
+    providers?: OAuthProvider[];
+  };
+  apiIntegrations?: {
+    enabled?: boolean;
+    autoSetup?: boolean;
+  };
+  openInterpreter?: {
+    enabled?: boolean;
+    config?: Partial<InterpreterConfig>;
+  };
+  cappyAI?: {
+    enabled?: boolean;
+    apiKey?: string;
+  };
+  openHands?: {
+    enabled?: boolean;
+  };
 }
 
 export class AutonomousAgentOS {
@@ -160,6 +225,17 @@ export class AutonomousAgentOS {
   public deadLetterQueue?: DeadLetterQueue<any>;
   public apmMonitor?: APMMonitor;
   public alertManager?: AlertManager;
+  
+  // Advanced integrations
+  public cvEngine?: UnifiedCVEngine;
+  public videoAnalyzer?: VideoAnalyzer;
+  public mcpChannelManager?: MCPChannelManager;
+  public multiModelRouter?: MultiModelRouter;
+  public oauthManager?: OAuthManager;
+  public apiIntegrationManager?: APIIntegrationManager;
+  public openInterpreter?: OpenInterpreterAgent;
+  public cappyAgent?: CappyAgent;
+  public openHandsAgent?: OpenHandsAgent;
 
   private config: AgentOSConfig;
   private initialized = false;
@@ -215,6 +291,39 @@ export class AutonomousAgentOS {
         alerts: true,
         ...config.observability,
       },
+      computerVision: {
+        enabled: true,
+        backends: ['opencv', 'yolo', 'sam', 'clip'],
+        videoAnalysis: true,
+        ...config.computerVision,
+      },
+      mcp: {
+        enabled: true,
+        autoSetup: true,
+        ...config.mcp,
+      },
+      oauth: {
+        enabled: true,
+        providers: [],
+        ...config.oauth,
+      },
+      apiIntegrations: {
+        enabled: true,
+        autoSetup: true,
+        ...config.apiIntegrations,
+      },
+      openInterpreter: {
+        enabled: false,
+        ...config.openInterpreter,
+      },
+      cappyAI: {
+        enabled: false,
+        ...config.cappyAI,
+      },
+      openHands: {
+        enabled: false,
+        ...config.openHands,
+      },
     };
 
     // Initialize core components
@@ -261,6 +370,47 @@ export class AutonomousAgentOS {
         this.alertManager = new AlertManager();
       }
     }
+    
+    // Initialize computer vision
+    if (this.config.computerVision?.enabled) {
+      this.cvEngine = new UnifiedCVEngine();
+      if (this.config.computerVision.videoAnalysis) {
+        this.videoAnalyzer = new VideoAnalyzer(this.cvEngine);
+      }
+    }
+    
+    // Initialize MCP channels
+    if (this.config.mcp?.enabled) {
+      this.mcpChannelManager = new MCPChannelManager();
+      this.multiModelRouter = new MultiModelRouter(this.mcpChannelManager);
+    }
+    
+    // Initialize OAuth
+    if (this.config.oauth?.enabled) {
+      this.oauthManager = new OAuthManager();
+    }
+    
+    // Initialize API integrations
+    if (this.config.apiIntegrations?.enabled) {
+      this.apiIntegrationManager = new APIIntegrationManager();
+    }
+    
+    // Initialize Open Interpreter
+    if (this.config.openInterpreter?.enabled) {
+      this.openInterpreter = new OpenInterpreterAgent(
+        this.config.openInterpreter.config
+      );
+    }
+    
+    // Initialize Cappy.ai
+    if (this.config.cappyAI?.enabled) {
+      this.cappyAgent = new CappyAgent(this.config.cappyAI.apiKey);
+    }
+    
+    // Initialize OpenHands
+    if (this.config.openHands?.enabled) {
+      this.openHandsAgent = new OpenHandsAgent();
+    }
   }
 
   async initialize(): Promise<void> {
@@ -273,6 +423,9 @@ export class AutonomousAgentOS {
     console.log('🔒 Security: ENABLED');
     console.log('🛡️  Resilience: ENABLED');
     console.log('📊 Observability: ENABLED');
+    console.log('👁️  Computer Vision: ENABLED');
+    console.log('🔌 MCP Channels: ENABLED');
+    console.log('🌐 API Integrations: ENABLED');
 
     // Initialize vision capabilities
     if (this.config.vision?.enabled) {
@@ -325,6 +478,35 @@ export class AutonomousAgentOS {
     if (this.alertManager) {
       this.setupAlertHandlers();
       console.log('✓ Alert system initialized');
+    }
+    
+    // Initialize computer vision
+    if (this.cvEngine) {
+      await this.cvEngine.initialize();
+      console.log('✓ Computer vision initialized');
+    }
+    
+    // Setup MCP channels
+    if (this.mcpChannelManager && this.config.mcp?.autoSetup) {
+      await setupMCPChannels(this.mcpChannelManager);
+      console.log('✓ MCP channels configured');
+    }
+    
+    // Setup API integrations
+    if (this.apiIntegrationManager && this.config.apiIntegrations?.autoSetup) {
+      await setupAPIIntegrations(this.apiIntegrationManager);
+      console.log('✓ API integrations configured');
+    }
+    
+    // Setup OAuth providers
+    if (this.oauthManager && this.config.oauth?.providers) {
+      for (const provider of this.config.oauth.providers) {
+        const config = OAUTH_PROVIDERS[provider as keyof typeof OAUTH_PROVIDERS];
+        if (config) {
+          this.oauthManager.registerProvider(provider, config as any);
+        }
+      }
+      console.log('✓ OAuth providers configured');
     }
 
     // Register default agent fleet
