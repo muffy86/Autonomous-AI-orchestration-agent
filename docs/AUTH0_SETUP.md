@@ -78,6 +78,17 @@ Replace:
 
 4. Click the button to test the Auth0 authentication flow
 
+### How User Creation Works
+
+When a user logs in with Auth0 for the first time:
+1. Auth0 authenticates the user
+2. The application receives the user's email from Auth0
+3. The system checks if a user with that email exists in the database
+4. If not found, a new user account is automatically created
+5. The user is logged in and can start using the chatbot
+
+This means Auth0 users don't need to "register" separately - they're automatically registered on first login.
+
 ## Optional: Customize Auth0 Login Experience
 
 ### Enable Social Connections

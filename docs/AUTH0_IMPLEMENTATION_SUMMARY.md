@@ -81,8 +81,19 @@ Created three comprehensive documentation files:
 4. User authenticates with Auth0
 5. Auth0 redirects back to `/api/auth/callback/auth0`
 6. NextAuth validates the OAuth callback
-7. User session is created with type 'regular'
-8. User is redirected to home page (`/`)
+7. JWT callback checks if user exists in database:
+   - If user doesn't exist: Creates new user with email from Auth0
+   - If user exists: Retrieves existing user ID
+8. User session is created with type 'regular'
+9. User is redirected to home page (`/`)
+
+### Automatic User Registration
+
+Auth0 users are automatically registered in the database on first login:
+- No separate registration step required
+- User record created with email from Auth0 profile
+- Password field filled with random UUID (not used for Auth0 login)
+- User can immediately access all chatbot features
 
 ### Security Considerations
 

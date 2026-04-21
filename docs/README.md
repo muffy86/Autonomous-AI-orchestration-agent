@@ -46,6 +46,14 @@ This folder contains comprehensive documentation for the Auth0 authentication in
 - Deployment architecture
 - **For understanding the system design**
 
+**[AUTH0_ACCOUNT_LINKING.md](AUTH0_ACCOUNT_LINKING.md)** 🔗
+- How Auth0 accounts link with existing accounts
+- Email-based account linking explained
+- Security considerations
+- Migration scenarios
+- Account security best practices
+- **Important for understanding user account management**
+
 ## 🚀 Quick Reference
 
 ### Getting Started
