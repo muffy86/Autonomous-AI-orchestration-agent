@@ -34,6 +34,10 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+- [Composio MCP Server](.cursor/COMPOSIO_MCP_SETUP.md)
+  - Model Context Protocol integration for accessing 1000+ external tools
+  - OAuth-based authentication for secure connections
+  - OpenClaw skill for advanced agent capabilities
 
 ## Model Providers
 
@@ -68,6 +72,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[Composio MCP Setup](.cursor/COMPOSIO_MCP_SETUP.md)** - Model Context Protocol server configuration and usage
 
 ## 🚀 Features & Workflows
 
