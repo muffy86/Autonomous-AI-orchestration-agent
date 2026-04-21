@@ -125,14 +125,57 @@ for (const task of tasks) {
 }
 ```
 
-## 🔌 Integrations
+## 🌐 Public AI Integration
+
+**Public AI** is a nonprofit, open-source platform that provides AI as a **public utility**—making sovereign AI models from national labs and research institutions accessible to everyone.
+
+### Why Public AI?
+
+- 🏛️ **Sovereign AI**: Models developed by public institutions, not private companies
+- 🔒 **Privacy-First**: GDPR-compliant, EU-hosted, no training on user data by default
+- 🔓 **Open Source**: Fully transparent infrastructure (Apache 2.0 licensed)
+- 🌐 **Public Governance**: Democratically controlled, nonprofit model
+- 🌍 **Multilingual**: Excellent support for European languages
+- ✅ **EU AI Act Compliant**: Built for regulatory compliance
+
+### Apertus Model (Swiss AI Initiative)
+
+- **Context Window**: 65,536 tokens (64K)
+- **Max Output**: 8,192 tokens
+- **License**: Apache 2.0 (commercial use allowed)
+- **Model ID**: `swiss-ai/apertus-8b-instruct`
+- **Temperature**: 0.8 (recommended)
+- **Top-p**: 0.9 (recommended)
+
+### Platform Access
+
+- **Chat Interface**: https://chat.publicai.co
+- **API Endpoint**: https://api.publicai.co/v1 (OpenAI-compatible)
+- **Documentation**: https://platform.publicai.co
+- **Sign Up**: Free at platform.publicai.co
+
+### Quick Setup
+
+```bash
+# Get API key from https://platform.publicai.co
+PUBLIC_AI_API_KEY=your_key_here
+```
+
+```typescript
+// Automatically integrated in full-featured setup
+const agentOS = await createFullFeaturedAgentOS(process.env.PUBLIC_AI_API_KEY);
+```
+
+**📘 Complete Guide**: See `PUBLIC_AI_INTEGRATION.md` for detailed documentation and examples.
+
+## 🔌 Additional Integrations
 
 ### Supported AI Models
 
+- **Public AI (Apertus)** ← Recommended for sovereign, privacy-first AI 🌐
 - OpenAI (GPT-4, GPT-4 Vision)
 - Anthropic (Claude)
 - xAI (Grok)
-- **Public AI (Apertus)** ← Sovereign, privacy-first
 - Google AI, Cohere, Mistral
 - Local models
 

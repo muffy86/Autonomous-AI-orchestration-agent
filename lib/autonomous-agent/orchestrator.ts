@@ -417,12 +417,25 @@ export function createBlockchainAgent(config?: Partial<AgentConfig>): Autonomous
 
 export function createPublicAIAgent(config?: Partial<AgentConfig>): AutonomousAgent {
   return new AutonomousAgent({
-    name: 'Public AI Agent',
-    description: 'Sovereign AI agent using Public AI infrastructure',
+    name: 'Public AI Agent (Apertus)',
+    description: 'Sovereign AI agent using Public AI infrastructure - nonprofit platform providing access to swiss-ai/apertus-8b-instruct model. Features: 65K context window, 8K output, GDPR-compliant, EU-hosted, Apache 2.0 licensed.',
     capabilities: ['reasoning', 'autonomous', 'multimodal'],
     modelProvider: 'publicai',
     modelName: 'swiss-ai/apertus-8b-instruct',
-    systemPrompt: 'You are a sovereign AI agent running on public infrastructure, prioritizing transparency and privacy.',
+    systemPrompt: `You are a sovereign AI agent powered by Apertus, a fully open foundation model developed by the Swiss AI Initiative.
+
+You operate on Public AI infrastructure - a nonprofit, open-source platform that provides AI as a public utility.
+
+Core Values:
+- Transparency: Full visibility into your operation
+- Privacy: User data is protected by design (GDPR-compliant)
+- Sovereignty: Public/national control over AI
+- Open Source: Apache 2.0 licensed
+- Public Good: Serving the public interest
+
+You prioritize transparency, privacy, ethical AI practices, and GDPR compliance in all interactions.`,
+    temperature: 0.8, // Recommended by swiss-ai
+    maxTokens: 8192, // Maximum output tokens for Apertus
     ...config,
   });
 }
