@@ -7,7 +7,7 @@ import 'server-only';
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { eq, and, desc, asc, count, sql, type SQL } from 'drizzle-orm';
+import { eq, and, desc, asc, count, sql } from 'drizzle-orm';
 import { chat, message, user, document, vote, stream } from './schema';
 import type { Chat, DBMessage, User, Document } from './schema';
 
@@ -17,27 +17,34 @@ const dbConfig = {
   max: 20, // Maximum connections in pool
   idle_timeout: 20, // Idle timeout in seconds
   connect_timeout: 10, // Connection timeout in seconds
-  
+
   // Query optimization
   prepare: true, // Use prepared statements
   transform: {
     undefined: null, // Transform undefined to null
   },
-  
+
   // Performance monitoring
   debug: process.env.NODE_ENV === 'development',
   onnotice: process.env.NODE_ENV === 'development' ? console.log : undefined,
 };
 
 // Enhanced database client with optimizations
-const client = postgres(process.env.POSTGRES_URL!, dbConfig);
+const postgresUrl = process.env.POSTGRES_URL;
+if (!postgresUrl) {
+  throw new Error('POSTGRES_URL environment variable is not set');
+}
+const client = postgres(postgresUrl, dbConfig);
 const db = drizzle(client, {
   logger: process.env.NODE_ENV === 'development',
 });
 
 // Query cache for frequently accessed data
 class QueryCache {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+  private cache = new Map<
+    string,
+    { data: any; timestamp: number; ttl: number }
+  >();
   private readonly defaultTTL = 5 * 60 * 1000; // 5 minutes
 
   set(key: string, data: any, ttl: number = this.defaultTTL): void {
@@ -93,7 +100,7 @@ class DatabaseMetrics {
   recordQuery(duration: number): void {
     this.queryTimes.push(duration);
     this.queryCount++;
-    
+
     // Keep only last 1000 query times
     if (this.queryTimes.length > 1000) {
       this.queryTimes = this.queryTimes.slice(-1000);
@@ -113,17 +120,23 @@ class DatabaseMetrics {
   }
 
   getMetrics() {
-    const avgQueryTime = this.queryTimes.length > 0 
-      ? this.queryTimes.reduce((sum, time) => sum + time, 0) / this.queryTimes.length 
-      : 0;
+    const avgQueryTime =
+      this.queryTimes.length > 0
+        ? this.queryTimes.reduce((sum, time) => sum + time, 0) /
+          this.queryTimes.length
+        : 0;
 
-    const p95QueryTime = this.queryTimes.length > 0
-      ? this.queryTimes.sort((a, b) => a - b)[Math.floor(this.queryTimes.length * 0.95)]
-      : 0;
+    const p95QueryTime =
+      this.queryTimes.length > 0
+        ? this.queryTimes.sort((a, b) => a - b)[
+            Math.floor(this.queryTimes.length * 0.95)
+          ]
+        : 0;
 
-    const cacheHitRate = (this.cacheHits + this.cacheMisses) > 0
-      ? this.cacheHits / (this.cacheHits + this.cacheMisses)
-      : 0;
+    const cacheHitRate =
+      this.cacheHits + this.cacheMisses > 0
+        ? this.cacheHits / (this.cacheHits + this.cacheMisses)
+        : 0;
 
     return {
       queryCount: this.queryCount,
@@ -150,7 +163,7 @@ const dbMetrics = new DatabaseMetrics();
 async function executeQuery<T>(
   queryFn: () => Promise<T>,
   cacheKey?: string,
-  cacheTTL?: number
+  cacheTTL?: number,
 ): Promise<T> {
   const startTime = Date.now();
 
@@ -167,7 +180,7 @@ async function executeQuery<T>(
 
     // Execute query
     const result = await queryFn();
-    
+
     // Cache result if cache key provided
     if (cacheKey) {
       queryCache.set(cacheKey, result, cacheTTL);
@@ -189,34 +202,44 @@ export const optimizedQueries = {
   // User queries with caching
   async getUserByEmail(email: string): Promise<User | null> {
     const cacheKey = `user:email:${email}`;
-    
+
     return executeQuery(
       async () => {
-        const users = await db.select().from(user).where(eq(user.email, email)).limit(1);
+        const users = await db
+          .select()
+          .from(user)
+          .where(eq(user.email, email))
+          .limit(1);
         return users[0] || null;
       },
       cacheKey,
-      10 * 60 * 1000 // 10 minutes cache
+      10 * 60 * 1000, // 10 minutes cache
     );
   },
 
   async getUserById(id: string): Promise<User | null> {
     const cacheKey = `user:id:${id}`;
-    
+
     return executeQuery(
       async () => {
-        const users = await db.select().from(user).where(eq(user.id, id)).limit(1);
+        const users = await db
+          .select()
+          .from(user)
+          .where(eq(user.id, id))
+          .limit(1);
         return users[0] || null;
       },
       cacheKey,
-      10 * 60 * 1000 // 10 minutes cache
+      10 * 60 * 1000, // 10 minutes cache
     );
   },
 
   // Chat queries with optimized joins and caching
-  async getChatWithMessageCount(chatId: string): Promise<Chat & { messageCount: number } | null> {
+  async getChatWithMessageCount(
+    chatId: string,
+  ): Promise<(Chat & { messageCount: number }) | null> {
     const cacheKey = `chat:with-count:${chatId}`;
-    
+
     return executeQuery(
       async () => {
         const result = await db
@@ -231,19 +254,25 @@ export const optimizedQueries = {
           .from(chat)
           .leftJoin(message, eq(chat.id, message.chatId))
           .where(eq(chat.id, chatId))
-          .groupBy(chat.id, chat.createdAt, chat.title, chat.userId, chat.visibility)
+          .groupBy(
+            chat.id,
+            chat.createdAt,
+            chat.title,
+            chat.userId,
+            chat.visibility,
+          )
           .limit(1);
 
         return result[0] || null;
       },
       cacheKey,
-      2 * 60 * 1000 // 2 minutes cache
+      2 * 60 * 1000, // 2 minutes cache
     );
   },
 
-  async getRecentChatsByUserId(userId: string, limit: number = 10): Promise<Chat[]> {
+  async getRecentChatsByUserId(userId: string, limit = 10): Promise<Chat[]> {
     const cacheKey = `chats:recent:${userId}:${limit}`;
-    
+
     return executeQuery(
       async () => {
         return await db
@@ -254,18 +283,18 @@ export const optimizedQueries = {
           .limit(limit);
       },
       cacheKey,
-      1 * 60 * 1000 // 1 minute cache
+      1 * 60 * 1000, // 1 minute cache
     );
   },
 
   // Message queries with pagination optimization
   async getMessagesByChatIdPaginated(
-    chatId: string, 
-    limit: number = 50, 
-    offset: number = 0
+    chatId: string,
+    limit = 50,
+    offset = 0,
   ): Promise<DBMessage[]> {
     const cacheKey = `messages:${chatId}:${limit}:${offset}`;
-    
+
     return executeQuery(
       async () => {
         return await db
@@ -277,13 +306,16 @@ export const optimizedQueries = {
           .offset(offset);
       },
       cacheKey,
-      30 * 1000 // 30 seconds cache
+      30 * 1000, // 30 seconds cache
     );
   },
 
-  async getLatestMessagesByChatId(chatId: string, limit: number = 10): Promise<DBMessage[]> {
+  async getLatestMessagesByChatId(
+    chatId: string,
+    limit = 10,
+  ): Promise<DBMessage[]> {
     const cacheKey = `messages:latest:${chatId}:${limit}`;
-    
+
     return executeQuery(
       async () => {
         return await db
@@ -294,31 +326,29 @@ export const optimizedQueries = {
           .limit(limit);
       },
       cacheKey,
-      30 * 1000 // 30 seconds cache
+      30 * 1000, // 30 seconds cache
     );
   },
 
   // Document queries with full-text search optimization
   async searchDocuments(
-    userId: string, 
-    searchTerm: string, 
-    limit: number = 20
+    userId: string,
+    searchTerm: string,
+    limit = 20,
   ): Promise<Document[]> {
-    return executeQuery(
-      async () => {
-        return await db
-          .select()
-          .from(document)
-          .where(
-            and(
-              eq(document.userId, userId),
-              sql`to_tsvector('english', ${document.title} || ' ' || coalesce(${document.content}, '')) @@ plainto_tsquery('english', ${searchTerm})`
-            )
-          )
-          .orderBy(desc(document.createdAt))
-          .limit(limit);
-      }
-    );
+    return executeQuery(async () => {
+      return await db
+        .select()
+        .from(document)
+        .where(
+          and(
+            eq(document.userId, userId),
+            sql`to_tsvector('english', ${document.title} || ' ' || coalesce(${document.content}, '')) @@ plainto_tsquery('english', ${searchTerm})`,
+          ),
+        )
+        .orderBy(desc(document.createdAt))
+        .limit(limit);
+    });
   },
 
   // Aggregation queries with caching
@@ -329,7 +359,7 @@ export const optimizedQueries = {
     totalVotes: number;
   }> {
     const cacheKey = `user:stats:${userId}`;
-    
+
     return executeQuery(
       async () => {
         const [chatStats] = await db
@@ -362,51 +392,49 @@ export const optimizedQueries = {
         };
       },
       cacheKey,
-      5 * 60 * 1000 // 5 minutes cache
+      5 * 60 * 1000, // 5 minutes cache
     );
   },
 
   // Batch operations for better performance
-  async batchCreateMessages(messages: Array<{
-    chatId: string;
-    role: string;
-    parts: any;
-    attachments: any;
-    createdAt: Date;
-  }>): Promise<void> {
-    return executeQuery(
-      async () => {
-        await db.insert(message).values(messages);
-        
-        // Invalidate related caches
-        const chatIds = [...new Set(messages.map(m => m.chatId))];
-        chatIds.forEach(chatId => {
-          queryCache.invalidate(`messages:${chatId}`);
-          queryCache.invalidate(`chat:with-count:${chatId}`);
-        });
-      }
-    );
+  async batchCreateMessages(
+    messages: Array<{
+      chatId: string;
+      role: string;
+      parts: any;
+      attachments: any;
+      createdAt: Date;
+    }>,
+  ): Promise<void> {
+    return executeQuery(async () => {
+      await db.insert(message).values(messages);
+
+      // Invalidate related caches
+      const chatIds = [...new Set(messages.map((m) => m.chatId))];
+      chatIds.forEach((chatId) => {
+        queryCache.invalidate(`messages:${chatId}`);
+        queryCache.invalidate(`chat:with-count:${chatId}`);
+      });
+    });
   },
 
   async batchDeleteMessages(messageIds: string[]): Promise<void> {
-    return executeQuery(
-      async () => {
-        // Get chat IDs before deletion for cache invalidation
-        const messagesToDelete = await db
-          .select({ chatId: message.chatId })
-          .from(message)
-          .where(sql`${message.id} = ANY(${messageIds})`);
+    return executeQuery(async () => {
+      // Get chat IDs before deletion for cache invalidation
+      const messagesToDelete = await db
+        .select({ chatId: message.chatId })
+        .from(message)
+        .where(sql`${message.id} = ANY(${messageIds})`);
 
-        await db.delete(message).where(sql`${message.id} = ANY(${messageIds})`);
-        
-        // Invalidate related caches
-        const chatIds = [...new Set(messagesToDelete.map(m => m.chatId))];
-        chatIds.forEach(chatId => {
-          queryCache.invalidate(`messages:${chatId}`);
-          queryCache.invalidate(`chat:with-count:${chatId}`);
-        });
-      }
-    );
+      await db.delete(message).where(sql`${message.id} = ANY(${messageIds})`);
+
+      // Invalidate related caches
+      const chatIds = [...new Set(messagesToDelete.map((m) => m.chatId))];
+      chatIds.forEach((chatId) => {
+        queryCache.invalidate(`messages:${chatId}`);
+        queryCache.invalidate(`chat:with-count:${chatId}`);
+      });
+    });
   },
 };
 
@@ -418,10 +446,9 @@ export const dbMaintenance = {
     indexUsage: Array<{ table: string; index: string; usage: number }>;
     tableStats: Array<{ table: string; size: string; rows: number }>;
   }> {
-    return executeQuery(
-      async () => {
-        // Get slow queries
-        const slowQueries = await db.execute(sql`
+    return executeQuery(async () => {
+      // Get slow queries
+      const slowQueries = await db.execute(sql`
           SELECT query, mean_time as avg_time, calls
           FROM pg_stat_statements
           WHERE mean_time > 100
@@ -429,8 +456,8 @@ export const dbMaintenance = {
           LIMIT 10
         `);
 
-        // Get index usage
-        const indexUsage = await db.execute(sql`
+      // Get index usage
+      const indexUsage = await db.execute(sql`
           SELECT 
             schemaname || '.' || tablename as table,
             indexname as index,
@@ -440,8 +467,8 @@ export const dbMaintenance = {
           LIMIT 20
         `);
 
-        // Get table statistics
-        const tableStats = await db.execute(sql`
+      // Get table statistics
+      const tableStats = await db.execute(sql`
           SELECT 
             schemaname || '.' || tablename as table,
             pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size,
@@ -450,13 +477,12 @@ export const dbMaintenance = {
           ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
         `);
 
-        return {
-          slowQueries: slowQueries.rows as any[],
-          indexUsage: indexUsage.rows as any[],
-          tableStats: tableStats.rows as any[],
-        };
-      }
-    );
+      return {
+        slowQueries: slowQueries as any[],
+        indexUsage: indexUsage as any[],
+        tableStats: tableStats as any[],
+      };
+    });
   },
 
   // Create recommended indexes
@@ -465,22 +491,22 @@ export const dbMaintenance = {
       // Chat queries optimization
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_chat_user_created 
        ON "Chat" (userId, createdAt DESC)`,
-      
+
       // Message queries optimization
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_message_chat_created 
        ON "Message_v2" (chatId, createdAt ASC)`,
-      
+
       // Document search optimization
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_document_user_created 
        ON "Document" (userId, createdAt DESC)`,
-      
+
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_document_search 
        ON "Document" USING gin(to_tsvector('english', title || ' ' || coalesce(content, '')))`,
-      
+
       // Vote queries optimization
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_vote_chat_message 
        ON "Vote_v2" (chatId, messageId)`,
-      
+
       // Stream queries optimization
       `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_stream_chat_created 
        ON "Stream" (chatId, createdAt DESC)`,
@@ -502,8 +528,15 @@ export const dbMaintenance = {
 
   // Vacuum and analyze tables
   async optimizeTables(): Promise<void> {
-    const tables = ['User', 'Chat', 'Message_v2', 'Document', 'Vote_v2', 'Stream'];
-    
+    const tables = [
+      'User',
+      'Chat',
+      'Message_v2',
+      'Document',
+      'Vote_v2',
+      'Stream',
+    ];
+
     for (const table of tables) {
       try {
         await db.execute(sql.raw(`VACUUM ANALYZE "${table}"`));
@@ -514,7 +547,7 @@ export const dbMaintenance = {
   },
 
   // Clean up old data
-  async cleanupOldData(daysToKeep: number = 90): Promise<{
+  async cleanupOldData(daysToKeep = 90): Promise<{
     deletedMessages: number;
     deletedStreams: number;
     deletedVotes: number;
@@ -522,41 +555,39 @@ export const dbMaintenance = {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
-    return executeQuery(
-      async () => {
-        // Delete old messages
-        const deletedMessages = await db
-          .delete(message)
-          .where(sql`${message.createdAt} < ${cutoffDate}`)
-          .returning({ id: message.id });
+    return executeQuery(async () => {
+      // Delete old messages
+      const deletedMessages = await db
+        .delete(message)
+        .where(sql`${message.createdAt} < ${cutoffDate}`)
+        .returning({ id: message.id });
 
-        // Delete old streams
-        const deletedStreams = await db
-          .delete(stream)
-          .where(sql`${stream.createdAt} < ${cutoffDate}`)
-          .returning({ id: stream.id });
+      // Delete old streams
+      const deletedStreams = await db
+        .delete(stream)
+        .where(sql`${stream.createdAt} < ${cutoffDate}`)
+        .returning({ id: stream.id });
 
-        // Delete orphaned votes
-        const deletedVotes = await db
-          .delete(vote)
-          .where(sql`
+      // Delete orphaned votes
+      const deletedVotes = await db
+        .delete(vote)
+        .where(sql`
             NOT EXISTS (
               SELECT 1 FROM "Message_v2" m 
               WHERE m.id = ${vote.messageId}
             )
           `)
-          .returning({ chatId: vote.chatId });
+        .returning({ chatId: vote.chatId });
 
-        // Clear related caches
-        queryCache.clear();
+      // Clear related caches
+      queryCache.clear();
 
-        return {
-          deletedMessages: deletedMessages.length,
-          deletedStreams: deletedStreams.length,
-          deletedVotes: deletedVotes.length,
-        };
-      }
-    );
+      return {
+        deletedMessages: deletedMessages.length,
+        deletedStreams: deletedStreams.length,
+        deletedVotes: deletedVotes.length,
+      };
+    });
   },
 };
 

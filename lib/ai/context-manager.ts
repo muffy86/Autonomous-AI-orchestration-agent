@@ -71,7 +71,7 @@ export class ConversationContextManager {
   async createContext(
     chatId: string,
     userId: string,
-    initialPreferences?: Partial<UserPreferences>
+    initialPreferences?: Partial<UserPreferences>,
   ): Promise<ConversationContext> {
     const defaultPreferences: UserPreferences = {
       preferredModel: 'grok-2-vision-1212',
@@ -117,7 +117,7 @@ export class ConversationContextManager {
   async updateContext(
     chatId: string,
     messages: Message[],
-    responseTime?: number
+    responseTime?: number,
   ): Promise<ConversationContext | null> {
     const context = this.contexts.get(chatId);
     if (!context) return null;
@@ -131,7 +131,7 @@ export class ConversationContextManager {
     if (responseTime) {
       const currentAvg = context.metadata.averageResponseTime;
       const messageCount = context.metadata.messageCount;
-      context.metadata.averageResponseTime = 
+      context.metadata.averageResponseTime =
         (currentAvg * (messageCount - 1) + responseTime) / messageCount;
     }
 
@@ -153,17 +153,22 @@ export class ConversationContextManager {
   private estimateTokenCount(messages: Message[]): number {
     // Rough estimation: 1 token ≈ 4 characters
     return messages.reduce((total, message) => {
-      const content = typeof message.content === 'string' 
-        ? message.content 
-        : JSON.stringify(message.content);
+      const content =
+        typeof message.content === 'string'
+          ? message.content
+          : JSON.stringify(message.content);
       return total + Math.ceil(content.length / 4);
     }, 0);
   }
 
-  private async extractTopicsAndEntities(context: ConversationContext): Promise<void> {
+  private async extractTopicsAndEntities(
+    context: ConversationContext,
+  ): Promise<void> {
     const recentMessages = context.messages.slice(-10); // Last 10 messages
     const text = recentMessages
-      .map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content))
+      .map((m) =>
+        typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+      )
       .join(' ');
 
     // Simple topic extraction (in a real implementation, you'd use NLP)
@@ -177,20 +182,61 @@ export class ConversationContextManager {
   private extractTopics(text: string): string[] {
     // Simple keyword-based topic extraction
     const topicKeywords = {
-      'programming': ['code', 'function', 'variable', 'programming', 'development', 'software'],
-      'ai': ['ai', 'artificial intelligence', 'machine learning', 'neural network', 'model'],
-      'web': ['html', 'css', 'javascript', 'react', 'website', 'frontend', 'backend'],
-      'data': ['data', 'database', 'sql', 'analytics', 'visualization', 'statistics'],
-      'science': ['research', 'experiment', 'hypothesis', 'analysis', 'scientific'],
-      'business': ['business', 'strategy', 'marketing', 'sales', 'revenue', 'profit'],
-      'education': ['learn', 'teach', 'education', 'course', 'tutorial', 'study'],
+      programming: [
+        'code',
+        'function',
+        'variable',
+        'programming',
+        'development',
+        'software',
+      ],
+      ai: [
+        'ai',
+        'artificial intelligence',
+        'machine learning',
+        'neural network',
+        'model',
+      ],
+      web: [
+        'html',
+        'css',
+        'javascript',
+        'react',
+        'website',
+        'frontend',
+        'backend',
+      ],
+      data: [
+        'data',
+        'database',
+        'sql',
+        'analytics',
+        'visualization',
+        'statistics',
+      ],
+      science: [
+        'research',
+        'experiment',
+        'hypothesis',
+        'analysis',
+        'scientific',
+      ],
+      business: [
+        'business',
+        'strategy',
+        'marketing',
+        'sales',
+        'revenue',
+        'profit',
+      ],
+      education: ['learn', 'teach', 'education', 'course', 'tutorial', 'study'],
     };
 
     const lowerText = text.toLowerCase();
     const detectedTopics: string[] = [];
 
     Object.entries(topicKeywords).forEach(([topic, keywords]) => {
-      if (keywords.some(keyword => lowerText.includes(keyword))) {
+      if (keywords.some((keyword) => lowerText.includes(keyword))) {
         detectedTopics.push(topic);
       }
     });
@@ -203,9 +249,17 @@ export class ConversationContextManager {
     const entities: Record<string, any> = {};
 
     // Extract code languages
-    const codeLanguages = ['python', 'javascript', 'typescript', 'java', 'c++', 'rust', 'go'];
-    const detectedLanguages = codeLanguages.filter(lang => 
-      text.toLowerCase().includes(lang)
+    const codeLanguages = [
+      'python',
+      'javascript',
+      'typescript',
+      'java',
+      'c++',
+      'rust',
+      'go',
+    ];
+    const detectedLanguages = codeLanguages.filter((lang) =>
+      text.toLowerCase().includes(lang),
     );
     if (detectedLanguages.length > 0) {
       entities.codeLanguages = detectedLanguages;
@@ -237,11 +291,11 @@ export class ConversationContextManager {
     // Create summary of older messages
     const messagesToCompress = context.messages.slice(0, -20); // Keep last 20 messages
     const summary = await this.createSummary(messagesToCompress);
-    
+
     // Update context
-    context.summary = summary.userIntent + '\n\n' + summary.conversationFlow.join('\n');
+    context.summary = `${summary.userIntent}\n\n${summary.conversationFlow.join('\n')}`;
     context.messages = context.messages.slice(-20); // Keep only recent messages
-    context.metadata.compressionRatio = 
+    context.metadata.compressionRatio =
       context.metadata.tokenCount / this.estimateTokenCount(context.messages);
     context.metadata.tokenCount = this.estimateTokenCount(context.messages);
 
@@ -252,7 +306,9 @@ export class ConversationContextManager {
   private async createSummary(messages: Message[]): Promise<ContextSummary> {
     // In a real implementation, this would use an AI model to create summaries
     const text = messages
-      .map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content))
+      .map((m) =>
+        typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+      )
       .join('\n');
 
     return {
@@ -267,25 +323,35 @@ export class ConversationContextManager {
   }
 
   private inferUserIntent(messages: Message[]): string {
-    const userMessages = messages.filter(m => m.role === 'user');
+    const userMessages = messages.filter((m) => m.role === 'user');
     if (userMessages.length === 0) return 'General conversation';
 
     const firstMessage = userMessages[0];
-    const content = typeof firstMessage.content === 'string' 
-      ? firstMessage.content 
-      : JSON.stringify(firstMessage.content);
+    const content =
+      typeof firstMessage.content === 'string'
+        ? firstMessage.content
+        : JSON.stringify(firstMessage.content);
 
     // Simple intent classification
     if (content.toLowerCase().includes('help') || content.includes('?')) {
       return 'Seeking help or information';
     }
-    if (content.toLowerCase().includes('create') || content.toLowerCase().includes('build')) {
+    if (
+      content.toLowerCase().includes('create') ||
+      content.toLowerCase().includes('build')
+    ) {
       return 'Creating or building something';
     }
-    if (content.toLowerCase().includes('explain') || content.toLowerCase().includes('how')) {
+    if (
+      content.toLowerCase().includes('explain') ||
+      content.toLowerCase().includes('how')
+    ) {
       return 'Learning or understanding';
     }
-    if (content.toLowerCase().includes('fix') || content.toLowerCase().includes('error')) {
+    if (
+      content.toLowerCase().includes('fix') ||
+      content.toLowerCase().includes('error')
+    ) {
       return 'Troubleshooting or debugging';
     }
 
@@ -294,9 +360,10 @@ export class ConversationContextManager {
 
   private extractConversationFlow(messages: Message[]): string[] {
     return messages
-      .filter(m => m.role === 'user')
-      .map(m => {
-        const content = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+      .filter((m) => m.role === 'user')
+      .map((m) => {
+        const content =
+          typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
         return content.substring(0, 100) + (content.length > 100 ? '...' : '');
       })
       .slice(0, 10);
@@ -305,34 +372,49 @@ export class ConversationContextManager {
   private extractImportantMessages(messages: Message[]): string[] {
     // Extract messages that contain important information
     return messages
-      .filter(m => {
-        const content = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
-        return content.length > 200 || 
-               content.includes('```') || 
-               content.toLowerCase().includes('important') ||
-               content.toLowerCase().includes('remember');
+      .filter((m) => {
+        const content =
+          typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+        return (
+          content.length > 200 ||
+          content.includes('```') ||
+          content.toLowerCase().includes('important') ||
+          content.toLowerCase().includes('remember')
+        );
       })
-      .map(m => {
-        const content = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+      .map((m) => {
+        const content =
+          typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
         return content.substring(0, 200) + (content.length > 200 ? '...' : '');
       })
       .slice(0, 5);
   }
 
-  private extractCodeSnippets(messages: Message[]): Array<{ language: string; code: string; purpose: string }> {
-    const codeSnippets: Array<{ language: string; code: string; purpose: string }> = [];
-    
-    messages.forEach(message => {
-      const content = typeof message.content === 'string' ? message.content : JSON.stringify(message.content);
-      const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-      let match;
+  private extractCodeSnippets(
+    messages: Message[],
+  ): Array<{ language: string; code: string; purpose: string }> {
+    const codeSnippets: Array<{
+      language: string;
+      code: string;
+      purpose: string;
+    }> = [];
 
-      while ((match = codeBlockRegex.exec(content)) !== null) {
+    messages.forEach((message) => {
+      const content =
+        typeof message.content === 'string'
+          ? message.content
+          : JSON.stringify(message.content);
+      const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+      let match: RegExpExecArray | null = null;
+
+      match = codeBlockRegex.exec(content);
+      while (match !== null) {
         const language = match[1] || 'unknown';
         const code = match[2].trim();
         const purpose = this.inferCodePurpose(code);
 
         codeSnippets.push({ language, code, purpose });
+        match = codeBlockRegex.exec(content);
       }
     });
 
@@ -340,32 +422,56 @@ export class ConversationContextManager {
   }
 
   private inferCodePurpose(code: string): string {
-    if (code.includes('function') || code.includes('def ')) return 'Function definition';
+    if (code.includes('function') || code.includes('def '))
+      return 'Function definition';
     if (code.includes('class ')) return 'Class definition';
-    if (code.includes('import ') || code.includes('require(')) return 'Import/dependency';
-    if (code.includes('if ') || code.includes('for ') || code.includes('while ')) return 'Logic/control flow';
-    if (code.includes('console.log') || code.includes('print(')) return 'Debug/output';
+    if (code.includes('import ') || code.includes('require('))
+      return 'Import/dependency';
+    if (
+      code.includes('if ') ||
+      code.includes('for ') ||
+      code.includes('while ')
+    )
+      return 'Logic/control flow';
+    if (code.includes('console.log') || code.includes('print('))
+      return 'Debug/output';
     return 'Code snippet';
   }
 
-  private extractDecisions(messages: Message[]): Array<{ question: string; answer: string; reasoning: string }> {
+  private extractDecisions(
+    messages: Message[],
+  ): Array<{ question: string; answer: string; reasoning: string }> {
     // Extract Q&A pairs and decisions made during conversation
-    const decisions: Array<{ question: string; answer: string; reasoning: string }> = [];
-    
+    const decisions: Array<{
+      question: string;
+      answer: string;
+      reasoning: string;
+    }> = [];
+
     for (let i = 0; i < messages.length - 1; i++) {
       const current = messages[i];
       const next = messages[i + 1];
 
       if (current.role === 'user' && next.role === 'assistant') {
-        const question = typeof current.content === 'string' ? current.content : JSON.stringify(current.content);
-        const answer = typeof next.content === 'string' ? next.content : JSON.stringify(next.content);
+        const question =
+          typeof current.content === 'string'
+            ? current.content
+            : JSON.stringify(current.content);
+        const answer =
+          typeof next.content === 'string'
+            ? next.content
+            : JSON.stringify(next.content);
 
-        if (question.includes('?') || question.toLowerCase().includes('should') || 
-            question.toLowerCase().includes('which') || question.toLowerCase().includes('how')) {
+        if (
+          question.includes('?') ||
+          question.toLowerCase().includes('should') ||
+          question.toLowerCase().includes('which') ||
+          question.toLowerCase().includes('how')
+        ) {
           decisions.push({
             question: question.substring(0, 200),
             answer: answer.substring(0, 300),
-            reasoning: 'Based on conversation context'
+            reasoning: 'Based on conversation context',
           });
         }
       }
@@ -388,7 +494,8 @@ export class ConversationContextManager {
     }
 
     // Penalize for very long response times
-    if (context.metadata.averageResponseTime > 10000) { // 10 seconds
+    if (context.metadata.averageResponseTime > 10000) {
+      // 10 seconds
       score -= 0.1;
     }
 
@@ -404,7 +511,10 @@ export class ConversationContextManager {
     return this.summaries.get(chatId) || null;
   }
 
-  updatePreferences(chatId: string, preferences: Partial<UserPreferences>): boolean {
+  updatePreferences(
+    chatId: string,
+    preferences: Partial<UserPreferences>,
+  ): boolean {
     const context = this.contexts.get(chatId);
     if (!context) return false;
 
@@ -418,7 +528,10 @@ export class ConversationContextManager {
     if (!context) return 'grok-2-vision-1212';
 
     // Choose model based on context and preferences
-    if (context.topics.includes('programming') && context.preferences.codeLanguages.length > 0) {
+    if (
+      context.topics.includes('programming') &&
+      context.preferences.codeLanguages.length > 0
+    ) {
       return 'grok-2-1212'; // Good for coding
     }
 
@@ -433,7 +546,7 @@ export class ConversationContextManager {
     return context.preferences.preferredModel;
   }
 
-  cleanup(olderThanDays: number = 30): number {
+  cleanup(olderThanDays = 30): number {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
@@ -456,15 +569,19 @@ export class ConversationContextManager {
     topTopics: Array<{ topic: string; count: number }>;
   } {
     const contexts = Array.from(this.contexts.values());
-    
+
     const totalContexts = contexts.length;
-    const averageTokenCount = contexts.reduce((sum, ctx) => sum + ctx.metadata.tokenCount, 0) / totalContexts || 0;
-    const averageQualityScore = contexts.reduce((sum, ctx) => sum + ctx.metadata.qualityScore, 0) / totalContexts || 0;
+    const averageTokenCount =
+      contexts.reduce((sum, ctx) => sum + ctx.metadata.tokenCount, 0) /
+        totalContexts || 0;
+    const averageQualityScore =
+      contexts.reduce((sum, ctx) => sum + ctx.metadata.qualityScore, 0) /
+        totalContexts || 0;
 
     // Count topics
     const topicCounts = new Map<string, number>();
-    contexts.forEach(ctx => {
-      ctx.topics.forEach(topic => {
+    contexts.forEach((ctx) => {
+      ctx.topics.forEach((topic) => {
         topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
       });
     });
@@ -486,7 +603,9 @@ export class ConversationContextManager {
 // Validation schemas
 export const contextPreferencesSchema = z.object({
   preferredModel: z.string().optional(),
-  responseStyle: z.enum(['concise', 'detailed', 'technical', 'casual']).optional(),
+  responseStyle: z
+    .enum(['concise', 'detailed', 'technical', 'casual'])
+    .optional(),
   codeLanguages: z.array(z.string()).optional(),
   domains: z.array(z.string()).optional(),
   temperature: z.number().min(0).max(2).optional(),

@@ -10,7 +10,7 @@ export function PerformanceMonitorComponent() {
   useEffect(() => {
     // Initialize performance monitoring
     const monitor = PerformanceMonitor.getInstance();
-    
+
     // Analyze bundle size in development
     if (process.env.NODE_ENV === 'development') {
       // Delay to ensure all scripts are loaded
@@ -18,17 +18,17 @@ export function PerformanceMonitorComponent() {
         analyzeBundleSize();
       }, 2000);
     }
-    
+
     // Track page load performance
     if (typeof window !== 'undefined') {
       // Mark page load start
       monitor.mark('page-load-start');
-      
+
       // Track when page is fully loaded
       const handleLoad = () => {
         monitor.mark('page-load-end');
         monitor.measure('page-load-time', 'page-load-start', 'page-load-end');
-        
+
         // Report memory usage if available
         const memory = monitor.getMemoryUsage();
         if (memory && process.env.NODE_ENV === 'development') {
@@ -39,20 +39,20 @@ export function PerformanceMonitorComponent() {
           });
         }
       };
-      
+
       if (document.readyState === 'complete') {
         handleLoad();
       } else {
         window.addEventListener('load', handleLoad, { once: true });
       }
-      
+
       // Clean up on unmount
       return () => {
         window.removeEventListener('load', handleLoad);
       };
     }
   }, []);
-  
+
   return null; // This component doesn't render anything
 }
 
@@ -67,7 +67,7 @@ export function useAIPerformanceTracking() {
       end: (id: string) => AIPerformanceTracker.endTracking(id, operation),
     };
   };
-  
+
   return { trackOperation };
 }
 
@@ -77,7 +77,7 @@ export function useAIPerformanceTracking() {
 export function PerformanceDashboard() {
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
-    
+
     // Add performance dashboard to window for debugging
     (window as any).__performanceDashboard = {
       getAIMetrics: () => {
@@ -90,9 +90,11 @@ export function PerformanceDashboard() {
       },
       analyzeBundleSize,
     };
-    
-    console.log('🚀 Performance Dashboard available at window.__performanceDashboard');
+
+    console.log(
+      '🚀 Performance Dashboard available at window.__performanceDashboard',
+    );
   }, []);
-  
+
   return null;
 }

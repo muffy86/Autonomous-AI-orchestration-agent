@@ -45,12 +45,12 @@ export const securitySchemas = {
     .refine((email) => {
       // Check for suspicious patterns
       const suspiciousPatterns = [
-        /[<>]/,  // HTML tags
-        /javascript:/i,  // JavaScript protocol
-        /data:/i,  // Data protocol
-        /vbscript:/i,  // VBScript protocol
+        /[<>]/, // HTML tags
+        /javascript:/i, // JavaScript protocol
+        /data:/i, // Data protocol
+        /vbscript:/i, // VBScript protocol
       ];
-      return !suspiciousPatterns.some(pattern => pattern.test(email));
+      return !suspiciousPatterns.some((pattern) => pattern.test(email));
     }, 'Email contains invalid characters'),
 
   // Password validation with strength requirements
@@ -83,13 +83,13 @@ export const securitySchemas = {
     .refine((message) => {
       // Check for suspicious patterns
       const suspiciousPatterns = [
-        /<script/i,  // Script tags
-        /javascript:/i,  // JavaScript protocol
-        /data:text\/html/i,  // HTML data URLs
-        /vbscript:/i,  // VBScript protocol
-        /on\w+\s*=/i,  // Event handlers
+        /<script/i, // Script tags
+        /javascript:/i, // JavaScript protocol
+        /data:text\/html/i, // HTML data URLs
+        /vbscript:/i, // VBScript protocol
+        /on\w+\s*=/i, // Event handlers
       ];
-      return !suspiciousPatterns.some(pattern => pattern.test(message));
+      return !suspiciousPatterns.some((pattern) => pattern.test(message));
     }, 'Message contains potentially unsafe content'),
 
   // File upload validation
@@ -106,41 +106,39 @@ export const securitySchemas = {
       .refine((name) => {
         // Check for suspicious patterns in filename
         const suspiciousPatterns = [
-          /\.\./,  // Directory traversal
-          /[<>:"|?*]/,  // Invalid filename characters
+          /\.\./, // Directory traversal
+          /[<>:"|?*]/, // Invalid filename characters
         ];
-        
+
         // Check for Windows reserved names (base name without extension)
         const baseName = name.split('.')[0];
         const reservedNames = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
-        
-        return !suspiciousPatterns.some(pattern => pattern.test(name)) && 
-               !reservedNames.test(baseName);
+
+        return (
+          !suspiciousPatterns.some((pattern) => pattern.test(name)) &&
+          !reservedNames.test(baseName)
+        );
       }, 'Filename contains invalid characters'),
     size: z
       .number()
       .min(1, 'File cannot be empty')
       .max(10 * 1024 * 1024, 'File size must not exceed 10MB'),
-    type: z
-      .string()
-      .refine((type) => {
-        const allowedTypes = [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'application/pdf',
-          'text/plain',
-          'text/markdown',
-          'application/json',
-        ];
-        return allowedTypes.includes(type);
-      }, 'File type not allowed'),
+    type: z.string().refine((type) => {
+      const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'application/pdf',
+        'text/plain',
+        'text/markdown',
+        'application/json',
+      ];
+      return allowedTypes.includes(type);
+    }, 'File type not allowed'),
   }),
 
   // UUID validation
-  uuid: z
-    .string()
-    .uuid('Invalid UUID format'),
+  uuid: z.string().uuid('Invalid UUID format'),
 
   // URL validation with security checks
   url: z
@@ -161,16 +159,13 @@ export const securitySchemas = {
         // Block localhost and private IP ranges in production
         if (process.env.NODE_ENV === 'production') {
           const hostname = parsed.hostname.toLowerCase();
-          const privateRanges = [
-            'localhost',
-            '127.0.0.1',
-            '0.0.0.0',
-            '::1',
-          ];
-          return !privateRanges.includes(hostname) && 
-                 !hostname.startsWith('192.168.') &&
-                 !hostname.startsWith('10.') &&
-                 !hostname.match(/^172\.(1[6-9]|2\d|3[01])\./);
+          const privateRanges = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+          return (
+            !privateRanges.includes(hostname) &&
+            !hostname.startsWith('192.168.') &&
+            !hostname.startsWith('10.') &&
+            !hostname.match(/^172\.(1[6-9]|2\d|3[01])\./)
+          );
         }
         return true;
       } catch {
@@ -184,7 +179,19 @@ export const securitySchemas = {
  */
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li'],
+    ALLOWED_TAGS: [
+      'p',
+      'br',
+      'strong',
+      'em',
+      'u',
+      'code',
+      'pre',
+      'blockquote',
+      'ul',
+      'ol',
+      'li',
+    ],
     ALLOWED_ATTR: [],
     ALLOW_DATA_ATTR: false,
   });
@@ -194,27 +201,27 @@ export function sanitizeHtml(html: string): string {
  * Sanitize text content for safe display
  */
 export function sanitizeText(text: string): string {
-  return text
-    .replace(/[<>&"']/g, (char) => {
-      const entities: Record<string, string> = {
-        '<': '&lt;',
-        '>': '&gt;',
-        '&': '&amp;',
-        '"': '&quot;',
-        "'": '&#x27;',
-      };
-      return entities[char] || char;
-    });
+  return text.replace(/[<>&"']/g, (char) => {
+    const entities: Record<string, string> = {
+      '<': '&lt;',
+      '>': '&gt;',
+      '&': '&amp;',
+      '"': '&quot;',
+      "'": '&#x27;',
+    };
+    return entities[char] || char;
+  });
 }
 
 /**
  * Generate a secure random token
  */
 export function generateSecureToken(length = 32): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   const randomArray = new Uint8Array(length);
-  
+
   if (typeof window !== 'undefined' && window.crypto) {
     window.crypto.getRandomValues(randomArray);
   } else if (typeof global !== 'undefined' && global.crypto) {
@@ -225,11 +232,11 @@ export function generateSecureToken(length = 32): string {
       randomArray[i] = Math.floor(Math.random() * 256);
     }
   }
-  
+
   for (let i = 0; i < length; i++) {
     result += chars[randomArray[i] % chars.length];
   }
-  
+
   return result;
 }
 
@@ -239,22 +246,22 @@ export function generateSecureToken(length = 32): string {
 export function validateAndSanitize<T>(
   data: unknown,
   schema: z.ZodSchema<T>,
-  sanitize = true
+  sanitize = true,
 ): { success: true; data: T } | { success: false; error: string } {
   try {
     const validated = schema.parse(data);
-    
+
     if (sanitize && typeof validated === 'string') {
       return { success: true, data: sanitizeText(validated) as T };
     }
-    
+
     return { success: true, data: validated };
   } catch (error) {
     if (error instanceof z.ZodError) {
       const firstError = error.errors[0];
       return { success: false, error: firstError.message };
     }
-    
+
     return { success: false, error: 'Validation failed' };
   }
 }
@@ -265,22 +272,22 @@ export function validateAndSanitize<T>(
 export function isTrustedOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin');
   const referer = request.headers.get('referer');
-  
+
   const trustedOrigins = [
     process.env.NEXTAUTH_URL,
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
     'http://localhost:3000',
     'https://localhost:3000',
   ].filter(Boolean);
-  
+
   if (origin && trustedOrigins.includes(origin)) {
     return true;
   }
-  
+
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      return trustedOrigins.some(trusted => {
+      return trustedOrigins.some((trusted) => {
         if (!trusted) return false;
         const trustedUrl = new URL(trusted);
         return refererUrl.origin === trustedUrl.origin;
@@ -289,7 +296,7 @@ export function isTrustedOrigin(request: NextRequest): boolean {
       return false;
     }
   }
-  
+
   return false;
 }
 
@@ -325,75 +332,79 @@ export function applySecurityHeaders(headers: Headers): void {
 /**
  * Rate limiting for API routes
  */
-export class RateLimiter {
-  private static instances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
+const rateLimiterInstances: Map<
+  string,
+  Map<string, { count: number; resetTime: number }>
+> = new Map();
 
-  static check(
-    identifier: string,
-    endpoint: string,
-    config: { windowMs: number; max: number }
-  ): { allowed: boolean; remaining: number; resetTime: number } {
-    const now = Date.now();
-    
-    if (!RateLimiter.instances.has(endpoint)) {
-      RateLimiter.instances.set(endpoint, new Map());
-    }
-    
-    const endpointLimits = RateLimiter.instances.get(endpoint);
-    if (!endpointLimits) {
-      throw new Error('Failed to get endpoint limits');
-    }
-    const userLimit = endpointLimits.get(identifier);
-    
-    if (!userLimit || now > userLimit.resetTime) {
-      // Reset or create new limit
-      endpointLimits.set(identifier, {
-        count: 1,
-        resetTime: now + config.windowMs,
-      });
-      return {
-        allowed: true,
-        remaining: config.max - 1,
-        resetTime: now + config.windowMs,
-      };
-    }
-    
-    if (userLimit.count >= config.max) {
-      return {
-        allowed: false,
-        remaining: 0,
-        resetTime: userLimit.resetTime,
-      };
-    }
-    
-    userLimit.count++;
+export function checkRateLimit(
+  identifier: string,
+  endpoint: string,
+  config: { windowMs: number; max: number },
+): { allowed: boolean; remaining: number; resetTime: number } {
+  const now = Date.now();
+
+  if (!rateLimiterInstances.has(endpoint)) {
+    rateLimiterInstances.set(endpoint, new Map());
+  }
+
+  const endpointLimits = rateLimiterInstances.get(endpoint);
+  if (!endpointLimits) {
+    throw new Error('Failed to get endpoint limits');
+  }
+  const userLimit = endpointLimits.get(identifier);
+
+  if (!userLimit || now > userLimit.resetTime) {
+    // Reset or create new limit
+    endpointLimits.set(identifier, {
+      count: 1,
+      resetTime: now + config.windowMs,
+    });
     return {
       allowed: true,
-      remaining: config.max - userLimit.count,
+      remaining: config.max - 1,
+      resetTime: now + config.windowMs,
+    };
+  }
+
+  if (userLimit.count >= config.max) {
+    return {
+      allowed: false,
+      remaining: 0,
       resetTime: userLimit.resetTime,
     };
   }
 
-  static cleanup(): void {
-    const now = Date.now();
-    
-    for (const [endpoint, limits] of RateLimiter.instances) {
-      for (const [identifier, limit] of limits) {
-        if (now > limit.resetTime) {
-          limits.delete(identifier);
-        }
+  userLimit.count++;
+  return {
+    allowed: true,
+    remaining: config.max - userLimit.count,
+    resetTime: userLimit.resetTime,
+  };
+}
+
+export function cleanupRateLimiter(): void {
+  const now = Date.now();
+
+  for (const [endpoint, limits] of rateLimiterInstances) {
+    for (const [identifier, limit] of limits) {
+      if (now > limit.resetTime) {
+        limits.delete(identifier);
       }
-      
-      if (limits.size === 0) {
-        RateLimiter.instances.delete(endpoint);
-      }
+    }
+
+    if (limits.size === 0) {
+      rateLimiterInstances.delete(endpoint);
     }
   }
 }
 
 // Cleanup rate limiter every 5 minutes
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    RateLimiter.cleanup();
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      cleanupRateLimiter();
+    },
+    5 * 60 * 1000,
+  );
 }

@@ -92,17 +92,13 @@ export class DatabaseAnalytics {
 
   async getDatabaseHealth(): Promise<DatabaseHealth> {
     try {
-      const [
-        uptimeResult,
-        connectionStats,
-        performanceStats,
-        storageStats,
-      ] = await Promise.all([
-        this.getUptime(),
-        this.getConnectionStats(),
-        this.getPerformanceStats(),
-        this.getStorageStats(),
-      ]);
+      const [uptimeResult, connectionStats, performanceStats, storageStats] =
+        await Promise.all([
+          this.getUptime(),
+          this.getConnectionStats(),
+          this.getPerformanceStats(),
+          this.getStorageStats(),
+        ]);
 
       const issues = this.analyzeIssues({
         connections: connectionStats,
@@ -125,30 +121,37 @@ export class DatabaseAnalytics {
         status: 'critical',
         uptime: 0,
         connections: { active: 0, idle: 0, total: 0, maxConnections: 0 },
-        performance: { avgQueryTime: 0, slowQueries: 0, cacheHitRatio: 0, indexHitRatio: 0 },
-        storage: { totalSize: '0 MB', availableSpace: '0 MB', largestTables: [] },
-        issues: [{
-          severity: 'critical',
-          message: 'Database connection failed',
-          recommendation: 'Check database connectivity and credentials',
-        }],
+        performance: {
+          avgQueryTime: 0,
+          slowQueries: 0,
+          cacheHitRatio: 0,
+          indexHitRatio: 0,
+        },
+        storage: {
+          totalSize: '0 MB',
+          availableSpace: '0 MB',
+          largestTables: [],
+        },
+        issues: [
+          {
+            severity: 'critical',
+            message: 'Database connection failed',
+            recommendation: 'Check database connectivity and credentials',
+          },
+        ],
       };
     }
   }
 
   async getQueryAnalytics(): Promise<QueryAnalytics> {
     try {
-      const [
-        queryStats,
-        slowQueries,
-        queryDistribution,
-        tableAccess,
-      ] = await Promise.all([
-        this.getQueryStats(),
-        this.getSlowQueries(),
-        this.getQueryDistribution(),
-        this.getTableAccess(),
-      ]);
+      const [queryStats, slowQueries, queryDistribution, tableAccess] =
+        await Promise.all([
+          this.getQueryStats(),
+          this.getSlowQueries(),
+          this.getQueryDistribution(),
+          this.getTableAccess(),
+        ]);
 
       return {
         totalQueries: queryStats.totalQueries,
@@ -171,17 +174,13 @@ export class DatabaseAnalytics {
 
   async getIndexAnalytics(): Promise<IndexAnalytics> {
     try {
-      const [
-        indexCount,
-        unusedIndexes,
-        missingIndexes,
-        indexEfficiency,
-      ] = await Promise.all([
-        this.getIndexCount(),
-        this.getUnusedIndexes(),
-        this.detectMissingIndexes(),
-        this.getIndexEfficiency(),
-      ]);
+      const [indexCount, unusedIndexes, missingIndexes, indexEfficiency] =
+        await Promise.all([
+          this.getIndexCount(),
+          this.getUnusedIndexes(),
+          this.detectMissingIndexes(),
+          this.getIndexEfficiency(),
+        ]);
 
       return {
         totalIndexes: indexCount,
@@ -204,7 +203,7 @@ export class DatabaseAnalytics {
     const result = await db.execute(sql`
       SELECT EXTRACT(EPOCH FROM (now() - pg_postmaster_start_time())) as uptime
     `);
-    return result.rows[0]?.uptime || 0;
+    return (result as any)[0]?.uptime || 0;
   }
 
   private async getConnectionStats(): Promise<DatabaseHealth['connections']> {
@@ -218,7 +217,7 @@ export class DatabaseAnalytics {
       WHERE datname = current_database()
     `);
 
-    const stats = result.rows[0] || {};
+    const stats = (result as any)[0] || {};
     return {
       active: stats.active || 0,
       idle: stats.idle || 0,
@@ -244,8 +243,8 @@ export class DatabaseAnalytics {
         FROM pg_statio_user_tables
       `);
 
-      const queryStats = queryStatsResult.rows[0] || {};
-      const cacheStats = cacheStatsResult.rows[0] || {};
+      const queryStats = (queryStatsResult as any)[0] || {};
+      const cacheStats = (cacheStatsResult as any)[0] || {};
 
       return {
         avgQueryTime: queryStats.avg_query_time || 0,
@@ -281,8 +280,8 @@ export class DatabaseAnalytics {
       `),
     ]);
 
-    const sizeStats = sizeResult.rows[0] || {};
-    const largestTables = tablesResult.rows.map((row: any) => ({
+    const sizeStats = (sizeResult as any)[0] || {};
+    const largestTables = tablesResult.map((row: any) => ({
       table: row.table_name,
       size: row.size,
     }));
@@ -294,7 +293,10 @@ export class DatabaseAnalytics {
     };
   }
 
-  private async getQueryStats(): Promise<{ totalQueries: number; avgQueryTime: number }> {
+  private async getQueryStats(): Promise<{
+    totalQueries: number;
+    avgQueryTime: number;
+  }> {
     try {
       const result = await db.execute(sql`
         SELECT 
@@ -303,7 +305,7 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const stats = (result as any)[0] || {};
       return {
         totalQueries: stats.total_queries || 0,
         avgQueryTime: stats.avg_query_time || 0,
@@ -327,8 +329,8 @@ export class DatabaseAnalytics {
         LIMIT 10
       `);
 
-      return result.rows.map((row: any) => ({
-        query: row.query.substring(0, 100) + '...',
+      return result.map((row: any) => ({
+        query: `${row.query.substring(0, 100)}...`,
         avgTime: row.avg_time,
         calls: row.calls,
         totalTime: row.total_time,
@@ -338,7 +340,9 @@ export class DatabaseAnalytics {
     }
   }
 
-  private async getQueryDistribution(): Promise<QueryAnalytics['queryDistribution']> {
+  private async getQueryDistribution(): Promise<
+    QueryAnalytics['queryDistribution']
+  > {
     try {
       const result = await db.execute(sql`
         SELECT 
@@ -349,7 +353,7 @@ export class DatabaseAnalytics {
         FROM pg_stat_statements
       `);
 
-      const stats = result.rows[0] || {};
+      const stats = (result as any)[0] || {};
       return {
         select: stats.select_count || 0,
         insert: stats.insert_count || 0,
@@ -373,7 +377,7 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       reads: row.reads || 0,
       writes: row.writes || 0,
@@ -386,7 +390,7 @@ export class DatabaseAnalytics {
       SELECT count(*) as index_count
       FROM pg_stat_user_indexes
     `);
-    return result.rows[0]?.index_count || 0;
+    return (result as any)[0]?.index_count || 0;
   }
 
   private async getUnusedIndexes(): Promise<IndexAnalytics['unusedIndexes']> {
@@ -400,14 +404,16 @@ export class DatabaseAnalytics {
       ORDER BY pg_relation_size(indexrelid) DESC
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       size: row.size,
     }));
   }
 
-  private async detectMissingIndexes(): Promise<IndexAnalytics['missingIndexes']> {
+  private async detectMissingIndexes(): Promise<
+    IndexAnalytics['missingIndexes']
+  > {
     // This is a simplified detection - in practice, you'd analyze query patterns
     const suggestions = [
       {
@@ -438,16 +444,20 @@ export class DatabaseAnalytics {
     `);
 
     const existingIndexNames = new Set(
-      existingIndexes.rows.map((row: any) => `${row.tablename}_${row.indexname}`)
+      existingIndexes.map(
+        (row: any) => `${row.tablename}_${row.indexname}`,
+      ),
     );
 
-    return suggestions.filter(suggestion => {
+    return suggestions.filter((suggestion) => {
       const indexKey = `${suggestion.table}_${suggestion.columns.join('_')}`;
       return !existingIndexNames.has(indexKey);
     });
   }
 
-  private async getIndexEfficiency(): Promise<IndexAnalytics['indexEfficiency']> {
+  private async getIndexEfficiency(): Promise<
+    IndexAnalytics['indexEfficiency']
+  > {
     const result = await db.execute(sql`
       SELECT 
         schemaname || '.' || tablename as table_name,
@@ -463,7 +473,7 @@ export class DatabaseAnalytics {
       LIMIT 20
     `);
 
-    return result.rows.map((row: any) => ({
+    return result.map((row: any) => ({
       table: row.table_name,
       index: row.index_name,
       hitRatio: row.hit_ratio || 0,
@@ -479,12 +489,14 @@ export class DatabaseAnalytics {
     const issues: DatabaseHealth['issues'] = [];
 
     // Connection issues
-    const connectionUsage = stats.connections.active / stats.connections.maxConnections;
+    const connectionUsage =
+      stats.connections.active / stats.connections.maxConnections;
     if (connectionUsage > 0.8) {
       issues.push({
         severity: 'critical',
         message: `High connection usage: ${Math.round(connectionUsage * 100)}%`,
-        recommendation: 'Consider increasing max_connections or implementing connection pooling',
+        recommendation:
+          'Consider increasing max_connections or implementing connection pooling',
       });
     } else if (connectionUsage > 0.6) {
       issues.push({
@@ -505,7 +517,8 @@ export class DatabaseAnalytics {
       issues.push({
         severity: 'warning',
         message: `Elevated query time: ${stats.performance.avgQueryTime.toFixed(2)}ms`,
-        recommendation: 'Review query performance and optimization opportunities',
+        recommendation:
+          'Review query performance and optimization opportunities',
       });
     }
 
@@ -513,7 +526,8 @@ export class DatabaseAnalytics {
       issues.push({
         severity: 'warning',
         message: `Low cache hit ratio: ${stats.performance.cacheHitRatio.toFixed(1)}%`,
-        recommendation: 'Consider increasing shared_buffers or optimizing queries',
+        recommendation:
+          'Consider increasing shared_buffers or optimizing queries',
       });
     }
 
@@ -528,11 +542,13 @@ export class DatabaseAnalytics {
     return issues;
   }
 
-  private determineHealthStatus(issues: DatabaseHealth['issues']): DatabaseHealth['status'] {
-    if (issues.some(issue => issue.severity === 'critical')) {
+  private determineHealthStatus(
+    issues: DatabaseHealth['issues'],
+  ): DatabaseHealth['status'] {
+    if (issues.some((issue) => issue.severity === 'critical')) {
       return 'critical';
     }
-    if (issues.some(issue => issue.severity === 'warning')) {
+    if (issues.some((issue) => issue.severity === 'warning')) {
       return 'warning';
     }
     return 'healthy';
@@ -558,7 +574,7 @@ export class DatabaseAnalytics {
       // Keep only last 24 hours of metrics
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       this.metricsHistory = this.metricsHistory.filter(
-        entry => entry.timestamp > oneDayAgo
+        (entry) => entry.timestamp > oneDayAgo,
       );
     } catch (error) {
       console.error('Failed to record database metrics:', error);
@@ -582,20 +598,21 @@ export class DatabaseAnalytics {
     ]);
 
     const criticalIssues = health.issues
-      .filter(issue => issue.severity === 'critical')
-      .map(issue => issue.message);
+      .filter((issue) => issue.severity === 'critical')
+      .map((issue) => issue.message);
 
     const recommendations = [
-      ...health.issues.map(issue => issue.recommendation),
+      ...health.issues.map((issue) => issue.recommendation),
       ...indexAnalytics.missingIndexes.map(
-        index => `Consider adding index on ${index.table}(${index.columns.join(', ')})`
+        (index) =>
+          `Consider adding index on ${index.table}(${index.columns.join(', ')})`,
       ),
     ];
 
     // Calculate performance score (0-100)
     let score = 100;
-    score -= health.issues.filter(i => i.severity === 'critical').length * 30;
-    score -= health.issues.filter(i => i.severity === 'warning').length * 10;
+    score -= health.issues.filter((i) => i.severity === 'critical').length * 30;
+    score -= health.issues.filter((i) => i.severity === 'warning').length * 10;
     score -= Math.max(0, (health.performance.avgQueryTime - 100) / 10);
     score = Math.max(0, Math.min(100, score));
 

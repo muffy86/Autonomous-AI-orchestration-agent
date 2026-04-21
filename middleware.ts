@@ -1,7 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { guestRegex, isDevelopmentEnvironment } from './lib/constants';
-import { RateLimiter, rateLimitConfig, applySecurityHeaders, isTrustedOrigin } from './lib/security';
+import {
+  checkRateLimit,
+  rateLimitConfig,
+  applySecurityHeaders,
+  isTrustedOrigin,
+} from './lib/security';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -21,22 +26,29 @@ export async function middleware(request: NextRequest) {
   }
 
   // Get client IP for rate limiting
-  const clientIP = request.ip || 
-    request.headers.get('x-forwarded-for')?.split(',')[0] || 
-    request.headers.get('x-real-ip') || 
+  const clientIP =
+    (request as any).ip ||
+    request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    request.headers.get('x-real-ip') ||
     'unknown';
 
   // Apply rate limiting based on route
-  let rateLimitResult: { allowed: boolean; remaining: number; resetTime: number } | undefined;
-  
+  let rateLimitResult:
+    | { allowed: boolean; remaining: number; resetTime: number }
+    | undefined;
+
   if (pathname.startsWith('/api/auth')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'auth', rateLimitConfig.auth);
+    rateLimitResult = checkRateLimit(clientIP, 'auth', rateLimitConfig.auth);
   } else if (pathname.startsWith('/api/chat')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'chat', rateLimitConfig.chat);
+    rateLimitResult = checkRateLimit(clientIP, 'chat', rateLimitConfig.chat);
   } else if (pathname.startsWith('/api/files/upload')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'upload', rateLimitConfig.upload);
+    rateLimitResult = checkRateLimit(
+      clientIP,
+      'upload',
+      rateLimitConfig.upload,
+    );
   } else if (pathname.startsWith('/api')) {
-    rateLimitResult = RateLimiter.check(clientIP, 'api', rateLimitConfig.api);
+    rateLimitResult = checkRateLimit(clientIP, 'api', rateLimitConfig.api);
   }
 
   // Check rate limit
@@ -51,23 +63,36 @@ export async function middleware(request: NextRequest) {
         status: 429,
         headers: {
           'Content-Type': 'application/json',
-          'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+          'Retry-After': Math.ceil(
+            (rateLimitResult.resetTime - Date.now()) / 1000,
+          ).toString(),
           'X-RateLimit-Limit': rateLimitConfig.api.max.toString(),
           'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-          'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+          'X-RateLimit-Reset': new Date(
+            rateLimitResult.resetTime,
+          ).toISOString(),
         },
-      }
+      },
     );
-    
+
     applySecurityHeaders(rateLimitResponse.headers);
     return rateLimitResponse;
   }
 
   // Add rate limit headers to successful responses
   if (rateLimitResult) {
-    response.headers.set('X-RateLimit-Limit', rateLimitConfig.api.max.toString());
-    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString());
+    response.headers.set(
+      'X-RateLimit-Limit',
+      rateLimitConfig.api.max.toString(),
+    );
+    response.headers.set(
+      'X-RateLimit-Remaining',
+      rateLimitResult.remaining.toString(),
+    );
+    response.headers.set(
+      'X-RateLimit-Reset',
+      new Date(rateLimitResult.resetTime).toISOString(),
+    );
   }
 
   // CSRF protection for state-changing operations
@@ -84,9 +109,9 @@ export async function middleware(request: NextRequest) {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+        },
       );
-      
+
       applySecurityHeaders(csrfResponse.headers);
       return csrfResponse;
     }

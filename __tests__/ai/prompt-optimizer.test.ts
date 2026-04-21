@@ -66,9 +66,15 @@ def add(a, b):
         const simpleAnalysis = optimizer.analyzePrompt(simplePrompt);
         const structuredAnalysis = optimizer.analyzePrompt(structuredPrompt);
 
-        expect(structuredAnalysis.overall).toBeGreaterThan(simpleAnalysis.overall);
-        expect(structuredAnalysis.structure).toBeGreaterThan(simpleAnalysis.structure);
-        expect(structuredAnalysis.specificity).toBeGreaterThan(simpleAnalysis.specificity);
+        expect(structuredAnalysis.overall).toBeGreaterThan(
+          simpleAnalysis.overall,
+        );
+        expect(structuredAnalysis.structure).toBeGreaterThan(
+          simpleAnalysis.structure,
+        );
+        expect(structuredAnalysis.specificity).toBeGreaterThan(
+          simpleAnalysis.specificity,
+        );
       });
 
       it('should identify issues in poor prompts', () => {
@@ -111,7 +117,9 @@ The function should be efficient and follow Python best practices.
 
         expect(optimization.original).toBe(prompt);
         expect(optimization.optimized).not.toBe(prompt);
-        expect(optimization.score.optimized).toBeGreaterThanOrEqual(optimization.score.original);
+        expect(optimization.score.optimized).toBeGreaterThanOrEqual(
+          optimization.score.original,
+        );
         expect(optimization.score.improvement).toBeGreaterThanOrEqual(0);
       });
 
@@ -157,7 +165,7 @@ result = factorial(5)  # Should return 120
         expect(Array.isArray(templates)).toBe(true);
         expect(templates.length).toBeGreaterThan(0);
 
-        templates.forEach(template => {
+        templates.forEach((template) => {
           expect(template).toHaveProperty('id');
           expect(template).toHaveProperty('name');
           expect(template).toHaveProperty('description');
@@ -169,7 +177,7 @@ result = factorial(5)  # Should return 120
 
       it('should get templates by category', () => {
         const codingTemplates = optimizer.getTemplatesByCategory('coding');
-        codingTemplates.forEach(template => {
+        codingTemplates.forEach((template) => {
           expect(template.category).toBe('coding');
         });
       });
@@ -177,12 +185,16 @@ result = factorial(5)  # Should return 120
       it('should search templates', () => {
         const searchResults = optimizer.searchTemplates('code');
         expect(Array.isArray(searchResults)).toBe(true);
-        
-        searchResults.forEach(template => {
+
+        searchResults.forEach((template) => {
           const matchesName = template.name.toLowerCase().includes('code');
-          const matchesDescription = template.description.toLowerCase().includes('code');
-          const matchesTags = template.tags.some(tag => tag.toLowerCase().includes('code'));
-          
+          const matchesDescription = template.description
+            .toLowerCase()
+            .includes('code');
+          const matchesTags = template.tags.some((tag) =>
+            tag.toLowerCase().includes('code'),
+          );
+
           expect(matchesName || matchesDescription || matchesTags).toBe(true);
         });
       });
@@ -199,10 +211,11 @@ result = factorial(5)  # Should return 120
               type: 'string' as const,
               description: 'A test variable',
               required: true,
-            }
+            },
           ],
           tags: ['test'],
           effectiveness: 0.8,
+          examples: [],
         };
 
         const templateId = optimizer.createTemplate(templateData);
@@ -211,7 +224,9 @@ result = factorial(5)  # Should return 120
 
         const createdTemplate = optimizer.getTemplate(templateId);
         expect(createdTemplate).toBeTruthy();
-        expect(createdTemplate!.name).toBe(templateData.name);
+        if (createdTemplate) {
+          expect(createdTemplate.name).toBe(templateData.name);
+        }
       });
 
       it('should update templates', () => {
@@ -219,26 +234,28 @@ result = factorial(5)  # Should return 120
         if (templates.length > 0) {
           const templateId = templates[0].id;
           const originalName = templates[0].name;
-          
+
           const updated = optimizer.updateTemplate(templateId, {
-            name: 'Updated Name'
+            name: 'Updated Name',
           });
-          
+
           expect(updated).toBe(true);
-          
+
           const updatedTemplate = optimizer.getTemplate(templateId);
-          expect(updatedTemplate!.name).toBe('Updated Name');
-          expect(updatedTemplate!.name).not.toBe(originalName);
+          if (updatedTemplate) {
+            expect(updatedTemplate.name).toBe('Updated Name');
+            expect(updatedTemplate.name).not.toBe(originalName);
+          }
         }
       });
 
       it('should render templates with variables', () => {
         const templates = optimizer.getAllTemplates();
-        const template = templates.find(t => t.variables.length > 0);
-        
+        const template = templates.find((t) => t.variables.length > 0);
+
         if (template) {
           const variables: Record<string, any> = {};
-          template.variables.forEach(variable => {
+          template.variables.forEach((variable) => {
             if (variable.type === 'string') {
               variables[variable.name] = 'test value';
             } else if (variable.type === 'boolean') {
@@ -251,9 +268,9 @@ result = factorial(5)  # Should return 120
           const rendered = optimizer.renderTemplate(template.id, variables);
           expect(rendered).toBeTruthy();
           expect(typeof rendered).toBe('string');
-          
+
           // Check that variables were replaced
-          template.variables.forEach(variable => {
+          template.variables.forEach((variable) => {
             if (variable.required) {
               expect(rendered).not.toContain(`{{${variable.name}}}`);
             }
@@ -265,7 +282,7 @@ result = factorial(5)  # Should return 120
     describe('Statistics', () => {
       it('should provide meaningful stats', () => {
         const stats = optimizer.getStats();
-        
+
         expect(stats).toHaveProperty('totalTemplates');
         expect(stats).toHaveProperty('templatesByCategory');
         expect(stats).toHaveProperty('mostUsedTemplates');
@@ -282,15 +299,15 @@ result = factorial(5)  # Should return 120
     describe('Optimization History', () => {
       it('should track optimization history', () => {
         const prompt = 'Test prompt for history';
-        
+
         // Perform optimization
         optimizer.optimizePrompt(prompt);
-        
+
         // Check history
         const history = optimizer.getOptimizationHistory(prompt);
         expect(Array.isArray(history)).toBe(true);
         expect(history.length).toBeGreaterThan(0);
-        
+
         const lastOptimization = history[history.length - 1];
         expect(lastOptimization.original).toBe(prompt);
       });
@@ -305,10 +322,10 @@ result = factorial(5)  # Should return 120
 
     it('should maintain state across calls', () => {
       const prompt = 'Test prompt for state';
-      
+
       // Perform optimization
       promptOptimizer.optimizePrompt(prompt);
-      
+
       // Check that history is maintained
       const history = promptOptimizer.getOptimizationHistory(prompt);
       expect(history.length).toBeGreaterThan(0);
@@ -340,7 +357,9 @@ result = factorial(5)  # Should return 120
       const template = promptOptimizer.getTemplate('non-existent-id');
       expect(template).toBeNull();
 
-      const updated = promptOptimizer.updateTemplate('non-existent-id', { name: 'test' });
+      const updated = promptOptimizer.updateTemplate('non-existent-id', {
+        name: 'test',
+      });
       expect(updated).toBe(false);
 
       const deleted = promptOptimizer.deleteTemplate('non-existent-id');

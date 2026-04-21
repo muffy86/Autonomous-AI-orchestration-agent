@@ -16,7 +16,11 @@ export async function GET(request: Request) {
   }
 
   // Validate the chatId parameter
-  const validationResult = validateAndSanitize(chatId, securitySchemas.uuid, false);
+  const validationResult = validateAndSanitize(
+    chatId,
+    securitySchemas.uuid,
+    false,
+  );
   if (!validationResult.success) {
     return new ChatSDKError(
       'bad_request:api',
@@ -52,11 +56,13 @@ const voteSchema = z.object({
 });
 
 export async function PATCH(request: Request) {
-  let chatId: string, messageId: string, type: 'up' | 'down';
-  
+  let chatId: string;
+  let messageId: string;
+  let type: 'up' | 'down';
+
   try {
     const body = await request.json();
-    
+
     // Validate the request body
     const validationResult = validateAndSanitize(body, voteSchema, false);
     if (!validationResult.success) {

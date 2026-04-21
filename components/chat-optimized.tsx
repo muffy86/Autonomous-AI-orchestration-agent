@@ -6,7 +6,7 @@ import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
-import { fetcher, } from '@/lib/utils';
+import { fetcher } from '@/lib/utils';
 import type { VisibilityType } from './visibility-selector';
 import { useArtifactSelector } from '@/hooks/use-artifact';
 import { unstable_serialize } from 'swr/infinite';
@@ -20,9 +20,17 @@ import { ChatSDKError } from '@/lib/errors';
 import { useAIPerformanceTracking } from './performance-monitor';
 
 // Lazy load heavy components
-const Artifact = lazy(() => import('./artifact').then(module => ({ default: module.Artifact })));
-const MultimodalInput = lazy(() => import('./multimodal-input').then(module => ({ default: module.MultimodalInput })));
-const Messages = lazy(() => import('./messages').then(module => ({ default: module.Messages })));
+const Artifact = lazy(() =>
+  import('./artifact').then((module) => ({ default: module.Artifact })),
+);
+const MultimodalInput = lazy(() =>
+  import('./multimodal-input').then((module) => ({
+    default: module.MultimodalInput,
+  })),
+);
+const Messages = lazy(() =>
+  import('./messages').then((module) => ({ default: module.Messages })),
+);
 
 // Loading components
 const ArtifactSkeleton = () => (
@@ -36,7 +44,10 @@ const InputSkeleton = () => (
 const MessagesSkeleton = () => (
   <div className="space-y-4">
     {[...Array(3)].map((_, i) => (
-      <div key={`message-skeleton-${Date.now()}-${i}`} className="animate-pulse">
+      <div
+        key={`message-skeleton-${Date.now()}-${i}`}
+        className="animate-pulse"
+      >
         <div className="bg-muted rounded-lg h-20 w-full mb-2" />
       </div>
     ))}
@@ -60,8 +71,10 @@ export function ChatOptimized({
 }) {
   const { trackOperation } = useAIPerformanceTracking();
   const [chatId, setChatId] = useState<string>(id);
-  const [selectedChatModel, setSelectedChatModel] = useState<string>(initialChatModel);
-  const [selectedVisibilityType, setSelectedVisibilityType] = useState<VisibilityType>(initialVisibilityType);
+  const [selectedChatModel, setSelectedChatModel] =
+    useState<string>(initialChatModel);
+  const [selectedVisibilityType, setSelectedVisibilityType] =
+    useState<VisibilityType>(initialVisibilityType);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const [votes, setVotes] = useState<Array<Vote>>([]);
   const [isComponentsLoaded, setIsComponentsLoaded] = useState(false);
@@ -100,7 +113,7 @@ export function ChatOptimized({
       // Track AI response performance
       const perfTracker = trackOperation('ai-response');
       const perfId = perfTracker.start();
-      
+
       // Simulate processing time tracking
       setTimeout(() => {
         perfTracker.end(perfId);
@@ -131,7 +144,8 @@ export function ChatOptimized({
     }
   }, [votesData]);
 
-  const { selectedArtifact, setSelectedArtifact } = useArtifactSelector(messages);
+  const { selectedArtifact, setSelectedArtifact } =
+    useArtifactSelector(messages);
 
   useAutoResume({
     messages,
@@ -144,7 +158,7 @@ export function ChatOptimized({
     const timer = setTimeout(() => {
       setIsComponentsLoaded(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -152,12 +166,12 @@ export function ChatOptimized({
   const processedMessages = useMemo(() => {
     const perfTracker = trackOperation('message-processing');
     const perfId = perfTracker.start();
-    
-    const processed = messages.map(message => ({
+
+    const processed = messages.map((message) => ({
       ...message,
       // Add any message processing here
     }));
-    
+
     perfTracker.end(perfId);
     return processed;
   }, [messages, trackOperation]);

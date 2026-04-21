@@ -9,7 +9,14 @@ export interface PromptTemplate {
   id: string;
   name: string;
   description: string;
-  category: 'coding' | 'writing' | 'analysis' | 'creative' | 'business' | 'educational' | 'general';
+  category:
+    | 'coding'
+    | 'writing'
+    | 'analysis'
+    | 'creative'
+    | 'business'
+    | 'educational'
+    | 'general';
   template: string;
   variables: Array<{
     name: string;
@@ -121,14 +128,30 @@ export class PromptOptimizer {
 
 Please provide detailed, actionable feedback with specific examples.`,
         variables: [
-          { name: 'language', type: 'string', description: 'Programming language', required: true },
-          { name: 'code', type: 'string', description: 'Code to review', required: true },
-          { name: 'context', type: 'string', description: 'Additional context', required: false },
+          {
+            name: 'language',
+            type: 'string',
+            description: 'Programming language',
+            required: true,
+          },
+          {
+            name: 'code',
+            type: 'string',
+            description: 'Code to review',
+            required: true,
+          },
+          {
+            name: 'context',
+            type: 'string',
+            description: 'Additional context',
+            required: false,
+          },
         ],
         examples: [
           {
             input: { language: 'python', code: 'def add(a, b): return a + b' },
-            expectedOutput: 'Code quality assessment with suggestions for improvement',
+            expectedOutput:
+              'Code quality assessment with suggestions for improvement',
           },
         ],
         tags: ['code', 'review', 'quality', 'feedback'],
@@ -186,16 +209,52 @@ Please provide detailed, actionable feedback with specific examples.`,
 
 Please create documentation that is both comprehensive and accessible to the target audience.`,
         variables: [
-          { name: 'topic', type: 'string', description: 'Topic to document', required: true },
-          { name: 'audience', type: 'string', description: 'Target audience', required: true },
-          { name: 'docType', type: 'string', description: 'Type of documentation', required: true },
-          { name: 'level', type: 'string', description: 'Technical level', required: true },
-          { name: 'includeExamples', type: 'boolean', description: 'Include examples', required: false, defaultValue: true },
-          { name: 'existingContent', type: 'string', description: 'Existing content', required: false },
+          {
+            name: 'topic',
+            type: 'string',
+            description: 'Topic to document',
+            required: true,
+          },
+          {
+            name: 'audience',
+            type: 'string',
+            description: 'Target audience',
+            required: true,
+          },
+          {
+            name: 'docType',
+            type: 'string',
+            description: 'Type of documentation',
+            required: true,
+          },
+          {
+            name: 'level',
+            type: 'string',
+            description: 'Technical level',
+            required: true,
+          },
+          {
+            name: 'includeExamples',
+            type: 'boolean',
+            description: 'Include examples',
+            required: false,
+            defaultValue: true,
+          },
+          {
+            name: 'existingContent',
+            type: 'string',
+            description: 'Existing content',
+            required: false,
+          },
         ],
         examples: [
           {
-            input: { topic: 'REST API', audience: 'developers', docType: 'API guide', level: 'intermediate' },
+            input: {
+              topic: 'REST API',
+              audience: 'developers',
+              docType: 'API guide',
+              level: 'intermediate',
+            },
             expectedOutput: 'Comprehensive API documentation with examples',
           },
         ],
@@ -259,23 +318,54 @@ Please create documentation that is both comprehensive and accessible to the tar
 
 Please provide detailed analysis with statistical backing and practical recommendations.`,
         variables: [
-          { name: 'datasetName', type: 'string', description: 'Name of dataset', required: true },
-          { name: 'dataSize', type: 'string', description: 'Size of dataset', required: true },
-          { name: 'dataType', type: 'string', description: 'Type of data', required: true },
-          { name: 'analysisTypes', type: 'array', description: 'Types of analysis needed', required: true },
-          { name: 'data', type: 'string', description: 'The actual data', required: true },
-          { name: 'businessContext', type: 'string', description: 'Business context', required: false },
+          {
+            name: 'datasetName',
+            type: 'string',
+            description: 'Name of dataset',
+            required: true,
+          },
+          {
+            name: 'dataSize',
+            type: 'string',
+            description: 'Size of dataset',
+            required: true,
+          },
+          {
+            name: 'dataType',
+            type: 'string',
+            description: 'Type of data',
+            required: true,
+          },
+          {
+            name: 'analysisTypes',
+            type: 'array',
+            description: 'Types of analysis needed',
+            required: true,
+          },
+          {
+            name: 'data',
+            type: 'string',
+            description: 'The actual data',
+            required: true,
+          },
+          {
+            name: 'businessContext',
+            type: 'string',
+            description: 'Business context',
+            required: false,
+          },
         ],
         examples: [
           {
-            input: { 
-              datasetName: 'Sales Data', 
-              dataSize: '1000 rows', 
-              dataType: 'CSV', 
-              analysisTypes: ['trend analysis', 'correlation'], 
-              data: 'sample data' 
+            input: {
+              datasetName: 'Sales Data',
+              dataSize: '1000 rows',
+              dataType: 'CSV',
+              analysisTypes: ['trend analysis', 'correlation'],
+              data: 'sample data',
             },
-            expectedOutput: 'Comprehensive data analysis with insights and recommendations',
+            expectedOutput:
+              'Comprehensive data analysis with insights and recommendations',
           },
         ],
         tags: ['data', 'analysis', 'statistics', 'insights'],
@@ -286,7 +376,7 @@ Please provide detailed analysis with statistical backing and practical recommen
       },
     ];
 
-    defaultTemplates.forEach(template => {
+    defaultTemplates.forEach((template) => {
       this.templates.set(template.id, template);
     });
   }
@@ -304,13 +394,13 @@ Please provide detailed analysis with statistical backing and practical recommen
       weaknesses: [],
     };
 
-    analysis.overall = (
-      analysis.clarity + 
-      analysis.specificity + 
-      analysis.structure + 
-      analysis.context + 
-      analysis.examples
-    ) / 5;
+    analysis.overall =
+      (analysis.clarity +
+        analysis.specificity +
+        analysis.structure +
+        analysis.context +
+        analysis.examples) /
+      5;
 
     this.identifyIssuesAndStrengths(prompt, analysis);
 
@@ -321,13 +411,31 @@ Please provide detailed analysis with statistical backing and practical recommen
     let score = 0.5; // Base score
 
     // Check for clear instructions
-    const instructionWords = ['please', 'create', 'analyze', 'explain', 'describe', 'list', 'provide'];
-    const hasInstructions = instructionWords.some(word => prompt.toLowerCase().includes(word));
+    const instructionWords = [
+      'please',
+      'create',
+      'analyze',
+      'explain',
+      'describe',
+      'list',
+      'provide',
+    ];
+    const hasInstructions = instructionWords.some((word) =>
+      prompt.toLowerCase().includes(word),
+    );
     if (hasInstructions) score += 0.2;
 
     // Check for ambiguous language
-    const ambiguousWords = ['maybe', 'perhaps', 'might', 'could be', 'possibly'];
-    const hasAmbiguity = ambiguousWords.some(word => prompt.toLowerCase().includes(word));
+    const ambiguousWords = [
+      'maybe',
+      'perhaps',
+      'might',
+      'could be',
+      'possibly',
+    ];
+    const hasAmbiguity = ambiguousWords.some((word) =>
+      prompt.toLowerCase().includes(word),
+    );
     if (hasAmbiguity) score -= 0.2;
 
     // Check for question marks (clear questions)
@@ -345,23 +453,52 @@ Please provide detailed analysis with statistical backing and practical recommen
     let score = 0.3; // Base score
 
     // Check for specific requirements
-    const specificWords = ['exactly', 'specifically', 'must', 'should', 'required', 'include'];
-    const specificityCount = specificWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const specificWords = [
+      'exactly',
+      'specifically',
+      'must',
+      'should',
+      'required',
+      'include',
+    ];
+    const specificityCount = specificWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.3, specificityCount * 0.1);
 
     // Check for constraints
-    const constraintWords = ['limit', 'maximum', 'minimum', 'between', 'within', 'no more than'];
-    const constraintCount = constraintWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const constraintWords = [
+      'limit',
+      'maximum',
+      'minimum',
+      'between',
+      'within',
+      'no more than',
+    ];
+    const constraintCount = constraintWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, constraintCount * 0.1);
 
     // Check for format specifications
     const formatWords = ['format', 'structure', 'template', 'style', 'length'];
-    const formatCount = formatWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const formatCount = formatWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, formatCount * 0.1);
 
     // Check for vague language
-    const vagueWords = ['some', 'various', 'different', 'several', 'many', 'few'];
-    const vagueness = vagueWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const vagueWords = [
+      'some',
+      'various',
+      'different',
+      'several',
+      'many',
+      'few',
+    ];
+    const vagueness = vagueWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score -= Math.min(0.3, vagueness * 0.1);
 
     return Math.max(0, Math.min(1, score));
@@ -392,7 +529,9 @@ Please provide detailed analysis with statistical backing and practical recommen
 
     // Check for logical flow
     const flowWords = ['first', 'second', 'then', 'next', 'finally', 'lastly'];
-    const flowCount = flowWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const flowCount = flowWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, flowCount * 0.05);
 
     return Math.max(0, Math.min(1, score));
@@ -402,18 +541,46 @@ Please provide detailed analysis with statistical backing and practical recommen
     let score = 0.3; // Base score
 
     // Check for background information
-    const contextWords = ['background', 'context', 'situation', 'scenario', 'purpose', 'goal'];
-    const contextCount = contextWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const contextWords = [
+      'background',
+      'context',
+      'situation',
+      'scenario',
+      'purpose',
+      'goal',
+    ];
+    const contextCount = contextWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.3, contextCount * 0.1);
 
     // Check for role definition
-    const roleWords = ['you are', 'act as', 'role', 'expert', 'assistant', 'specialist'];
-    const roleCount = roleWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const roleWords = [
+      'you are',
+      'act as',
+      'role',
+      'expert',
+      'assistant',
+      'specialist',
+    ];
+    const roleCount = roleWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, roleCount * 0.1);
 
     // Check for audience specification
-    const audienceWords = ['audience', 'reader', 'user', 'client', 'customer', 'beginner', 'expert'];
-    const audienceCount = audienceWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const audienceWords = [
+      'audience',
+      'reader',
+      'user',
+      'client',
+      'customer',
+      'beginner',
+      'expert',
+    ];
+    const audienceCount = audienceWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, audienceCount * 0.1);
 
     return Math.max(0, Math.min(1, score));
@@ -423,8 +590,16 @@ Please provide detailed analysis with statistical backing and practical recommen
     let score = 0.1; // Base score
 
     // Check for explicit examples
-    const exampleWords = ['example', 'for instance', 'such as', 'like', 'including'];
-    const exampleCount = exampleWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const exampleWords = [
+      'example',
+      'for instance',
+      'such as',
+      'like',
+      'including',
+    ];
+    const exampleCount = exampleWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.4, exampleCount * 0.2);
 
     // Check for code blocks
@@ -433,13 +608,18 @@ Please provide detailed analysis with statistical backing and practical recommen
 
     // Check for sample data
     const sampleWords = ['sample', 'demo', 'test', 'mock'];
-    const sampleCount = sampleWords.filter(word => prompt.toLowerCase().includes(word)).length;
+    const sampleCount = sampleWords.filter((word) =>
+      prompt.toLowerCase().includes(word),
+    ).length;
     score += Math.min(0.2, sampleCount * 0.1);
 
     return Math.max(0, Math.min(1, score));
   }
 
-  private identifyIssuesAndStrengths(prompt: string, analysis: PromptAnalysis): void {
+  private identifyIssuesAndStrengths(
+    prompt: string,
+    analysis: PromptAnalysis,
+  ): void {
     // Identify issues
     if (analysis.clarity < 0.6) {
       analysis.issues.push({
@@ -455,7 +635,8 @@ Please provide detailed analysis with statistical backing and practical recommen
         type: 'specificity',
         message: 'Prompt is too vague',
         severity: 'high',
-        suggestion: 'Add specific requirements, constraints, and expected outcomes',
+        suggestion:
+          'Add specific requirements, constraints, and expected outcomes',
       });
     }
 
@@ -529,7 +710,11 @@ Please provide detailed analysis with statistical backing and practical recommen
 
   optimizePrompt(prompt: string, targetCategory?: string): PromptOptimization {
     const originalAnalysis = this.analyzePrompt(prompt);
-    const optimized = this.generateOptimizedPrompt(prompt, originalAnalysis, targetCategory);
+    const optimized = this.generateOptimizedPrompt(
+      prompt,
+      originalAnalysis,
+      targetCategory,
+    );
     const optimizedAnalysis = this.analyzePrompt(optimized);
 
     const improvements: PromptOptimization['improvements'] = [];
@@ -584,7 +769,11 @@ Please provide detailed analysis with statistical backing and practical recommen
         optimized: optimizedAnalysis.overall,
         improvement: optimizedAnalysis.overall - originalAnalysis.overall,
       },
-      reasoning: this.generateOptimizationReasoning(originalAnalysis, optimizedAnalysis, improvements),
+      reasoning: this.generateOptimizationReasoning(
+        originalAnalysis,
+        optimizedAnalysis,
+        improvements,
+      ),
     };
 
     // Store in history
@@ -595,12 +784,16 @@ Please provide detailed analysis with statistical backing and practical recommen
     return optimization;
   }
 
-  private generateOptimizedPrompt(prompt: string, analysis: PromptAnalysis, targetCategory?: string): string {
+  private generateOptimizedPrompt(
+    prompt: string,
+    analysis: PromptAnalysis,
+    targetCategory?: string,
+  ): string {
     let optimized = prompt;
 
     // Add role definition if missing
     if (analysis.context < 0.5 && !prompt.toLowerCase().includes('you are')) {
-      const rolePrefix = targetCategory 
+      const rolePrefix = targetCategory
         ? `You are an expert ${targetCategory} assistant. `
         : 'You are a helpful AI assistant. ';
       optimized = rolePrefix + optimized;
@@ -622,8 +815,12 @@ Please provide detailed analysis with statistical backing and practical recommen
     }
 
     // Add clear output format
-    if (!optimized.toLowerCase().includes('format') && !optimized.toLowerCase().includes('structure')) {
-      optimized += '\n\nPlease provide your response in a clear, well-structured format.';
+    if (
+      !optimized.toLowerCase().includes('format') &&
+      !optimized.toLowerCase().includes('structure')
+    ) {
+      optimized +=
+        '\n\nPlease provide your response in a clear, well-structured format.';
     }
 
     return optimized.trim();
@@ -632,13 +829,13 @@ Please provide detailed analysis with statistical backing and practical recommen
   private addStructure(prompt: string): string {
     if (prompt.includes('\n')) return prompt; // Already has some structure
 
-    const sentences = prompt.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const sentences = prompt.split(/[.!?]+/).filter((s) => s.trim().length > 0);
     if (sentences.length <= 2) return prompt;
 
     // Convert to structured format
-    let structured = sentences[0].trim() + '.\n\n';
+    let structured = `${sentences[0].trim()}.\n\n`;
     structured += 'Please provide:\n';
-    
+
     sentences.slice(1).forEach((sentence, index) => {
       structured += `${index + 1}. ${sentence.trim()}\n`;
     });
@@ -664,15 +861,16 @@ Please provide detailed analysis with statistical backing and practical recommen
 
   private addExampleRequest(prompt: string): string {
     if (prompt.toLowerCase().includes('example')) return prompt;
-    return prompt + '\n\nPlease include relevant examples to illustrate your points.';
+    return `${prompt}\n\nPlease include relevant examples to illustrate your points.`;
   }
 
   private generateOptimizationReasoning(
     original: PromptAnalysis,
     optimized: PromptAnalysis,
-    improvements: PromptOptimization['improvements']
+    improvements: PromptOptimization['improvements'],
   ): string {
-    let reasoning = 'The prompt was optimized based on the following analysis:\n\n';
+    let reasoning =
+      'The prompt was optimized based on the following analysis:\n\n';
 
     reasoning += `Original score: ${(original.overall * 100).toFixed(1)}%\n`;
     reasoning += `Optimized score: ${(optimized.overall * 100).toFixed(1)}%\n`;
@@ -684,7 +882,8 @@ Please provide detailed analysis with statistical backing and practical recommen
     });
 
     if (improvements.length === 0) {
-      reasoning += 'The prompt was already well-structured with minimal improvements needed.\n';
+      reasoning +=
+        'The prompt was already well-structured with minimal improvements needed.\n';
     }
 
     return reasoning;
@@ -698,20 +897,27 @@ Please provide detailed analysis with statistical backing and practical recommen
     return Array.from(this.templates.values());
   }
 
-  getTemplatesByCategory(category: PromptTemplate['category']): PromptTemplate[] {
-    return this.getAllTemplates().filter(template => template.category === category);
+  getTemplatesByCategory(
+    category: PromptTemplate['category'],
+  ): PromptTemplate[] {
+    return this.getAllTemplates().filter(
+      (template) => template.category === category,
+    );
   }
 
   searchTemplates(query: string): PromptTemplate[] {
     const lowerQuery = query.toLowerCase();
-    return this.getAllTemplates().filter(template => 
-      template.name.toLowerCase().includes(lowerQuery) ||
-      template.description.toLowerCase().includes(lowerQuery) ||
-      template.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    return this.getAllTemplates().filter(
+      (template) =>
+        template.name.toLowerCase().includes(lowerQuery) ||
+        template.description.toLowerCase().includes(lowerQuery) ||
+        template.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)),
     );
   }
 
-  createTemplate(template: Omit<PromptTemplate, 'id' | 'usage' | 'createdAt' | 'updatedAt'>): string {
+  createTemplate(
+    template: Omit<PromptTemplate, 'id' | 'usage' | 'createdAt' | 'updatedAt'>,
+  ): string {
     const id = `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const newTemplate: PromptTemplate = {
       ...template,
@@ -756,26 +962,34 @@ Please provide detailed analysis with statistical backing and practical recommen
     let rendered = template.template;
 
     // Replace variables
-    template.variables.forEach(variable => {
+    template.variables.forEach((variable) => {
       const value = variables[variable.name] ?? variable.defaultValue ?? '';
       const regex = new RegExp(`{{${variable.name}}}`, 'g');
       rendered = rendered.replace(regex, String(value));
     });
 
     // Handle conditional blocks (simplified)
-    rendered = rendered.replace(/{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g, (match, condition, content) => {
-      return variables[condition] ? content : '';
-    });
+    rendered = rendered.replace(
+      /{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g,
+      (match, condition, content) => {
+        return variables[condition] ? content : '';
+      },
+    );
 
     // Handle loops (simplified)
-    rendered = rendered.replace(/{{#each\s+(\w+)}}([\s\S]*?){{\/each}}/g, (match, arrayName, content) => {
-      const array = variables[arrayName];
-      if (!Array.isArray(array)) return '';
-      
-      return array.map(item => {
-        return content.replace(/{{this}}/g, String(item));
-      }).join('');
-    });
+    rendered = rendered.replace(
+      /{{#each\s+(\w+)}}([\s\S]*?){{\/each}}/g,
+      (match, arrayName, content) => {
+        const array = variables[arrayName];
+        if (!Array.isArray(array)) return '';
+
+        return array
+          .map((item) => {
+            return content.replace(/{{this}}/g, String(item));
+          })
+          .join('');
+      },
+    );
 
     return rendered;
   }
@@ -792,25 +1006,31 @@ Please provide detailed analysis with statistical backing and practical recommen
     totalOptimizations: number;
   } {
     const templates = this.getAllTemplates();
-    
-    const templatesByCategory = templates.reduce((acc, template) => {
-      acc[template.category] = (acc[template.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+
+    const templatesByCategory = templates.reduce(
+      (acc, template) => {
+        acc[template.category] = (acc[template.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const mostUsedTemplates = templates
       .sort((a, b) => b.usage - a.usage)
       .slice(0, 5)
-      .map(template => ({
+      .map((template) => ({
         id: template.id,
         name: template.name,
         usage: template.usage,
       }));
 
-    const averageEffectiveness = templates.reduce((sum, template) => sum + template.effectiveness, 0) / templates.length || 0;
+    const averageEffectiveness =
+      templates.reduce((sum, template) => sum + template.effectiveness, 0) /
+        templates.length || 0;
 
-    const totalOptimizations = Array.from(this.optimizationHistory.values())
-      .reduce((sum, history) => sum + history.length, 0);
+    const totalOptimizations = Array.from(
+      this.optimizationHistory.values(),
+    ).reduce((sum, history) => sum + history.length, 0);
 
     return {
       totalTemplates: templates.length,
@@ -825,21 +1045,41 @@ Please provide detailed analysis with statistical backing and practical recommen
 // Validation schemas
 export const promptAnalysisSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required'),
-  targetCategory: z.enum(['coding', 'writing', 'analysis', 'creative', 'business', 'educational', 'general']).optional(),
+  targetCategory: z
+    .enum([
+      'coding',
+      'writing',
+      'analysis',
+      'creative',
+      'business',
+      'educational',
+      'general',
+    ])
+    .optional(),
 });
 
 export const templateCreationSchema = z.object({
   name: z.string().min(1, 'Template name is required'),
   description: z.string().min(1, 'Description is required'),
-  category: z.enum(['coding', 'writing', 'analysis', 'creative', 'business', 'educational', 'general']),
+  category: z.enum([
+    'coding',
+    'writing',
+    'analysis',
+    'creative',
+    'business',
+    'educational',
+    'general',
+  ]),
   template: z.string().min(1, 'Template content is required'),
-  variables: z.array(z.object({
-    name: z.string().min(1),
-    type: z.enum(['string', 'number', 'boolean', 'array']),
-    description: z.string().min(1),
-    required: z.boolean(),
-    defaultValue: z.any().optional(),
-  })),
+  variables: z.array(
+    z.object({
+      name: z.string().min(1),
+      type: z.enum(['string', 'number', 'boolean', 'array']),
+      description: z.string().min(1),
+      required: z.boolean(),
+      defaultValue: z.any().optional(),
+    }),
+  ),
   tags: z.array(z.string()),
   effectiveness: z.number().min(0).max(1).optional().default(0.5),
 });

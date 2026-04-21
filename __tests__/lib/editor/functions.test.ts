@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from '@jest/globals';
 
 // Simple test for editor functions - complex mocking causes issues
 describe('editor functions', () => {
@@ -6,6 +6,6 @@ describe('editor functions', () => {
     // This is a placeholder test to ensure the test suite runs
     // In a real scenario, we would need proper mocking of ProseMirror
     // and React DOM dependencies
-    expect(true).toBe(true)
-  })
-})
+    expect(true).toBe(true);
+  });
+});
