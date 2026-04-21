@@ -8,6 +8,9 @@ export * from './screen-capture';
 export * from './blockchain';
 export * from './tools';
 export * from './execution-pipeline';
+export * from './security';
+export * from './resilience';
+export * from './observability';
 
 import {
   AgentOrchestrator,
@@ -50,6 +53,36 @@ import {
   type DeploymentTarget,
 } from './execution-pipeline';
 
+import {
+  SecurityManager,
+  RateLimiter,
+  EncryptionService,
+  SandboxManager,
+  InputSanitizer,
+  SecurityScanner,
+  type SecurityPolicy,
+} from './security';
+
+import {
+  CircuitBreaker,
+  RetryManager,
+  FallbackManager,
+  HealthMonitor,
+  Bulkhead,
+  DeadLetterQueue,
+  type HealthCheck,
+} from './resilience';
+
+import {
+  APMMonitor,
+  DistributedTracer,
+  PerformanceMonitor,
+  StructuredLogger,
+  MetricsCollector,
+  AlertManager,
+  LogLevel,
+} from './observability';
+
 // ============================================================================
 // Autonomous Agent OS - Complete System
 // ============================================================================
@@ -78,6 +111,26 @@ export interface AgentOSConfig {
     enabled?: boolean;
     apiKey?: string;
   };
+  security?: {
+    enabled?: boolean;
+    policy?: Partial<SecurityPolicy>;
+    rateLimit?: boolean;
+    encryption?: boolean;
+    sandbox?: boolean;
+  };
+  resilience?: {
+    enabled?: boolean;
+    circuitBreaker?: boolean;
+    retries?: boolean;
+    healthChecks?: boolean;
+  };
+  observability?: {
+    enabled?: boolean;
+    tracing?: boolean;
+    metrics?: boolean;
+    logging?: LogLevel;
+    alerts?: boolean;
+  };
 }
 
 export class AutonomousAgentOS {
@@ -93,6 +146,20 @@ export class AutonomousAgentOS {
   public defiAgent?: DeFiAgent;
   public nftAgent?: NFTAgent;
   public bridgeAgent?: CrossChainBridgeAgent;
+  
+  // Advanced features
+  public securityManager?: SecurityManager;
+  public rateLimiter?: RateLimiter;
+  public encryptionService?: EncryptionService;
+  public sandboxManager?: SandboxManager;
+  public circuitBreakers: Map<string, CircuitBreaker> = new Map();
+  public retryManager?: RetryManager;
+  public fallbackManager?: FallbackManager;
+  public healthMonitor?: HealthMonitor;
+  public bulkhead?: Bulkhead;
+  public deadLetterQueue?: DeadLetterQueue<any>;
+  public apmMonitor?: APMMonitor;
+  public alertManager?: AlertManager;
 
   private config: AgentOSConfig;
   private initialized = false;
@@ -126,6 +193,28 @@ export class AutonomousAgentOS {
         enabled: false,
         ...config.publicAI,
       },
+      security: {
+        enabled: true,
+        rateLimit: true,
+        encryption: true,
+        sandbox: true,
+        ...config.security,
+      },
+      resilience: {
+        enabled: true,
+        circuitBreaker: true,
+        retries: true,
+        healthChecks: true,
+        ...config.resilience,
+      },
+      observability: {
+        enabled: true,
+        tracing: true,
+        metrics: true,
+        logging: LogLevel.INFO,
+        alerts: true,
+        ...config.observability,
+      },
     };
 
     // Initialize core components
@@ -139,6 +228,39 @@ export class AutonomousAgentOS {
     this.pipelineExecutor = new PipelineExecutor();
     this.deploymentManager = new DeploymentManager();
     this.monitoringService = new MonitoringService();
+    
+    // Initialize advanced features
+    if (this.config.security?.enabled) {
+      this.securityManager = new SecurityManager(this.config.security.policy);
+      if (this.config.security.rateLimit) {
+        this.rateLimiter = new RateLimiter();
+      }
+      if (this.config.security.encryption) {
+        this.encryptionService = new EncryptionService();
+      }
+      if (this.config.security.sandbox) {
+        this.sandboxManager = new SandboxManager();
+      }
+    }
+    
+    if (this.config.resilience?.enabled) {
+      if (this.config.resilience.retries) {
+        this.retryManager = new RetryManager();
+      }
+      this.fallbackManager = new FallbackManager();
+      if (this.config.resilience.healthChecks) {
+        this.healthMonitor = new HealthMonitor();
+      }
+      this.bulkhead = new Bulkhead(100, 200); // Max 100 concurrent, 200 queue
+      this.deadLetterQueue = new DeadLetterQueue();
+    }
+    
+    if (this.config.observability?.enabled) {
+      this.apmMonitor = new APMMonitor();
+      if (this.config.observability.alerts) {
+        this.alertManager = new AlertManager();
+      }
+    }
   }
 
   async initialize(): Promise<void> {
@@ -148,6 +270,9 @@ export class AutonomousAgentOS {
     }
 
     console.log('🚀 Initializing Autonomous Agent OS...');
+    console.log('🔒 Security: ENABLED');
+    console.log('🛡️  Resilience: ENABLED');
+    console.log('📊 Observability: ENABLED');
 
     // Initialize vision capabilities
     if (this.config.vision?.enabled) {
@@ -184,12 +309,125 @@ export class AutonomousAgentOS {
       }
     }
 
+    // Setup health checks
+    if (this.healthMonitor) {
+      this.setupHealthChecks();
+      console.log('✓ Health monitoring initialized');
+    }
+
+    // Setup circuit breakers for critical services
+    if (this.config.resilience?.circuitBreaker) {
+      this.setupCircuitBreakers();
+      console.log('✓ Circuit breakers initialized');
+    }
+
+    // Setup alert handlers
+    if (this.alertManager) {
+      this.setupAlertHandlers();
+      console.log('✓ Alert system initialized');
+    }
+
     // Register default agent fleet
     await this.registerDefaultAgents();
 
     this.initialized = true;
     console.log('✅ Autonomous Agent OS initialized successfully');
     console.log('📊 System Status:', this.getSystemStatus());
+  }
+
+  private setupHealthChecks(): void {
+    if (!this.healthMonitor) return;
+
+    // Core orchestrator health
+    this.healthMonitor.registerCheck({
+      name: 'orchestrator',
+      critical: true,
+      timeout: 5000,
+      check: async () => ({
+        healthy: this.orchestrator.getAgents().length > 0,
+        details: { agentCount: this.orchestrator.getAgents().length },
+      }),
+    });
+
+    // Tool registry health
+    this.healthMonitor.registerCheck({
+      name: 'tools',
+      critical: true,
+      timeout: 5000,
+      check: async () => ({
+        healthy: this.toolRegistry.getEnabledTools().length > 0,
+        details: { toolCount: this.toolRegistry.getEnabledTools().length },
+      }),
+    });
+
+    // Blockchain health (if enabled)
+    if (this.config.blockchain?.enabled) {
+      this.healthMonitor.registerCheck({
+        name: 'blockchain',
+        critical: false,
+        timeout: 10000,
+        check: async () => ({
+          healthy: this.chainManager.getSupportedChains().length > 0,
+          details: { chains: this.chainManager.getSupportedChains() },
+        }),
+      });
+    }
+  }
+
+  private setupCircuitBreakers(): void {
+    // API circuit breaker
+    this.circuitBreakers.set(
+      'api',
+      new CircuitBreaker('api', {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 60000,
+      })
+    );
+
+    // Blockchain circuit breaker
+    this.circuitBreakers.set(
+      'blockchain',
+      new CircuitBreaker('blockchain', {
+        failureThreshold: 3,
+        successThreshold: 2,
+        timeout: 120000,
+      })
+    );
+
+    // Vision circuit breaker
+    this.circuitBreakers.set(
+      'vision',
+      new CircuitBreaker('vision', {
+        failureThreshold: 5,
+        successThreshold: 3,
+        timeout: 30000,
+      })
+    );
+  }
+
+  private setupAlertHandlers(): void {
+    if (!this.alertManager) return;
+
+    this.alertManager.registerHandler((alert) => {
+      // Log to APM
+      if (this.apmMonitor) {
+        this.apmMonitor.getLogger().error(
+          `ALERT: ${alert.title}`,
+          undefined,
+          { alert }
+        );
+      }
+
+      // In production: Send to notification channels
+      // - Slack
+      // - PagerDuty
+      // - Email
+      // - SMS
+      if (process.env.NODE_ENV === 'production' && alert.severity === 'critical') {
+        console.error('🚨 CRITICAL ALERT:', alert);
+      }
+    });
   }
 
   private async registerDefaultAgents(): Promise<void> {
