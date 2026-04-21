@@ -1,0 +1,30 @@
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devPath": "http://localhost:3000",
+    "distDir": "../out"
+  },
+  "package": {
+    "productName": "AI Agent",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": true,
+      "shell": { "all": true },
+      "fs": { "all": true, "scope": ["$APPDATA/*", "$HOME/*"] },
+      "http": { "all": true, "scope": ["http://*", "https://*"] },
+      "notification": { "all": true },
+      "clipboard": { "all": true }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "com.ai.agent",
+      "icon": ["icons/icon.png"],
+      "targets": "all"
+    },
+    "security": { "csp": null },
+    "windows": [{ "title": "AI Agent", "width": 1400, "height": 900, "fullscreen": false }]
+  }
+}

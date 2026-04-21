@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous AI Agent</title>
+  <link rel="stylesheet" href="popup-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <span class="logo-icon">🤖</span>
+        <h1>AI Agent</h1>
+      </div>
+      <div class="status" id="status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connecting...</span>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="agent">Agent</button>
+      <button class="tab" data-tab="tasks">Tasks</button>
+      <button class="tab" data-tab="context">Context</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </div>
+
+    <div class="tab-content active" id="agent-tab">
+      <div class="quick-actions">
+        <button class="quick-btn" id="capture-btn">
+          📸 Capture Context
+        </button>
+        <button class="quick-btn" id="analyze-btn">
+          🔍 Analyze Page
+        </button>
+        <button class="quick-btn" id="fill-btn">
+          📝 Fill Form
+        </button>
+        <button class="quick-btn" id="extract-btn">
+          📊 Extract Data
+        </button>
+      </div>
+
+      <div class="task-input">
+        <textarea id="task-prompt" placeholder="What should I do? (e.g., 'Fill out this form', 'Extract all email addresses', 'Navigate to pricing page')"></textarea>
+        <button class="execute-btn" id="execute-btn">Execute Task</button>
+      </div>
+
+      <div class="recent-actions" id="recent-actions">
+        <h3>Recent Actions</h3>
+        <div class="action-list"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tasks-tab">
+      <div class="active-tasks" id="active-tasks">
+        <h3>Active Tasks</h3>
+        <div class="task-list"></div>
+      </div>
+      
+      <div class="task-history">
+        <h3>History</h3>
+        <div class="history-list"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="context-tab">
+      <div class="context-view" id="context-view">
+        <div class="context-section">
+          <h4>Page Information</h4>
+          <div id="page-info"></div>
+        </div>
+        
+        <div class="context-section">
+          <h4>Forms Detected</h4>
+          <div id="forms-info"></div>
+        </div>
+        
+        <div class="context-section">
+          <h4>Interactive Elements</h4>
+          <div id="elements-info"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="settings-tab">
+      <div class="settings">
+        <div class="setting-group">
+          <label>
+            <input type="checkbox" id="auto-capture" checked>
+            Auto-capture context on page load
+          </label>
+        </div>
+        
+        <div class="setting-group">
+          <label>
+            <input type="checkbox" id="show-overlay" checked>
+            Show overlay on action
+          </label>
+        </div>
+        
+        <div class="setting-group">
+          <label>
+            <input type="checkbox" id="verbose-logging">
+            Verbose logging
+          </label>
+        </div>
+        
+        <div class="setting-group">
+          <label for="mcp-server">MCP Server URL:</label>
+          <input type="text" id="mcp-server" value="http://localhost:3001" placeholder="http://localhost:3001">
+        </div>
+        
+        <div class="setting-group">
+          <label for="default-model">Default AI Model:</label>
+          <select id="default-model">
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Free)</option>
+            <option value="groq-llama-70b">Groq Llama 70B (Free)</option>
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+          </select>
+        </div>
+        
+        <button class="save-btn" id="save-settings">Save Settings</button>
+        <button class="reset-btn" id="reset-settings">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup-script.js"></script>
+</body>
+</html>

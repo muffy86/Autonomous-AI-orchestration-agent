@@ -1,5 +1,9 @@
 # Use the official Node.js 20 image as base
+# Multi-stage build for AI Chatbot with MCP Server
 FROM node:20-alpine AS base
+
+# Install system dependencies for MCP server
+RUN apk add --no-cache git curl
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -52,12 +56,18 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy MCP server files
+COPY --from=builder --chown=nextjs:nodejs /app/lib/mcp ./lib/mcp
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+
 USER nextjs
 
 EXPOSE 3000
+EXPOSE 3001
 
 ENV PORT=3000
+ENV MCP_PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
-CMD ["node", "server.js"]
+# Start both Next.js and MCP server
+CMD ["sh", "-c", "node server.js & node lib/mcp/server/http.ts"]
