@@ -288,6 +288,42 @@ class ModelProviderManager {
         },
       ],
     });
+
+    // Public AI (SOVEREIGN, FREE, OPEN-SOURCE!)
+    const publicai = createOpenAI({
+      baseURL: 'https://api.publicai.co/v1',
+      apiKey: process.env.PUBLICAI_API_KEY || 'public',
+    });
+
+    this.providers.set('publicai', {
+      id: 'publicai',
+      name: 'Public AI',
+      description: 'Sovereign, open-source AI models from public institutions (FREE)',
+      apiKeyEnv: 'PUBLICAI_API_KEY',
+      free: true,
+      apiKeyConfigured: true, // Works without API key!
+      provider: publicai,
+      models: [
+        {
+          id: 'apertus',
+          name: 'Apertus (Swiss AI)',
+          description: 'Swiss AI Initiative foundation model - sovereign, transparent, GDPR-compliant',
+          capabilities: ['text', 'multilingual', 'translation', 'rag', 'web-search'],
+          contextWindow: 65536,
+          maxOutput: 8192,
+          pricing: { input: 0, output: 0 },
+        },
+        {
+          id: 'sea-lion-v4',
+          name: 'SEA-LION v4',
+          description: 'Southeast Asian multilingual model',
+          capabilities: ['text', 'multilingual', 'translation'],
+          contextWindow: 65536,
+          maxOutput: 8192,
+          pricing: { input: 0, output: 0 },
+        },
+      ],
+    });
   }
 
   listProviders() {
