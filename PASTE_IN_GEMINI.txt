@@ -1,0 +1,43 @@
+================================================================================
+PASTE THIS IN GEMINI CODE ASSIST / CLAUDE / ANY AI AGENT
+================================================================================
+
+I need you to deploy an autonomous AI orchestration environment to Google Cloud Platform.
+
+Repository: https://github.com/muffy86/Autonomous-AI-orchestration-agent.git
+Branch: cursor/full-orchestration-mcp-environment-e9c0
+
+Read the deployment instructions from:
+https://raw.githubusercontent.com/muffy86/Autonomous-AI-orchestration-agent/cursor/full-orchestration-mcp-environment-e9c0/GEMINI_AGENT_INSTRUCTIONS.md
+
+Execute these exact steps:
+
+1. Create GCP VM instance:
+   - Name: ai-orchestration-vm
+   - Machine type: e2-standard-4
+   - Zone: us-central1-a
+   - OS: Ubuntu 22.04 LTS
+   - Disk: 50GB SSD
+   - Tags: orchestration
+
+2. Create firewall rule allowing TCP ports: 80,443,3000,3001,9090,16686,5050
+
+3. SSH to the VM and execute:
+   - Install Docker: curl -fsSL https://get.docker.com | sh
+   - Install Node.js 20: curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs
+   - Install pnpm: sudo npm install -g pnpm
+   - Clone repo: git clone https://github.com/muffy86/Autonomous-AI-orchestration-agent.git
+   - Checkout branch: git checkout cursor/full-orchestration-mcp-environment-e9c0
+   - Install deps: pnpm setup:all
+   - Configure: cp .env.orchestration .env
+   - Start services: docker-compose -f docker-compose.orchestration.yml up -d
+   - Init database: pnpm db:migrate
+
+4. Report back with:
+   - External IP address
+   - Status of all Docker containers
+   - URLs to access the services
+
+Execute all these commands and verify the deployment is successful.
+
+================================================================================

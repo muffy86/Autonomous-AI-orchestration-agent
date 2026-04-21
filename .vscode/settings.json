@@ -1,5 +1,18 @@
 {
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.rulers": [80, 120],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggest.preview": true,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -9,9 +22,115 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.wordWrap": "on"
+  },
+  
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
   "eslint.workingDirectories": [
     { "pattern": "app/*" },
     { "pattern": "packages/*" }
-  ]
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/.turbo": true
+  },
+  
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.turbo": true
+  },
+  
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/.git/objects/**": true,
+    "**/.turbo/**": true
+  },
+  
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "gitlens.codeLens.enabled": true,
+  
+  "docker.dockerComposeBuild": true,
+  "docker.showStartPage": false,
+  
+  "jest.autoRun": "off",
+  "jest.showCoverageOnLoad": false,
+  
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME",
+    "HACK",
+    "NOTE",
+    "XXX",
+    "BUG"
+  ],
+  
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning"
+  ],
+  
+  "sonarlint.rules": {
+    "typescript:S1128": {
+      "level": "off"
+    }
+  },
+  
+  "redhat.telemetry.enabled": false,
+  "gitlens.telemetry.enabled": false,
+  
+  "cSpell.words": [
+    "chatbot",
+    "biomejs",
+    "drizzle",
+    "postgres",
+    "vercel",
+    "nextjs",
+    "tailwindcss",
+    "shadcn",
+    "orchestration",
+    "webhooks",
+    "prometheus",
+    "grafana",
+    "loki",
+    "promtail",
+    "jaeger"
+  ],
+  
+  "window.zoomLevel": 0,
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "GitHub Dark Default",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontSize": 14
 }
