@@ -7,6 +7,10 @@ import { securitySchemas, } from '@/lib/security';
 
 import { signIn } from './auth';
 
+export const signInWithAuth0 = async () => {
+  await signIn('auth0', { redirectTo: '/' });
+};
+
 const authFormSchema = z.object({
   email: securitySchemas.email,
   password: securitySchemas.password,

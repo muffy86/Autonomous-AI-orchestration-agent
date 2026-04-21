@@ -34,6 +34,9 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
+  - Email/password authentication
+  - OAuth integration with Auth0 (optional)
+  - Guest mode support
 
 ## Model Providers
 
@@ -68,6 +71,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - **[Deployment Guide](DEPLOYMENT.md)** - Comprehensive deployment instructions
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
 - **[Branch Protection Setup](.github/BRANCH_PROTECTION.md)** - GitHub branch protection configuration
+- **[Auth0 Setup Guide](docs/AUTH0_SETUP.md)** - Configure Auth0 authentication (optional)
 
 ## 🚀 Features & Workflows
 
