@@ -72,14 +72,23 @@ This folder contains comprehensive documentation for the Auth0 authentication in
 - Troubleshooting configuration issues
 - **Complete reference for all configuration options**
 
+**[AUTH0_FAQ.md](AUTH0_FAQ.md)** ❓
+- Frequently Asked Questions
+- Common scenarios and solutions
+- Troubleshooting quick answers
+- Security and compliance questions
+- Feature explanations
+- **Start here if you have a specific question**
+
 ## 🚀 Quick Reference
 
 ### Getting Started
 
 1. **First time?** → Read [AUTH0_QUICK_START.md](AUTH0_QUICK_START.md)
-2. **Need details?** → Read [AUTH0_SETUP.md](AUTH0_SETUP.md)
-3. **Want technical info?** → Read [AUTH0_IMPLEMENTATION_SUMMARY.md](AUTH0_IMPLEMENTATION_SUMMARY.md)
-4. **Understanding architecture?** → Read [AUTH0_ARCHITECTURE.md](AUTH0_ARCHITECTURE.md)
+2. **Have a question?** → Check [AUTH0_FAQ.md](AUTH0_FAQ.md)
+3. **Need details?** → Read [AUTH0_SETUP.md](AUTH0_SETUP.md)
+4. **Want technical info?** → Read [AUTH0_IMPLEMENTATION_SUMMARY.md](AUTH0_IMPLEMENTATION_SUMMARY.md)
+5. **Understanding architecture?** → Read [AUTH0_ARCHITECTURE.md](AUTH0_ARCHITECTURE.md)
 
 ### Common Tasks
 
