@@ -22,8 +22,24 @@ The MCP server is configured in `.cursor/mcp.json` with the following settings:
 ```
 .cursor/
 ├── mcp.json                    # MCP server configuration
-└── COMPOSIO_MCP_SETUP.md      # This documentation file
+├── COMPOSIO_MCP_SETUP.md      # This documentation file
+└── verify-composio-setup.sh   # Setup verification script
 ```
+
+## Verification
+
+To verify that your Composio MCP setup is working correctly, run the verification script:
+
+```bash
+./.cursor/verify-composio-setup.sh
+```
+
+This script will check:
+- MCP configuration file exists and is valid
+- Composio CLI is installed
+- Composio authentication is active
+- Documentation is present
+- Network connectivity to Composio endpoint
 
 ## Installation
 
