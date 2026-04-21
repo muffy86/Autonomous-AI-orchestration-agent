@@ -85,7 +85,6 @@ class DatabaseConnectionPool {
         connect_timeout: 10,
         prepare: true,
         transform: { undefined: null },
-        readonly: true,
       });
     }
 

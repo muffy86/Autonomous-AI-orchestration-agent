@@ -321,6 +321,38 @@ export class ModelManager {
     return this.usage.get(modelId) || null;
   }
 
+  getStats(): {
+    totalModels: number;
+    availableModels: number;
+    categories: Record<string, number>;
+    totalUsage: { requests: number; tokens: number };
+  } {
+    const allModels = this.getAllModels();
+    const availableModels = this.getAvailableModels();
+    
+    const categories: Record<string, number> = {};
+    allModels.forEach(model => {
+      categories[model.category] = (categories[model.category] || 0) + 1;
+    });
+
+    let totalRequests = 0;
+    let totalTokens = 0;
+    this.usage.forEach(usage => {
+      totalRequests += usage.requests;
+      totalTokens += usage.tokens;
+    });
+
+    return {
+      totalModels: allModels.length,
+      availableModels: availableModels.length,
+      categories,
+      totalUsage: {
+        requests: totalRequests,
+        tokens: totalTokens
+      }
+    };
+  }
+
   estimateCost(modelId: string, inputTokens: number, outputTokens: number): number {
     const model = this.getModel(modelId);
     if (!model) return 0;

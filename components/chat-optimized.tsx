@@ -8,7 +8,7 @@ import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
 import { fetcher, } from '@/lib/utils';
 import type { VisibilityType } from './visibility-selector';
-import { useArtifactSelector } from '@/hooks/use-artifact';
+import { useArtifact } from '@/hooks/use-artifact';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
 import { toast } from './toast';
@@ -72,7 +72,6 @@ export function ChatOptimized({
   const {
     visibilityType,
     setVisibilityType,
-    saveChat: saveChatVisibility,
   } = useChatVisibility({
     chatId,
     initialVisibilityType: selectedVisibilityType,
@@ -88,6 +87,9 @@ export function ChatOptimized({
     isLoading,
     stop,
     reload,
+    data,
+    experimental_resume,
+    status,
   } = useChat({
     id: chatId,
     body: {
@@ -107,15 +109,14 @@ export function ChatOptimized({
       }, 0);
 
       if (!isReadonly) {
-        saveChatVisibility(message);
         mutate(unstable_serialize(getChatHistoryPaginationKey));
       }
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast.error(error.message);
+        toast({ type: 'error', description: error.message });
       } else {
-        toast.error('An unexpected error occurred. Please try again.');
+        toast({ type: 'error', description: 'An unexpected error occurred. Please try again.' });
       }
     },
   });
@@ -131,12 +132,14 @@ export function ChatOptimized({
     }
   }, [votesData]);
 
-  const { selectedArtifact, setSelectedArtifact } = useArtifactSelector(messages);
+  const { artifact, setArtifact } = useArtifact();
 
   useAutoResume({
-    messages,
-    isLoading,
-    reload,
+    autoResume: false, // Set to false for optimized chat to avoid auto-resuming
+    initialMessages,
+    experimental_resume,
+    data,
+    setMessages,
   });
 
   // Preload components after initial render
@@ -166,10 +169,8 @@ export function ChatOptimized({
     <div className="flex flex-col h-full">
       <ChatHeader
         chatId={chatId}
-        selectedChatModel={selectedChatModel}
-        setSelectedChatModel={setSelectedChatModel}
+        selectedModelId={selectedChatModel}
         selectedVisibilityType={visibilityType}
-        setSelectedVisibilityType={setVisibilityType}
         isReadonly={isReadonly}
         session={session}
       />
@@ -183,12 +184,11 @@ export function ChatOptimized({
                   chatId={chatId}
                   messages={processedMessages}
                   votes={votes}
-                  setVotes={setVotes}
-                  isLoading={isLoading}
+                  status={status}
+                  setMessages={setMessages}
                   reload={reload}
-                  stop={stop}
                   isReadonly={isReadonly}
-                  session={session}
+                  isArtifactVisible={artifact.isVisible}
                 />
               )}
             </Suspense>
@@ -203,14 +203,14 @@ export function ChatOptimized({
                     input={input}
                     setInput={setInput}
                     handleSubmit={handleSubmit}
-                    isLoading={isLoading}
+                    status={status}
                     stop={stop}
                     attachments={attachments}
                     setAttachments={setAttachments}
                     messages={messages}
                     setMessages={setMessages}
                     append={append}
-                    session={session}
+                    selectedVisibilityType={visibilityType}
                   />
                 )}
               </Suspense>
@@ -218,13 +218,26 @@ export function ChatOptimized({
           )}
         </div>
 
-        {selectedArtifact && (
+        {artifact.isVisible && (
           <div className="w-1/2 border-l">
             <Suspense fallback={<ArtifactSkeleton />}>
               {isComponentsLoaded && (
                 <Artifact
-                  artifact={selectedArtifact}
-                  onClose={() => setSelectedArtifact(null)}
+                  chatId={chatId}
+                  input={input}
+                  setInput={setInput}
+                  status={status}
+                  stop={stop}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
+                  messages={messages}
+                  setMessages={setMessages}
+                  votes={votes}
+                  append={append}
+                  handleSubmit={handleSubmit}
+                  reload={reload}
+                  isReadonly={isReadonly}
+                  selectedVisibilityType={visibilityType}
                 />
               )}
             </Suspense>
