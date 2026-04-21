@@ -1,0 +1,8 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/mcp.json",
+  "mcpServers": {
+    "composio": {
+      "url": "https://connect.composio.dev/mcp"
+    }
+  }
+}
