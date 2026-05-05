@@ -7,7 +7,7 @@ export default function NotFound() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
       <div className="max-w-md w-full space-y-4 text-center">
         <div className="flex justify-center">
-          <FileQuestion className="h-16 w-16 text-muted-foreground" />
+          <FileQuestion className="size-16 text-muted-foreground" />
         </div>
         
         <h1 className="text-4xl font-bold text-foreground">
@@ -19,7 +19,7 @@ export default function NotFound() {
         </h2>
         
         <p className="text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         
         <div className="flex gap-2 justify-center pt-4">

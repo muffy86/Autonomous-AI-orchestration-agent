@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
           <div className="max-w-md w-full space-y-4 text-center">
             <div className="flex justify-center">
-              <AlertCircle className="h-16 w-16 text-destructive" />
+              <AlertCircle className="size-16 text-destructive" />
             </div>
             
             <h1 className="text-2xl font-bold text-foreground">
@@ -76,7 +76,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 Try Again
               </Button>
               <Button
-                onClick={() => window.location.href = '/'}
+                onClick={() => { window.location.href = '/'; }}
                 variant="outline"
               >
                 Go Home
