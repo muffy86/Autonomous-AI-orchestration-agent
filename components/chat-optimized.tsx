@@ -175,14 +175,13 @@ export function ChatOptimized({
               {isComponentsLoaded && (
                 <Messages
                   chatId={chatId}
-                  messages={processedMessages}
+                  status={isLoading ? 'submitted' : 'awaiting_message'}
                   votes={votes}
-                  setVotes={setVotes}
-                  isLoading={isLoading}
+                  messages={processedMessages}
+                  setMessages={setMessages}
                   reload={reload}
-                  stop={stop}
                   isReadonly={isReadonly}
-                  session={session}
+                  isArtifactVisible={isArtifactVisible}
                 />
               )}
             </Suspense>
@@ -197,14 +196,14 @@ export function ChatOptimized({
                     input={input}
                     setInput={setInput}
                     handleSubmit={handleSubmit}
-                    isLoading={isLoading}
+                    status={isLoading ? 'submitted' : 'awaiting_message'}
                     stop={stop}
                     attachments={attachments}
                     setAttachments={setAttachments}
                     messages={messages}
                     setMessages={setMessages}
                     append={append}
-                    session={session}
+                    selectedVisibilityType={visibilityType}
                   />
                 )}
               </Suspense>
@@ -220,7 +219,7 @@ export function ChatOptimized({
                   chatId={chatId}
                   input={input}
                   setInput={setInput}
-                  status={isLoading ? 'streaming' : 'ready'}
+                  status={isLoading ? 'submitted' : 'awaiting_message'}
                   handleSubmit={handleSubmit}
                   append={append}
                   messages={messages}
@@ -228,9 +227,10 @@ export function ChatOptimized({
                   reload={reload}
                   stop={stop}
                   votes={votes}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
                   isReadonly={isReadonly}
                   selectedVisibilityType={visibilityType}
-                  session={session}
                 />
               )}
             </Suspense>
