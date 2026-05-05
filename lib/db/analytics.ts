@@ -328,7 +328,7 @@ export class DatabaseAnalytics {
       `);
 
       return result.rows.map((row: any) => ({
-        query: row.query.substring(0, 100) + '...',
+        query: `${row.query.substring(0, 100)}...`,
         avgTime: row.avg_time,
         calls: row.calls,
         totalTime: row.total_time,

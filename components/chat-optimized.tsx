@@ -8,14 +8,13 @@ import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
 import { fetcher, } from '@/lib/utils';
 import type { VisibilityType } from './visibility-selector';
-import { useArtifactSelector } from '@/hooks/use-artifact';
+import { useArtifactSelector, useArtifact } from '@/hooks/use-artifact';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
 import { toast } from './toast';
 import type { Session } from 'next-auth';
 import { useSearchParams } from 'next/navigation';
 import { useChatVisibility } from '@/hooks/use-chat-visibility';
-import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 import { useAIPerformanceTracking } from './performance-monitor';
 
@@ -72,7 +71,6 @@ export function ChatOptimized({
   const {
     visibilityType,
     setVisibilityType,
-    saveChat: saveChatVisibility,
   } = useChatVisibility({
     chatId,
     initialVisibilityType: selectedVisibilityType,
@@ -88,6 +86,8 @@ export function ChatOptimized({
     isLoading,
     stop,
     reload,
+    experimental_resume,
+    data,
   } = useChat({
     id: chatId,
     body: {
@@ -107,15 +107,14 @@ export function ChatOptimized({
       }, 0);
 
       if (!isReadonly) {
-        saveChatVisibility(message);
         mutate(unstable_serialize(getChatHistoryPaginationKey));
       }
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast.error(error.message);
+        toast({ type: 'error', description: error.message });
       } else {
-        toast.error('An unexpected error occurred. Please try again.');
+        toast({ type: 'error', description: 'An unexpected error occurred. Please try again.' });
       }
     },
   });
@@ -131,13 +130,8 @@ export function ChatOptimized({
     }
   }, [votesData]);
 
-  const { selectedArtifact, setSelectedArtifact } = useArtifactSelector(messages);
-
-  useAutoResume({
-    messages,
-    isLoading,
-    reload,
-  });
+  const { artifact } = useArtifact();
+  const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
   // Preload components after initial render
   useEffect(() => {
@@ -218,13 +212,25 @@ export function ChatOptimized({
           )}
         </div>
 
-        {selectedArtifact && (
+        {isArtifactVisible && (
           <div className="w-1/2 border-l">
             <Suspense fallback={<ArtifactSkeleton />}>
               {isComponentsLoaded && (
                 <Artifact
-                  artifact={selectedArtifact}
-                  onClose={() => setSelectedArtifact(null)}
+                  chatId={chatId}
+                  input={input}
+                  setInput={setInput}
+                  status={isLoading ? 'streaming' : 'ready'}
+                  handleSubmit={handleSubmit}
+                  append={append}
+                  messages={messages}
+                  setMessages={setMessages}
+                  reload={reload}
+                  stop={stop}
+                  votes={votes}
+                  isReadonly={isReadonly}
+                  selectedVisibilityType={visibilityType}
+                  session={session}
                 />
               )}
             </Suspense>
