@@ -9,13 +9,16 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  index,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
-});
+}, (table) => ({
+  emailIdx: index('user_email_idx').on(table.email),
+}));
 
 export type User = InferSelectModel<typeof user>;
 
@@ -29,7 +32,11 @@ export const chat = pgTable('Chat', {
   visibility: varchar('visibility', { enum: ['public', 'private'] })
     .notNull()
     .default('private'),
-});
+}, (table) => ({
+  userIdIdx: index('chat_user_id_idx').on(table.userId),
+  createdAtIdx: index('chat_created_at_idx').on(table.createdAt),
+  visibilityIdx: index('chat_visibility_idx').on(table.visibility),
+}));
 
 export type Chat = InferSelectModel<typeof chat>;
 
@@ -56,7 +63,10 @@ export const message = pgTable('Message_v2', {
   parts: json('parts').notNull(),
   attachments: json('attachments').notNull(),
   createdAt: timestamp('createdAt').notNull(),
-});
+}, (table) => ({
+  chatIdIdx: index('message_chat_id_idx').on(table.chatId),
+  createdAtIdx: index('message_created_at_idx').on(table.createdAt),
+}));
 
 export type DBMessage = InferSelectModel<typeof message>;
 
@@ -119,6 +129,9 @@ export const document = pgTable(
   (table) => {
     return {
       pk: primaryKey({ columns: [table.id, table.createdAt] }),
+      userIdIdx: index('document_user_id_idx').on(table.userId),
+      createdAtIdx: index('document_created_at_idx').on(table.createdAt),
+      kindIdx: index('document_kind_idx').on(table.kind),
     };
   },
 );
@@ -146,6 +159,9 @@ export const suggestion = pgTable(
       columns: [table.documentId, table.documentCreatedAt],
       foreignColumns: [document.id, document.createdAt],
     }),
+    documentIdIdx: index('suggestion_document_id_idx').on(table.documentId),
+    userIdIdx: index('suggestion_user_id_idx').on(table.userId),
+    isResolvedIdx: index('suggestion_is_resolved_idx').on(table.isResolved),
   }),
 );
 
