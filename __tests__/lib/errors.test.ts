@@ -3,7 +3,7 @@ import { ChatSDKError, getMessageByErrorCode } from '@/lib/errors'
 
 // Mock Response
 global.Response = {
-  json: jest.fn((data, options) => ({
+  json: jest.fn((data, options?: { status?: number }) => ({
     json: async () => data,
     status: options?.status || 200,
   })),

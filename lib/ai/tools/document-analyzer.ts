@@ -215,7 +215,7 @@ function generateSectionSummary(content: string): string {
   
   // Return first sentence as summary, truncated if too long
   const firstSentence = sentences[0].trim();
-  return firstSentence.length > 100 ? firstSentence.substring(0, 100) + '...' : firstSentence;
+  return firstSentence.length > 100 ? `${firstSentence.substring(0, 100)}...` : firstSentence;
 }
 
 function analyzeContent(content: string, sentences: string[], words: string[]): DocumentAnalysisResult['content'] {

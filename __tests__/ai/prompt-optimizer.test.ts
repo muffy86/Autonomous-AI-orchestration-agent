@@ -201,6 +201,12 @@ result = factorial(5)  # Should return 120
               required: true,
             }
           ],
+          examples: [
+            {
+              input: { variable: 'test' },
+              expectedOutput: 'This is a test template with test',
+            }
+          ],
           tags: ['test'],
           effectiveness: 0.8,
         };
@@ -211,7 +217,7 @@ result = factorial(5)  # Should return 120
 
         const createdTemplate = optimizer.getTemplate(templateId);
         expect(createdTemplate).toBeTruthy();
-        expect(createdTemplate!.name).toBe(templateData.name);
+        expect(createdTemplate?.name).toBe(templateData.name);
       });
 
       it('should update templates', () => {
@@ -227,8 +233,8 @@ result = factorial(5)  # Should return 120
           expect(updated).toBe(true);
           
           const updatedTemplate = optimizer.getTemplate(templateId);
-          expect(updatedTemplate!.name).toBe('Updated Name');
-          expect(updatedTemplate!.name).not.toBe(originalName);
+          expect(updatedTemplate?.name).toBe('Updated Name');
+          expect(updatedTemplate?.name).not.toBe(originalName);
         }
       });
 

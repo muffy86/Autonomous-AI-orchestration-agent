@@ -325,21 +325,21 @@ export function applySecurityHeaders(headers: Headers): void {
 /**
  * Rate limiting for API routes
  */
-export class RateLimiter {
-  private static instances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
+const rateLimiterInstances: Map<string, Map<string, { count: number; resetTime: number }>> = new Map();
 
-  static check(
+export const RateLimiter = {
+  check(
     identifier: string,
     endpoint: string,
     config: { windowMs: number; max: number }
   ): { allowed: boolean; remaining: number; resetTime: number } {
     const now = Date.now();
     
-    if (!RateLimiter.instances.has(endpoint)) {
-      RateLimiter.instances.set(endpoint, new Map());
+    if (!rateLimiterInstances.has(endpoint)) {
+      rateLimiterInstances.set(endpoint, new Map());
     }
     
-    const endpointLimits = RateLimiter.instances.get(endpoint);
+    const endpointLimits = rateLimiterInstances.get(endpoint);
     if (!endpointLimits) {
       throw new Error('Failed to get endpoint limits');
     }
@@ -372,12 +372,12 @@ export class RateLimiter {
       remaining: config.max - userLimit.count,
       resetTime: userLimit.resetTime,
     };
-  }
+  },
 
-  static cleanup(): void {
+  cleanup(): void {
     const now = Date.now();
     
-    for (const [endpoint, limits] of RateLimiter.instances) {
+    for (const [endpoint, limits] of rateLimiterInstances) {
       for (const [identifier, limit] of limits) {
         if (now > limit.resetTime) {
           limits.delete(identifier);
@@ -385,11 +385,11 @@ export class RateLimiter {
       }
       
       if (limits.size === 0) {
-        RateLimiter.instances.delete(endpoint);
+        rateLimiterInstances.delete(endpoint);
       }
     }
   }
-}
+} as const;
 
 // Cleanup rate limiter every 5 minutes
 if (typeof setInterval !== 'undefined') {

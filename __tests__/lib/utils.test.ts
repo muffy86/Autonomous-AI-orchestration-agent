@@ -13,7 +13,7 @@ import {
 import { ChatSDKError } from '@/lib/errors'
 
 // Mock fetch globally
-global.fetch = jest.fn()
+global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 // Mock localStorage

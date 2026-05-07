@@ -28,6 +28,8 @@ import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
+import { applyRateLimit } from '@/lib/rate-limit';
+import type { NextRequest } from 'next/server';
 import {
   createResumableStreamContext,
   type ResumableStreamContext,
@@ -50,9 +52,11 @@ function getStreamContext() {
       });
     } catch (error: any) {
       if (error.message.includes('REDIS_URL')) {
-        console.log(
-          ' > Resumable streams are disabled due to missing REDIS_URL',
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            ' > Resumable streams are disabled due to missing REDIS_URL',
+          );
+        }
       } else {
         console.error(error);
       }
@@ -62,7 +66,13 @@ function getStreamContext() {
   return globalStreamContext;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // Apply rate limiting for chat API
+  const rateLimitResponse = await applyRateLimit(request, 'chat');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   // Start performance tracking
   const perfId = AIPerformanceTracker.startTracking('chat-api-request');
   

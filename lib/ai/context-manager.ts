@@ -239,7 +239,7 @@ export class ConversationContextManager {
     const summary = await this.createSummary(messagesToCompress);
     
     // Update context
-    context.summary = summary.userIntent + '\n\n' + summary.conversationFlow.join('\n');
+    context.summary = `${summary.userIntent}\n\n${summary.conversationFlow.join('\n')}`;
     context.messages = context.messages.slice(-20); // Keep only recent messages
     context.metadata.compressionRatio = 
       context.metadata.tokenCount / this.estimateTokenCount(context.messages);
@@ -325,14 +325,16 @@ export class ConversationContextManager {
     messages.forEach(message => {
       const content = typeof message.content === 'string' ? message.content : JSON.stringify(message.content);
       const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-      let match;
+      let match: RegExpExecArray | null = null;
 
-      while ((match = codeBlockRegex.exec(content)) !== null) {
+      match = codeBlockRegex.exec(content);
+      while (match !== null) {
         const language = match[1] || 'unknown';
         const code = match[2].trim();
         const purpose = this.inferCodePurpose(code);
 
         codeSnippets.push({ language, code, purpose });
+        match = codeBlockRegex.exec(content);
       }
     });
 
@@ -433,7 +435,7 @@ export class ConversationContextManager {
     return context.preferences.preferredModel;
   }
 
-  cleanup(olderThanDays: number = 30): number {
+  cleanup(olderThanDays = 30): number {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 

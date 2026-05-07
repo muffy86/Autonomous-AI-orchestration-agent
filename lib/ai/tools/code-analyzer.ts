@@ -315,7 +315,8 @@ function analyzePerformance(code: string, lines: string[], language: string): Co
 
   // Language-specific performance checks
   if (language === 'javascript' || language === 'typescript') {
-    if (code.includes('document.getElementById') && code.match(/document\.getElementById/g)!.length > 3) {
+    const domQueryMatches = code.match(/document\.getElementById/g);
+    if (code.includes('document.getElementById') && domQueryMatches && domQueryMatches.length > 3) {
       bottlenecks.push('Multiple DOM queries detected');
       optimizations.push('Cache DOM elements in variables');
     }

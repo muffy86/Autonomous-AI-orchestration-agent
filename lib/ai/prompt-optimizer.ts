@@ -636,7 +636,7 @@ Please provide detailed analysis with statistical backing and practical recommen
     if (sentences.length <= 2) return prompt;
 
     // Convert to structured format
-    let structured = sentences[0].trim() + '.\n\n';
+    let structured = `${sentences[0].trim()}.\n\n`;
     structured += 'Please provide:\n';
     
     sentences.slice(1).forEach((sentence, index) => {
@@ -664,7 +664,7 @@ Please provide detailed analysis with statistical backing and practical recommen
 
   private addExampleRequest(prompt: string): string {
     if (prompt.toLowerCase().includes('example')) return prompt;
-    return prompt + '\n\nPlease include relevant examples to illustrate your points.';
+    return `${prompt}\n\nPlease include relevant examples to illustrate your points.`;
   }
 
   private generateOptimizationReasoning(

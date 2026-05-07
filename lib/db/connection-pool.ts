@@ -7,7 +7,6 @@ import 'server-only';
 
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { sql } from 'drizzle-orm';
 
 export interface ConnectionConfig {
   host: string;
@@ -45,7 +44,7 @@ class DatabaseConnectionPool {
   private drizzleInstances: Map<string, ReturnType<typeof drizzle>> = new Map();
   private healthStatus: Map<string, ConnectionHealth> = new Map();
   private stats: Map<string, PoolStats> = new Map();
-  private currentPrimary: string = 'primary';
+  private currentPrimary = 'primary';
   private readonly maxFailures = 3;
   private readonly healthCheckInterval = 30000; // 30 seconds
   private healthCheckTimer?: NodeJS.Timeout;
@@ -63,7 +62,12 @@ class DatabaseConnectionPool {
   }
 
   private initializeConnections(): void {
-    const primaryConfig = this.parseConnectionString(process.env.POSTGRES_URL!);
+    const postgresUrl = process.env.POSTGRES_URL;
+    if (!postgresUrl) {
+      throw new Error('POSTGRES_URL environment variable is not set');
+    }
+    
+    const primaryConfig = this.parseConnectionString(postgresUrl);
     const readReplicaUrl = process.env.POSTGRES_READ_REPLICA_URL;
 
     // Primary connection (read/write)
@@ -103,7 +107,7 @@ class DatabaseConnectionPool {
     const parsed = new URL(url);
     return {
       host: parsed.hostname,
-      port: parseInt(parsed.port) || 5432,
+      port: Number.parseInt(parsed.port) || 5432,
       database: parsed.pathname.slice(1),
       username: parsed.username,
       password: parsed.password,
@@ -177,28 +181,36 @@ class DatabaseConnectionPool {
         await pool`SELECT 1`;
         const latency = Date.now() - startTime;
 
-        const health = this.healthStatus.get(name)!;
-        health.isHealthy = true;
-        health.latency = latency;
-        health.lastCheck = new Date();
-        health.consecutiveFailures = 0;
+        const health = this.healthStatus.get(name);
+        if (health) {
+          health.isHealthy = true;
+          health.latency = latency;
+          health.lastCheck = new Date();
+          health.consecutiveFailures = 0;
+        }
 
         // Update stats
-        const stats = this.stats.get(name)!;
-        stats.totalQueries++;
+        const stats = this.stats.get(name);
+        if (stats) {
+          stats.totalQueries++;
+        }
       } catch (error) {
-        const health = this.healthStatus.get(name)!;
-        health.isHealthy = false;
-        health.consecutiveFailures++;
-        health.lastCheck = new Date();
+        const health = this.healthStatus.get(name);
+        if (health) {
+          health.isHealthy = false;
+          health.consecutiveFailures++;
+          health.lastCheck = new Date();
+        }
 
-        const stats = this.stats.get(name)!;
-        stats.failedQueries++;
+        const stats = this.stats.get(name);
+        if (stats) {
+          stats.failedQueries++;
+        }
 
         console.error(`Health check failed for pool '${name}':`, error);
 
         // Failover logic
-        if (name === this.currentPrimary && health.consecutiveFailures >= this.maxFailures) {
+        if (name === this.currentPrimary && health && health.consecutiveFailures >= this.maxFailures) {
           this.performFailover();
         }
       }
@@ -210,8 +222,8 @@ class DatabaseConnectionPool {
     
     // Try to use replica as primary
     if (this.pools.has('replica')) {
-      const replicaHealth = this.healthStatus.get('replica')!;
-      if (replicaHealth.isHealthy) {
+      const replicaHealth = this.healthStatus.get('replica');
+      if (replicaHealth?.isHealthy) {
         this.currentPrimary = 'replica';
         console.log('Failover successful: using replica as primary');
         return;
@@ -288,7 +300,10 @@ class DatabaseConnectionPool {
       }
     }
 
-    throw lastError!;
+    if (lastError) {
+      throw lastError;
+    }
+    throw new Error('Query execution failed without error details');
   }
 
   private updateQueryStats(poolType: string, duration: number, success: boolean): void {
@@ -382,13 +397,15 @@ class DatabaseConnectionPool {
         unhealthyPools.push(name);
       }
 
-      const stats = this.stats.get(name)!;
-      totalConnections += stats.totalConnections;
-      totalQueries += stats.totalQueries;
-      
-      if (stats.totalQueries > 0) {
-        totalResponseTime += stats.avgResponseTime * stats.totalQueries;
-        queryCount += stats.totalQueries;
+      const stats = this.stats.get(name);
+      if (stats) {
+        totalConnections += stats.totalConnections;
+        totalQueries += stats.totalQueries;
+        
+        if (stats.totalQueries > 0) {
+          totalResponseTime += stats.avgResponseTime * stats.totalQueries;
+          queryCount += stats.totalQueries;
+        }
       }
     }
 
@@ -438,8 +455,8 @@ class DatabaseConnectionPool {
   // Manual failover trigger
   async triggerFailover(targetPool?: string): Promise<boolean> {
     if (targetPool && this.pools.has(targetPool)) {
-      const health = this.healthStatus.get(targetPool)!;
-      if (health.isHealthy) {
+      const health = this.healthStatus.get(targetPool);
+      if (health?.isHealthy) {
         this.currentPrimary = targetPool;
         console.log(`Manual failover to '${targetPool}' successful`);
         return true;
