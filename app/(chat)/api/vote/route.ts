@@ -2,9 +2,17 @@ import { auth } from '@/app/(auth)/auth';
 import { getChatById, getVotesByChatId, voteMessage } from '@/lib/db/queries';
 import { ChatSDKError } from '@/lib/errors';
 import { securitySchemas, validateAndSanitize } from '@/lib/security';
+import { applyRateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
+import type { NextRequest } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResponse = await applyRateLimit(request, 'read');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const { searchParams } = new URL(request.url);
   const chatId = searchParams.get('chatId');
 
@@ -51,7 +59,13 @@ const voteSchema = z.object({
   type: z.enum(['up', 'down']),
 });
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResponse = await applyRateLimit(request, 'write');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   let chatId: string;
   let messageId: string;
   let type: 'up' | 'down';

@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { auth } from '@/app/(auth)/auth';
+import { applyRateLimit } from '@/lib/rate-limit';
+import type { NextRequest } from 'next/server';
 
 // Use Blob instead of File since File is not available in Node.js environment
 const FileSchema = z.object({
@@ -17,7 +19,13 @@ const FileSchema = z.object({
     }),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResponse = await applyRateLimit(request, 'upload');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const session = await auth();
 
   if (!session) {
