@@ -1,0 +1,20 @@
+# Sovereign AI OS - Core Dependencies
+# pip install -r requirements.txt
+
+# Web Framework (Orchestrator)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+httpx>=0.25.0
+pydantic>=2.0.0
+
+# Telegram Bot (ECHO Nexus)
+python-telegram-bot>=20.7
+
+# Vault (optional - Docker handles this)
+# infisical-python  # Use CLI instead
+
+# Research/Automation
+# playwright  # For research-capture.py (optional)
+
+# Utils
+python-dotenv>=1.0.0

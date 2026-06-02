@@ -1,0 +1,91 @@
+{
+  "$schema": "skill-registry-v1",
+  "version": "1.0.0",
+  "last_updated": "2025-01-13T00:00:00Z",
+  "skills": [
+    {
+      "id": "memory-sync",
+      "name": "Memory Sync Pipeline",
+      "description": "Sync memories from Notion/GitHub to canonical JSONL",
+      "entry": "memory-sync.py",
+      "cmd": "python memory-sync.py --sync",
+      "type": "python",
+      "tags": ["memory", "sync", "notion", "github"],
+      "inputs": [],
+      "outputs": ["~/mind-weaver/memory.jsonl"],
+      "health_check": "python memory-sync.py --query test",
+      "auto_load": true
+    },
+    {
+      "id": "handoff-write",
+      "name": "Agent Handoff Writer",
+      "description": "Write handoff.json for agent state transfer",
+      "entry": "handoff-write.py",
+      "cmd": "python handoff-write.py",
+      "type": "python",
+      "tags": ["agent", "handoff", "state"],
+      "inputs": ["status", "context", "next_instructions"],
+      "outputs": ["~/.agent-handoffs/handoff_*.json"],
+      "health_check": "python handoff-write.py --read-latest",
+      "auto_load": true
+    },
+    {
+      "id": "echo-nexus",
+      "name": "ECHO Nexus Task Queue",
+      "description": "Mobile-to-desktop task capture via Telegram",
+      "entry": "echo-nexus-bot.py",
+      "cmd": "python echo-nexus-bot.py",
+      "type": "python-daemon",
+      "tags": ["telegram", "tasks", "queue", "mobile"],
+      "inputs": ["telegram_message"],
+      "outputs": ["~/.echo-nexus/tasks.jsonl"],
+      "health_check": "python echo-nexus-cli.py --backlog",
+      "auto_load": true
+    },
+    {
+      "id": "wsl2-watcher",
+      "name": "WSL2 Desktop Watcher",
+      "description": "Surface mobile tasks at desktop login",
+      "entry": "wsl2-watcher.py",
+      "cmd": "python wsl2-watcher.py --daemon",
+      "type": "python-daemon",
+      "tags": ["watcher", "desktop", "notifications"],
+      "inputs": ["~/.echo-nexus/tasks.jsonl"],
+      "outputs": ["desktop_notifications"],
+      "health_check": "python wsl2-watcher.py --once",
+      "auto_load": true
+    },
+    {
+      "id": "vault-infisical",
+      "name": "Secrets Vault",
+      "description": "Self-hosted Infisical for zero-trust secrets",
+      "entry": "vault-setup.sh",
+      "cmd": "bash vault-setup.sh",
+      "type": "bash-setup",
+      "tags": ["secrets", "vault", "security"],
+      "inputs": [],
+      "outputs": ["http://localhost:8080"],
+      "health_check": "curl -f http://localhost:8080/health",
+      "auto_load": false
+    },
+    {
+      "id": "research-capture",
+      "name": "Research Capture",
+      "description": "Capture page + summary per agent iteration",
+      "entry": "research-capture.py",
+      "cmd": "python research-capture.py",
+      "type": "python",
+      "tags": ["research", "browser", "memory"],
+      "inputs": ["url", "html", "screenshot_path"],
+      "outputs": ["~/mind-weaver/research/"],
+      "health_check": "ls ~/mind-weaver/research/",
+      "auto_load": true
+    }
+  ],
+  "categories": {
+    "memory": ["memory-sync", "research-capture"],
+    "agent": ["handoff-write"],
+    "task": ["echo-nexus", "wsl2-watcher"],
+    "security": ["vault-infisical"]
+  }
+}

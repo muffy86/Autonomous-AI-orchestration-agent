@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Handoff Protocol",
+  "type": "object",
+  "required": ["session_id", "timestamp", "agent", "status"],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "UUID for this session"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "agent": {
+      "type": "string",
+      "description": "Agent instance identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "paused", "error", "delegated"]
+    },
+    "completed_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "output_refs": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "File paths or URLs produced"
+          }
+        }
+      }
+    },
+    "open_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+          "blocked_by": {"type": "string"}
+        }
+      }
+    },
+    "decisions_made": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "decision": {"type": "string"},
+          "rationale": {"type": "string"},
+          "alternatives_rejected": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "context_summary": {
+      "type": "string",
+      "description": "3-sentence LLM summary of session context"
+    },
+    "next_agent_instructions": {
+      "type": "string",
+      "description": "Directives for the next agent session"
+    },
+    "references": {
+      "type": "object",
+      "properties": {
+        "repos_modified": {"type": "array", "items": {"type": "string"}},
+        "files_created": {"type": "array", "items": {"type": "string"}},
+        "external_links": {"type": "array", "items": {"type": "string"}},
+        "memory_keys": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "runtime_state": {
+      "type": "object",
+      "description": "Agent-specific state to persist",
+      "additionalProperties": true
+    }
+  }
+}

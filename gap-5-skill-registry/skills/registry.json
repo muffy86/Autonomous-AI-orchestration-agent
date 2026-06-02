@@ -1,0 +1,89 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-01T00:00:00Z",
+  "skills": {
+    "gap-1-echo-nexus": {
+      "name": "ECHO Nexus",
+      "description": "Mobile↔Desktop context bridge with Telegram bot and WSL2 watcher",
+      "path": "gap-1-echo-nexus/echo-nexus.py",
+      "entry_point": "echo-nexus.py",
+      "commands": ["add", "list", "surface", "complete", "archive", "bot", "watcher"],
+      "dependencies": ["python-telegram-bot", "aiohttp"],
+      "env_vars": ["TELEGRAM_BOT_TOKEN"],
+      "tags": ["context-bridge", "telegram", "wsl2", "tasks"],
+      "status": "production"
+    },
+    "gap-3-memory-sync": {
+      "name": "Memory Sync",
+      "description": "Sync Notion/GitHub to canonical memory store",
+      "path": "gap-3-memory/memory-sync.py",
+      "entry_point": "memory-sync.py",
+      "commands": ["sync", "consolidate", "push", "search", "add", "quick", "context"],
+      "dependencies": ["requests"],
+      "env_vars": ["NOTION_TOKEN", "GITHUB_TOKEN"],
+      "tags": ["memory", "notion", "github", "sync"],
+      "status": "production"
+    },
+    "gap-4-vault": {
+      "name": "Secret Vault",
+      "description": "Infisical + pass fallback for secret management",
+      "path": "gap-4-vault/vault-setup.sh",
+      "entry_point": "vault-setup.sh",
+      "commands": ["setup", "add", "get", "run"],
+      "dependencies": ["gpg", "pass", "docker"],
+      "env_vars": ["INFISICAL_TOKEN", "INFISICAL_WORKSPACE_ID"],
+      "tags": ["secrets", "security", "vault", "infisical"],
+      "status": "production"
+    },
+    "gap-8-handoff": {
+      "name": "Agent Handoff",
+      "description": "Session state tracking for agent continuity",
+      "path": "gap-8-handoff/handoff.py",
+      "entry_point": "handoff.py",
+      "commands": ["load", "create", "complete", "block", "finalize", "summary"],
+      "dependencies": [],
+      "env_vars": [],
+      "tags": ["handoff", "session", "continuity", "tasks"],
+      "status": "production"
+    },
+    "web-research": {
+      "name": "Web Research",
+      "description": "Multi-tab research with structured output",
+      "path": "skills/web-research.py",
+      "entry_point": "web-research.py",
+      "commands": ["search", "extract", "compare"],
+      "dependencies": ["requests", "beautifulsoup4"],
+      "env_vars": ["OPENROUTER_API_KEY", "SERPAPI_KEY"],
+      "tags": ["research", "web", "extraction", "comparison"],
+      "status": "beta"
+    },
+    "github-automation": {
+      "name": "GitHub Automation",
+      "description": "Repo management, issues, PRs automation",
+      "path": "skills/github-automation.py",
+      "entry_point": "github-automation.py",
+      "commands": ["create-issue", "create-pr", "sync-project", "list-repos"],
+      "dependencies": ["requests", "pygithub"],
+      "env_vars": ["GITHUB_TOKEN"],
+      "tags": ["github", "git", "automation", "project-management"],
+      "status": "production"
+    },
+    "telegram-bridge": {
+      "name": "Telegram Bridge",
+      "description": "Bot framework for Telegram integrations",
+      "path": "skills/telegram-bridge.py",
+      "entry_point": "telegram-bridge.py",
+      "commands": ["send", "poll", "webhook"],
+      "dependencies": ["python-telegram-bot", "aiohttp"],
+      "env_vars": ["TELEGRAM_BOT_TOKEN"],
+      "tags": ["telegram", "messaging", "notifications"],
+      "status": "production"
+    }
+  },
+  "aliases": {
+    "mem": "gap-3-memory-sync",
+    "vault": "gap-4-vault",
+    "echo": "gap-1-echo-nexus",
+    "handoff": "gap-8-handoff"
+  }
+}
