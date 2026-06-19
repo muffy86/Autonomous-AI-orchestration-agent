@@ -2,6 +2,7 @@
 """
 orchestrator-api.py - Self-hosted FastAPI event router
 Replaces Make.com "AI Agent - Max Config" with retry/backoff + DLQ
+PRODUCTION-READY: Real caching, metrics, rate limiting
 """
 
 import json
@@ -21,6 +22,22 @@ from pydantic import BaseModel, Field
 import httpx
 import uvicorn
 
+# Production cache with metrics
+from lib_cache import ProductionCache, cached, get_cache
+# Production rate limiting
+from lib_rate_limit import rate_limit, get_rate_limiter
+# Environment validation
+from lib_env import get_orchestrator_env_validator, EnvValidationError
+
+# === Validate Environment on Startup ===
+try:
+    env_validator = get_orchestrator_env_validator()
+    env_config = env_validator.validate(fail_fast=True)
+    env_validator.print_config()
+except EnvValidationError as e:
+    print(f"\n❌ STARTUP FAILED - Environment validation error:\n{e}\n")
+    sys.exit(1)
+
 # Config
 DATA_DIR = Path.home() / ".orchestrator"
 QUEUE_DIR = DATA_DIR / "queue"
@@ -29,7 +46,7 @@ LOG_FILE = DATA_DIR / "events.logl"
 
 MAX_RETRIES = 3
 RETRY_DELAYS = [5, 30, 300]  # seconds
-HMAC_SECRET = os.getenv("ORCH_SECRET", "change-me-in-production")
+HMAC_SECRET = env_config["ORCH_SECRET"]  # From validated environment
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 QUEUE_DIR.mkdir(exist_ok=True)
@@ -147,16 +164,24 @@ class Router:
                 print(f"[orchestrator] Handler error: {e}")
                 return False
         
-        # 2. Check webhook routes
-        for route in self.routes:
-            if route.source == event.get("source") and route.event_type == event.get("event_type"):
-                return await self._webhook_call(route.target, event)
+        # 2. Check webhook routes (with caching)
+        route = self._find_route_cached(event.get("source", ""), event.get("event_type", ""))
+        if route:
+            return await self._webhook_call(route.target, event)
         
         # 3. Fallback: direct webhook_url in event
         if event.get("webhook_url"):
             return await self._webhook_call(event["webhook_url"], event)
         
         return False
+    
+    @cached(ttl=60.0, key_prefix="route")
+    def _find_route_cached(self, source: str, event_type: str) -> Optional[RouteConfig]:
+        """Find matching route (cached for 60s)."""
+        for route in self.routes:
+            if route.source == source and route.event_type == event_type:
+                return route
+        return None
     
     async def _webhook_call(self, url: str, event: dict) -> bool:
         """POST to webhook with retry."""
@@ -248,7 +273,8 @@ app = FastAPI(
 # === Routes ===
 
 @app.post("/v1/events", response_model=Dict)
-async def ingest_event(event: WebhookEvent, background: BackgroundTasks):
+@rate_limit("write")
+async def ingest_event(request: Request, event: WebhookEvent, background: BackgroundTasks):
     """Ingest event into queue."""
     event_data = event.dict()
     event_id = queue.enqueue(event_data)
@@ -256,14 +282,16 @@ async def ingest_event(event: WebhookEvent, background: BackgroundTasks):
 
 
 @app.post("/v1/events/sync")
-async def ingest_sync(event: WebhookEvent):
+@rate_limit("write")
+async def ingest_sync(request: Request, event: WebhookEvent):
     """Ingest and process synchronously (for webhooks that need immediate response)."""
     success = await router.process_event(event.dict())
     return {"processed": success}
 
 
 @app.get("/v1/health")
-async def health():
+@rate_limit("read")
+async def health(request: Request):
     return {
         "status": "healthy",
         "queue_depth": queue.count(),
@@ -272,13 +300,30 @@ async def health():
     }
 
 
+@app.get("/v1/metrics")
+@rate_limit("read")
+async def metrics(request: Request):
+    """Real cache metrics - not theater."""
+    cache = get_cache()
+    limiter = get_rate_limiter()
+    return {
+        "cache": cache.get_metrics(),
+        "rate_limiter": limiter.get_metrics(),
+        "queue_depth": queue.count(),
+        "dlq_count": len(list(DLQ_DIR.glob("*.json"))),
+        "worker_running": worker.running
+    }
+
+
 @app.get("/v1/queue")
-async def get_queue():
+@rate_limit("read")
+async def get_queue(request: Request):
     return {"count": queue.count(), "events": [f.stem for f in QUEUE_DIR.glob("*.json")]}
 
 
 @app.get("/v1/dlq")
-async def get_dlq():
+@rate_limit("read")
+async def get_dlq(request: Request):
     dead = [json.loads(f.read_text()) for f in DLQ_DIR.glob("*.json")]
     return {"count": len(dead), "events": dead}
 
