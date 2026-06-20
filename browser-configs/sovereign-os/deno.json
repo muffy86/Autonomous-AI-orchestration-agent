@@ -1,7 +1,7 @@
 {
   "name": "@sovereign-os/browser",
-  "version": "1.0.0",
-  "description": "End-to-end sovereign AI browser operating system",
+  "version": "2.0.0",
+  "description": "End-to-end sovereign AI browser operating system with advanced automation",
   "type": "module",
   "exports": "./core.ts",
   "tasks": {
@@ -9,10 +9,11 @@
     "dev": "deno run --allow-all --watch server.ts",
     "build": "deno compile --allow-all --output sovereign-os server.ts",
     "test": "deno test --allow-all",
-    "cache": "deno cache --reload core.ts"
+    "cache": "deno cache --reload core.ts server.ts"
   },
   "imports": {
-    "ollama": "npm:ollama@^0.5.0"
+    "ollama": "npm:ollama@^0.5.0",
+    "puppeteer": "npm:puppeteer@21.6.0"
   },
   "license": "MIT",
   "keywords": [
@@ -21,9 +22,15 @@
     "sovereign",
     "uncensored",
     "autonomous-agents",
+    "autogpt",
+    "babyagi",
     "privacy",
     "local-llm",
     "knowledge-graph",
-    "automation"
+    "automation",
+    "workflows",
+    "plugins",
+    "search",
+    "web-scraping"
   ]
 }

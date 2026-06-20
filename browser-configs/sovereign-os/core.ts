@@ -16,6 +16,10 @@ import { AutoGPT } from './agents/auto-gpt.ts';
 import { BabyAGI } from './agents/baby-agi.ts';
 import { PersonalKnowledgeGraph } from './knowledge/graph.ts';
 import { SovereignDataLayer } from './data/sovereign.ts';
+import { SearchEngine } from './search/engine.ts';
+import { BrowserAutomation } from './automation/browser.ts';
+import { SettingsManager } from './config/settings.ts';
+import { PluginManager } from './plugins/manager.ts';
 
 /**
  * Main Orchestrator - Controls all agents and browser automation
@@ -25,6 +29,10 @@ export class SovereignBrowserOS {
   private knowledgeGraph: PersonalKnowledgeGraph;
   private dataLayer: SovereignDataLayer;
   private ollama: Ollama;
+  private searchEngine: SearchEngine;
+  private browserAutomation: BrowserAutomation;
+  private settings: SettingsManager;
+  private plugins: PluginManager;
   private isRunning = false;
   
   constructor(config = {}) {
@@ -69,28 +77,49 @@ export class SovereignBrowserOS {
   async init() {
     console.log('🚀 Initializing Sovereign Browser OS...');
     
-    // Initialize local Ollama
-    this.ollama = new Ollama({ host: 'http://localhost:11434' });
-    
-    // Initialize personal data layer
+    // Initialize personal data layer (first, as others depend on it)
     this.dataLayer = new SovereignDataLayer({
       storage: 'opfs', // Origin Private File System
       encryption: true,
-      sync: 'p2p' // Optional peer-to-peer sync
+      sync: this.config.sync || 'none'
     });
     await this.dataLayer.init();
+    
+    // Initialize settings
+    this.settings = new SettingsManager(this.dataLayer);
+    await this.settings.init();
+    
+    // Initialize local Ollama
+    this.ollama = new Ollama({ host: 'http://localhost:11434' });
+    
+    // Initialize search engine
+    this.searchEngine = new SearchEngine({
+      cacheEnabled: this.settings.get('search.cacheEnabled'),
+      cacheTTL: this.settings.get('search.cacheTTL'),
+      maxResults: this.settings.get('search.maxResults')
+    });
+    
+    // Initialize browser automation
+    this.browserAutomation = new BrowserAutomation();
+    await this.browserAutomation.init();
     
     // Initialize knowledge graph
     this.knowledgeGraph = new PersonalKnowledgeGraph(this.dataLayer);
     await this.knowledgeGraph.init();
     
-    // Initialize agents
+    // Initialize plugin system
+    this.plugins = new PluginManager(this.dataLayer);
+    await this.plugins.init();
+    
+    // Initialize agents (including plugin agents)
     await this.initializeAgents();
     
     // Start orchestration loop
     this.startOrchestrationLoop();
     
     console.log('✅ Sovereign Browser OS ready!');
+    console.log(`   Agents: ${this.agents.size}`);
+    console.log(`   Plugins: ${this.plugins.listPlugins().length}`);
   }
 
   async initializeAgents() {
@@ -355,22 +384,24 @@ Generate production-ready code. Include tests. Use latest 2026 best practices.`;
       capabilities: ['web-search', 'data-gathering', 'analysis', 'summarization'],
       
       async execute(task: any, context: any) {
-        // Multi-source research
-        const sources = [
-          await this.searchPerplexity(task.query),
-          await this.searchWeb(task.query),
-          await this.searchArxiv(task.query),
-          await context.knowledgeGraph.query(task.query)
-        ];
+        // Use the integrated search engine
+        const searchResults = await this.searchEngine.smartSearch(
+          task.query,
+          this.ollama,
+          { engines: this.settings.get('search.defaultEngines') }
+        );
         
-        // Synthesize findings
-        const synthesis = await this.queryUncensored(`Synthesize these research findings:
-
-${sources.map((s, i) => `Source ${i + 1}:\n${s}`).join('\n\n')}
-
-Provide comprehensive analysis with citations.`);
+        // Store in knowledge graph
+        await context.knowledgeGraph.addNode({
+          type: 'research-result',
+          content: {
+            query: task.query,
+            answer: searchResults.answer,
+            sources: searchResults.sources
+          }
+        });
         
-        return { synthesis, sources };
+        return searchResults;
       }.bind(this)
     };
   }
@@ -381,26 +412,38 @@ Provide comprehensive analysis with citations.`);
       capabilities: ['navigate', 'scrape', 'interact', 'automate'],
       
       async execute(task: any, context: any) {
-        // Full browser automation
-        const puppeteer = await import('npm:puppeteer');
-        const browser = await puppeteer.launch({ headless: false });
-        const page = await browser.newPage();
+        // Use the integrated browser automation
+        if (task.url) {
+          await this.browserAutomation.goto(task.url);
+        }
         
-        // Execute automation
-        const result = await this.automateTask(page, task);
+        let result: any = {};
         
-        await browser.close();
-        return result;
-      }.bind(this),
-      
-      async automateTask(page: any, task: any) {
-        // AI-powered automation
-        const plan = await this.queryUncensored(`Generate Puppeteer code to: ${task.description}
-
-Return executable JavaScript code.`);
+        if (task.action === 'scrape') {
+          if (task.selector) {
+            result.data = await this.browserAutomation.extractAll(task.selector);
+          } else if (task.table) {
+            result.data = await this.browserAutomation.scrapeTable(task.table);
+          } else {
+            // Use AI to extract
+            result.data = await this.browserAutomation.extractWithAI(task.description, this.ollama);
+          }
+        } else if (task.action === 'fill-form') {
+          await this.browserAutomation.fillForm(task.formData);
+          if (task.submit) {
+            await this.browserAutomation.submitForm(task.formSelector);
+          }
+          result.success = true;
+        } else if (task.action === 'screenshot') {
+          result.screenshot = await this.browserAutomation.screenshot(task.options);
+        } else if (task.action === 'monitor') {
+          result.monitor = await this.browserAutomation.monitorChanges(
+            task.selector,
+            task.callback,
+            task.interval
+          );
+        }
         
-        // Execute generated code
-        const result = await eval(plan);
         return result;
       }.bind(this)
     };
@@ -469,34 +512,20 @@ Provide insights, patterns, and recommendations.`);
 
   // ===== Helper Methods =====
 
-  async searchPerplexity(query: string) {
-    // Use Perplexity API for research
-    const apiKey = await this.dataLayer.getSecret('PERPLEXITY_API_KEY');
-    
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [{ role: 'user', content: query }]
-      })
-    });
-    
-    const data = await response.json();
-    return data.choices[0].message.content;
+  async searchWeb(query: string) {
+    return await this.searchEngine.searchAll(query);
   }
 
-  async searchWeb(query: string) {
-    // Multi-engine web search
-    const results = await Promise.all([
-      this.searchBrave(query),
-      this.searchDuckDuckGo(query)
-    ]);
-    
-    return results.flat();
+  async searchPerplexity(query: string) {
+    return await this.searchEngine.searchPerplexity(query);
+  }
+
+  async searchCode(query: string) {
+    return await this.searchEngine.searchCode(query);
+  }
+
+  async searchAcademic(query: string) {
+    return await this.searchEngine.searchAcademic(query);
   }
 
   async summarizeResults(results: any[]) {
