@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal, Cpu, Play } from 'lucide-react';
+import { Cpu, Play } from 'lucide-react';
 import { SystemState, StreamLog } from './types';
 
 export default function App() {
