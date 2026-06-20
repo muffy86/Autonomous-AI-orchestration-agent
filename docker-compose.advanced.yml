@@ -1,0 +1,178 @@
+# Sovereign OS Docker Compose - Advanced Configuration
+version: '3.8'
+
+services:
+  # Ollama - Local LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sovereign-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+    networks:
+      - sovereign-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Sovereign OS - Main Application
+  sovereign-os:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.sovereign-os
+    container_name: sovereign-browser-os
+    ports:
+      - "8000:8000"
+    volumes:
+      - sovereign-data:/app/data
+      - ./config:/app/config:ro
+    environment:
+      - DENO_DIR=/app/.deno
+      - OLLAMA_HOST=http://ollama:11434
+      - NODE_ENV=production
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+      replicas: 2
+    networks:
+      - sovereign-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Chrome - Browser Automation
+  chrome:
+    image: browserless/chrome:latest
+    container_name: sovereign-chrome
+    ports:
+      - "3000:3000"
+    environment:
+      - CONNECTION_TIMEOUT=60000
+      - MAX_CONCURRENT_SESSIONS=10
+      - PREBOOT_CHROME=true
+      - ENABLE_DEBUGGER=false
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    networks:
+      - sovereign-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis - Caching Layer (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: sovereign-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    networks:
+      - sovereign-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx - Reverse Proxy & Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: sovereign-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    restart: unless-stopped
+    depends_on:
+      - sovereign-os
+    networks:
+      - sovereign-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus - Metrics (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sovereign-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    restart: unless-stopped
+    networks:
+      - sovereign-network
+
+  # Grafana - Monitoring Dashboard (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sovereign-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - sovereign-network
+
+volumes:
+  ollama-data:
+    driver: local
+  sovereign-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  sovereign-network:
+    driver: bridge
