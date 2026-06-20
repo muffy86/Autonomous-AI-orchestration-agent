@@ -21,6 +21,7 @@ export default function App() {
   }, [logs]);
 
   useEffect(() => {
+    // 1. Telemetry State Polling Frame
     const fetchState = async () => {
       try {
         const res = await fetch('/api/state');
@@ -39,27 +40,33 @@ export default function App() {
     };
 
     fetchState();
-    const interval = setInterval(fetchState, 2000);
-    
-    setLogs([
-      { id: '1', timestamp: new Date().toLocaleTimeString(), source: 'SYSTEM', level: 'INFO', message: 'Core Core Rust engine bound successfully.' },
-      { id: '2', timestamp: new Date().toLocaleTimeString(), source: 'AGENT', level: 'SUCCESS', message: 'Awaiting execution loops.' }
-    ]);
+    const interval = setInterval(fetchState, 3000);
 
-    return () => clearInterval(interval);
+    // 2. Persistent Live EventSource SSE Logging Stream
+    const eventSource = new EventSource('/api/stream');
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const newLog: StreamLog = JSON.parse(event.data);
+        setLogs((prev) => [...prev, newLog]);
+      } catch (err) {
+        console.error("Malformed stream event packet parsing failure.", err);
+      }
+    };
+
+    eventSource.onerror = () => {
+      setConnected(false);
+    };
+
+    return () => {
+      clearInterval(interval);
+      eventSource.close();
+    };
   }, []);
 
   const handleSendCommand = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputCmd.trim()) return;
-
-    setLogs(prev => [...prev, {
-      id: Date.now().toString(),
-      timestamp: new Date().toLocaleTimeString(),
-      source: 'SYSTEM',
-      level: 'INFO',
-      message: `Direct Command Dispatched: ${inputCmd}`
-    }]);
 
     try {
       await fetch('/api/execute', {
@@ -68,12 +75,12 @@ export default function App() {
         body: JSON.stringify({ command: inputCmd })
       });
     } catch (err) {
-      setLogs(prev => [...prev, {
-        id: Date.now().toString(),
-        timestamp: new Date().toLocaleTimeString(),
-        source: 'SYSTEM',
-        level: 'ERROR',
-        message: 'Endpoint dropped.'
+      setLogs((prev) => [...prev, {
+        id: String(Date.now()),
+        timestamp: "FAIL",
+        source: "SYSTEM",
+        level: "ERROR",
+        message: "Pipeline connectivity lost."
       }]);
     }
     setInputCmd('');
@@ -95,15 +102,15 @@ export default function App() {
       <div className="grid grid-cols-12 flex-1 gap-4 overflow-hidden">
         <aside className="col-span-3 border border-zinc-800 bg-zinc-900/40 p-4 rounded flex flex-col gap-6">
           <h2 className="text-xs uppercase font-bold tracking-widest text-zinc-400 flex items-center gap-2">
-            <Cpu size={14} /> Telemetry Matrix
+            <Cpu size={14} /> System Metrics
           </h2>
           <div className="space-y-4 text-xs">
             <div className="bg-zinc-950 p-3 border border-zinc-800/80 rounded">
-              <span className="text-zinc-500 block mb-1">VRAM Footprint</span>
+              <span className="text-zinc-500 block mb-1">Hardware Footprint</span>
               <div>{sysState.vramAllocation}</div>
             </div>
             <div className="bg-zinc-950 p-3 border border-zinc-800/80 rounded">
-              <span className="text-zinc-500 block mb-1">Active Context</span>
+              <span className="text-zinc-500 block mb-1">Context Window</span>
               <div>{sysState.activeMemoryTokens.toLocaleString()} tokens</div>
             </div>
           </div>
@@ -114,7 +121,7 @@ export default function App() {
             {logs.map((log) => (
               <div key={log.id} className="flex items-start gap-3 border-b border-zinc-900/30 pb-1">
                 <span className="text-zinc-600">[{log.timestamp}]</span>
-                <span className="font-bold text-indigo-400">[{log.source}]</span>
+                <span className={`font-bold ${log.source === 'SYSTEM' ? 'text-amber-400' : 'text-indigo-400'}`}>[{log.source}]</span>
                 <span className={log.level === 'ERROR' ? 'text-rose-400' : 'text-zinc-300'}>{log.message}</span>
               </div>
             ))}
@@ -126,11 +133,11 @@ export default function App() {
               type="text"
               value={inputCmd}
               onChange={(e) => setInputCmd(e.target.value)}
-              placeholder="Inject manual system prompt intercept loop..."
+              placeholder="Inject raw operational script or runtime intercept override loop..."
               className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-zinc-700 text-zinc-200"
             />
             <button type="submit" className="bg-zinc-100 text-zinc-950 text-xs px-4 py-2 rounded font-bold flex items-center gap-2">
-              <Play size={12} fill="currentColor" /> EXECUTE
+              <Play size={12} fill="currentColor" /> INJECT
             </button>
           </form>
         </main>
