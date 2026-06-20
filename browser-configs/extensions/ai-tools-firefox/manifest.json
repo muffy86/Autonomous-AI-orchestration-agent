@@ -1,0 +1,95 @@
+{
+  "manifest_version": 3,
+  "name": "AI Tools - Firefox Edition",
+  "version": "2.0.0",
+  "description": "Advanced AI browser automation for Firefox - June 2026",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "clipboardWrite",
+    "scripting",
+    "webRequest"
+  ],
+  
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  
+  "background": {
+    "scripts": ["background.js"]
+  },
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "commands": {
+    "search-perplexity": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P"
+      },
+      "description": "Search on Perplexity"
+    },
+    "ask-chatgpt": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+G"
+      },
+      "description": "Ask ChatGPT"
+    },
+    "copy-as-markdown": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+M"
+      },
+      "description": "Copy page as Markdown"
+    },
+    "voice-command": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V"
+      },
+      "description": "Activate voice commands"
+    }
+  },
+  
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["styles/*", "scripts/*", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ai-tools@browser-automation.ai",
+      "strict_min_version": "109.0"
+    }
+  }
+}
