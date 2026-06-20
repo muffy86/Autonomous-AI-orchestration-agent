@@ -4,6 +4,37 @@
 
 Complete toolkit for advanced browser AI automation, development, and productivity.
 
+## 🚀 NEW: Sovereign Browser OS - The Ultimate AI Browser Experience
+
+**Your complete sovereign AI operating system** - End-to-end autonomous browser with uncensored LLMs, personal knowledge graph, and full data sovereignty.
+
+### ✨ What Makes It Special
+
+- 🔓 **Uncensored AI** - Local Ollama + cloud providers with zero filters or limits
+- 🤖 **Autonomous Agents** - AutoGPT & BabyAGI style agents that work autonomously
+- 🧠 **Personal Knowledge Graph** - Your data, locally stored, fully encrypted, you own it
+- 🔐 **Complete Sovereignty** - Everything stays on your device, end-to-end encrypted
+- 🎨 **Modern UI/UX** - Beautiful command palette (⌘K), real-time status, first-principles design
+- 🚫 **No Walled Gardens** - Use any LLM provider, no censorship, no tracking, no limits
+
+### 🏃 Quick Start
+
+```bash
+# Install prerequisites
+curl -fsSL https://deno.land/x/install/install.sh | sh  # Deno
+curl -fsSL https://ollama.com/install.sh | sh          # Ollama (optional)
+
+# Start Sovereign OS
+cd browser-configs/sovereign-os
+deno run --allow-all server.ts
+
+# Open http://localhost:8000
+```
+
+👉 **[Read Full Documentation →](./sovereign-os/README.md)**
+
+---
+
 ## 🆕 What's New in June 2026
 
 - ✅ **Ollama Integration** - Run Llama 3.1, Mistral, and other LLMs locally

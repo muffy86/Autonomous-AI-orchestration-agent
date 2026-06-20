@@ -1,0 +1,29 @@
+{
+  "name": "@sovereign-os/browser",
+  "version": "1.0.0",
+  "description": "End-to-end sovereign AI browser operating system",
+  "type": "module",
+  "exports": "./core.ts",
+  "tasks": {
+    "start": "deno run --allow-all server.ts",
+    "dev": "deno run --allow-all --watch server.ts",
+    "build": "deno compile --allow-all --output sovereign-os server.ts",
+    "test": "deno test --allow-all",
+    "cache": "deno cache --reload core.ts"
+  },
+  "imports": {
+    "ollama": "npm:ollama@^0.5.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "browser-os",
+    "sovereign",
+    "uncensored",
+    "autonomous-agents",
+    "privacy",
+    "local-llm",
+    "knowledge-graph",
+    "automation"
+  ]
+}

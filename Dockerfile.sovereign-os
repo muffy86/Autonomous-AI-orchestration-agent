@@ -1,0 +1,30 @@
+FROM denoland/deno:alpine-1.42.0
+
+LABEL maintainer="Sovereign Browser OS"
+LABEL description="End-to-end sovereign AI browser operating system"
+
+# Install Ollama
+RUN apk add --no-cache curl bash
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Create app directory
+WORKDIR /app
+
+# Copy application files
+COPY browser-configs/sovereign-os/ .
+
+# Cache dependencies
+RUN deno cache --reload core.ts server.ts
+
+# Expose ports
+EXPOSE 8000 11434
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8000/api/health || exit 1
+
+# Start Ollama and the app
+CMD ollama serve & \
+    sleep 5 && \
+    ollama pull llama3.1:8b && \
+    deno run --allow-all server.ts

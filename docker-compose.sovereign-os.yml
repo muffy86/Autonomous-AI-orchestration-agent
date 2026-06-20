@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  sovereign-os:
+    build:
+      context: .
+      dockerfile: Dockerfile.sovereign-os
+    container_name: sovereign-browser-os
+    ports:
+      - "8000:8000"    # Web UI
+      - "11434:11434"  # Ollama API
+    volumes:
+      - ollama-data:/root/.ollama
+      - sovereign-data:/app/data
+    environment:
+      - DENO_DIR=/app/.deno
+    restart: unless-stopped
+    networks:
+      - sovereign-network
+
+  # Optional: Add browser automation with Chrome
+  chrome:
+    image: browserless/chrome:latest
+    container_name: sovereign-chrome
+    ports:
+      - "3000:3000"
+    environment:
+      - CONNECTION_TIMEOUT=60000
+      - MAX_CONCURRENT_SESSIONS=10
+    restart: unless-stopped
+    networks:
+      - sovereign-network
+
+volumes:
+  ollama-data:
+    driver: local
+  sovereign-data:
+    driver: local
+
+networks:
+  sovereign-network:
+    driver: bridge
